@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -15,7 +15,7 @@ internal sealed class EffectDialog : DialogWindow
 {
     private readonly List<(Slider Slider, Action<object, double> Set)> _rows = [];
     private readonly List<double> _fallbacks = [];
-    private readonly CheckBox _on = new() { Content = "Draw this effect" };
+    private readonly CheckBox _on = new() { Content = "绘制此效果" };
     private readonly CheckBox? _inside;
     private readonly EffectKind _kind;
     private LayerEffects? _result;
@@ -37,11 +37,11 @@ internal sealed class EffectDialog : DialogWindow
             {
                 var stroke = current?.Stroke ?? new StrokeEffect();
                 _on.IsChecked = current?.Stroke is { IsEnabled: true };
-                Add(group, "Size, pixels", 0, StrokeEffect.MaxSize, stroke.Size, 4, (s, v) => ((StrokeEffect)s).Size = v, "0");
-                Colour(group, "Color", stroke.Red, stroke.Green, stroke.Blue,
+                Add(group, "大小(像素)", 0, StrokeEffect.MaxSize, stroke.Size, 4, (s, v) => ((StrokeEffect)s).Size = v, "0");
+                Colour(group, "颜色", stroke.Red, stroke.Green, stroke.Blue,
                     (r, g, b) => { stroke.Red = r; stroke.Green = g; stroke.Blue = b; });
-                Add(group, "Opacity", 0, 1, stroke.Opacity, 1, (s, v) => ((StrokeEffect)s).Opacity = v, "0.00");
-                _inside = new CheckBox { Content = "Inside the edge", IsChecked = stroke.Inside };
+                Add(group, "不透明度", 0, 1, stroke.Opacity, 1, (s, v) => ((StrokeEffect)s).Opacity = v, "0.00");
+                _inside = new CheckBox { Content = "边缘内", IsChecked = stroke.Inside };
                 group.Children.Add(_inside);
                 break;
             }
@@ -49,60 +49,60 @@ internal sealed class EffectDialog : DialogWindow
             {
                 var shadow = current?.Shadow ?? new ShadowEffect();
                 _on.IsChecked = current?.Shadow is { IsEnabled: true };
-                Add(group, "Angle, degrees", -360, 360, shadow.Angle, 90, (s, v) => ((ShadowEffect)s).Angle = v);
-                Add(group, "Distance, pixels", 0, 5000, shadow.Distance, 20, (s, v) => ((ShadowEffect)s).Distance = v, "0");
-                Add(group, "Blur, pixels", 0, 500, shadow.Blur, 20, (s, v) => ((ShadowEffect)s).Blur = v);
-                Colour(group, "Color", shadow.Red, shadow.Green, shadow.Blue,
+                Add(group, "角度(度)", -360, 360, shadow.Angle, 90, (s, v) => ((ShadowEffect)s).Angle = v);
+                Add(group, "距离(像素)", 0, 5000, shadow.Distance, 20, (s, v) => ((ShadowEffect)s).Distance = v, "0");
+                Add(group, "模糊(像素)", 0, 500, shadow.Blur, 20, (s, v) => ((ShadowEffect)s).Blur = v);
+                Colour(group, "颜色", shadow.Red, shadow.Green, shadow.Blue,
                     (r, g, b) => { shadow.Red = r; shadow.Green = g; shadow.Blue = b; });
-                Add(group, "Opacity", 0, 1, shadow.Opacity, 0.5, (s, v) => ((ShadowEffect)s).Opacity = v, "0.00");
+                Add(group, "不透明度", 0, 1, shadow.Opacity, 0.5, (s, v) => ((ShadowEffect)s).Opacity = v, "0.00");
                 break;
             }
             case EffectKind.ColorOverlay:
             {
                 var overlay = current?.ColorOverlay ?? new ColorOverlayEffect();
                 _on.IsChecked = current?.ColorOverlay is { IsEnabled: true };
-                Colour(group, "Color", overlay.Red, overlay.Green, overlay.Blue,
+                Colour(group, "颜色", overlay.Red, overlay.Green, overlay.Blue,
                     (r, g, b) => { overlay.Red = r; overlay.Green = g; overlay.Blue = b; });
-                Add(group, "Opacity", 0, 1, overlay.Opacity, 1, (s, v) => ((ColorOverlayEffect)s).Opacity = v, "0.00");
+                Add(group, "不透明度", 0, 1, overlay.Opacity, 1, (s, v) => ((ColorOverlayEffect)s).Opacity = v, "0.00");
                 break;
             }
             case EffectKind.InnerShadow:
             {
                 var inner = current?.InnerShadow ?? new InnerShadowEffect();
                 _on.IsChecked = current?.InnerShadow is { IsEnabled: true };
-                Add(group, "Angle, degrees", -360, 360, inner.Angle, 90, (s, v) => ((InnerShadowEffect)s).Angle = v);
-                Add(group, "Distance, pixels", 0, 5000, inner.Distance, 10, (s, v) => ((InnerShadowEffect)s).Distance = v, "0");
-                Add(group, "Blur, pixels", 0, 500, inner.Blur, 10, (s, v) => ((InnerShadowEffect)s).Blur = v);
-                Colour(group, "Color", inner.Red, inner.Green, inner.Blue,
+                Add(group, "角度(度)", -360, 360, inner.Angle, 90, (s, v) => ((InnerShadowEffect)s).Angle = v);
+                Add(group, "距离(像素)", 0, 5000, inner.Distance, 10, (s, v) => ((InnerShadowEffect)s).Distance = v, "0");
+                Add(group, "模糊(像素)", 0, 500, inner.Blur, 10, (s, v) => ((InnerShadowEffect)s).Blur = v);
+                Colour(group, "颜色", inner.Red, inner.Green, inner.Blue,
                     (r, g, b) => { inner.Red = r; inner.Green = g; inner.Blue = b; });
-                Add(group, "Opacity", 0, 1, inner.Opacity, 0.5, (s, v) => ((InnerShadowEffect)s).Opacity = v, "0.00");
+                Add(group, "不透明度", 0, 1, inner.Opacity, 0.5, (s, v) => ((InnerShadowEffect)s).Opacity = v, "0.00");
                 break;
             }
             case EffectKind.OuterGlow:
             {
                 var glow = current?.OuterGlow ?? new OuterGlowEffect();
                 _on.IsChecked = current?.OuterGlow is { IsEnabled: true };
-                Add(group, "Size, pixels", 0, 500, glow.Size, 20, (s, v) => ((OuterGlowEffect)s).Size = v);
-                Colour(group, "Color", glow.Red, glow.Green, glow.Blue,
+                Add(group, "大小(像素)", 0, 500, glow.Size, 20, (s, v) => ((OuterGlowEffect)s).Size = v);
+                Colour(group, "颜色", glow.Red, glow.Green, glow.Blue,
                     (r, g, b) => { glow.Red = r; glow.Green = g; glow.Blue = b; });
-                Add(group, "Opacity", 0, 1, glow.Opacity, 0.75, (s, v) => ((OuterGlowEffect)s).Opacity = v, "0.00");
+                Add(group, "不透明度", 0, 1, glow.Opacity, 0.75, (s, v) => ((OuterGlowEffect)s).Opacity = v, "0.00");
                 break;
             }
             default:
             {
                 var glow = current?.InnerGlow ?? new InnerGlowEffect();
                 _on.IsChecked = current?.InnerGlow is { IsEnabled: true };
-                Add(group, "Size, pixels", 0, 500, glow.Size, 10, (s, v) => ((InnerGlowEffect)s).Size = v);
-                Colour(group, "Color", glow.Red, glow.Green, glow.Blue,
+                Add(group, "大小(像素)", 0, 500, glow.Size, 10, (s, v) => ((InnerGlowEffect)s).Size = v);
+                Colour(group, "颜色", glow.Red, glow.Green, glow.Blue,
                     (r, g, b) => { glow.Red = r; glow.Green = g; glow.Blue = b; });
-                Add(group, "Opacity", 0, 1, glow.Opacity, 0.75, (s, v) => ((InnerGlowEffect)s).Opacity = v, "0.00");
+                Add(group, "不透明度", 0, 1, glow.Opacity, 0.75, (s, v) => ((InnerGlowEffect)s).Opacity = v, "0.00");
                 break;
             }
         }
 
-        var ok = new Button { Content = "Apply", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
-        var remove = new Button { Content = "Remove" };
+        var ok = new Button { Content = "应用", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
+        var remove = new Button { Content = "移去" };
         ok.Click += (_, _) => Accept();
         cancel.Click += (_, _) => Close();
         remove.Click += (_, _) =>
@@ -132,12 +132,12 @@ internal sealed class EffectDialog : DialogWindow
     /// <summary>What the menu calls each effect, as the Mac build's Effects menu does.</summary>
     public static string TitleFor(EffectKind kind) => kind switch
     {
-        EffectKind.Stroke => "Stroke",
-        EffectKind.DropShadow => "Drop Shadow",
-        EffectKind.ColorOverlay => "Color Overlay",
-        EffectKind.InnerShadow => "Inner Shadow",
-        EffectKind.OuterGlow => "Outer Glow",
-        _ => "Inner Glow",
+        EffectKind.Stroke => "描边",
+        EffectKind.DropShadow => "投影",
+        EffectKind.ColorOverlay => "颜色叠加",
+        EffectKind.InnerShadow => "内阴影",
+        EffectKind.OuterGlow => "外发光",
+        _ => "内发光",
     };
 
     /// <summary>Three rows, one channel each, all writing into the same effect.</summary>
@@ -145,7 +145,7 @@ internal sealed class EffectDialog : DialogWindow
         Action<double, double, double> set)
     {
         var values = new[] { red, green, blue };
-        foreach (var (channel, index) in new[] { ("Red", 0), ("Green", 1), ("Blue", 2) })
+        foreach (var (channel, index) in new[] { ("红", 0), ("绿", 1), ("蓝", 2) })
         {
             var at = index;
             Add(parent, $"{label}: {channel}", 0, 1, values[index], values[index],

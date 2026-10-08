@@ -99,18 +99,18 @@ public static class LayerPlacement
     /// <summary>What that kind of adjustment layer is called, as the Filter and Image menus name it.</summary>
     public static string Name(AdjustmentKind kind) => kind switch
     {
-        AdjustmentKind.HueSaturation => "Hue/Saturation",
-        AdjustmentKind.Levels => "Levels",
-        AdjustmentKind.Curves => "Curves",
-        AdjustmentKind.Exposure => "Exposure",
-        AdjustmentKind.GradientMap => "Gradient Map",
-        AdjustmentKind.Grain => "Grain",
-        AdjustmentKind.AddNoise => "Add Noise",
-        AdjustmentKind.GaussianBlur => "Gaussian Blur",
-        AdjustmentKind.MotionBlur => "Motion Blur",
-        AdjustmentKind.Invert => "Invert",
-        AdjustmentKind.BlackWhite => "Black & White",
-        _ => "Color Balance",
+        AdjustmentKind.HueSaturation => "色相/饱和度",
+        AdjustmentKind.Levels => "色阶",
+        AdjustmentKind.Curves => "曲线",
+        AdjustmentKind.Exposure => "曝光度",
+        AdjustmentKind.GradientMap => "渐变映射",
+        AdjustmentKind.Grain => "颗粒",
+        AdjustmentKind.AddNoise => "添加杂色",
+        AdjustmentKind.GaussianBlur => "高斯模糊",
+        AdjustmentKind.MotionBlur => "动感模糊",
+        AdjustmentKind.Invert => "反相",
+        AdjustmentKind.BlackWhite => "黑白",
+        _ => "色彩平衡",
     };
 
     /// <summary>

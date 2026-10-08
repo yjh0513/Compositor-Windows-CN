@@ -40,7 +40,7 @@ public class LayerAdjustmentTests
         Assert.Null(adjustment.Asset);
         // It covers the whole canvas, as an adjustment layer does.
         Assert.Equal(new LayerTransform(0, 0, 24, 24), adjustment.Transform);
-        Assert.Equal("Exposure 1", adjustment.Name);
+        Assert.Equal("曝光度 1", adjustment.Name);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class LayerAdjustmentTests
         using var _ = document;
         var first = LayerPlacement.AddAdjustment(document, AdjustmentKind.Grain, layer.ID);
         LayerPlacement.AddAdjustment(document, AdjustmentKind.Grain, first);
-        Assert.Equal(new[] { "Warm", "Grain 1", "Grain 2" }, document.Layers.Select(entry => entry.Name));
+        Assert.Equal(new[] { "Warm", "颗粒 1", "颗粒 2" }, document.Layers.Select(entry => entry.Name));
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
@@ -23,8 +23,8 @@ internal sealed class TextPrompt : DialogWindow
         CanResize = false;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         _box = new TextBox { Text = initial, Margin = new Thickness(0, 8, 0, 14) };
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         ok.Click += (_, _) => Accept();
         cancel.Click += (_, _) => Close();
         _box.KeyDown += (_, pressed) =>

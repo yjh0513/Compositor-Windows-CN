@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Compositor.Core.Model;
@@ -14,16 +14,16 @@ internal sealed class NewDocumentDialog : DialogWindow
     /// <summary>A size worth starting from, as the Mac build's presets menu lists them.</summary>
     private static readonly (string Title, int Width, int Height)[] Presets =
     [
-        ("Custom", 0, 0),
+        ("自定义", 0, 0),
         ("4K", 3840, 2160),
         ("1440p", 2560, 1440),
         ("1080p", 1920, 1080),
-        ("Instagram square", 1080, 1080),
-        ("Instagram portrait", 1080, 1350),
-        ("Instagram story", 1080, 1920),
-        ("YouTube thumbnail", 1080, 608),
-        ("A4 at 300 per inch", 2480, 3508),
-        ("A3 at 300 per inch", 3508, 4961),
+        ("Instagram 正方形", 1080, 1080),
+        ("Instagram 竖版", 1080, 1350),
+        ("Instagram 快拍", 1080, 1920),
+        ("YouTube 缩略图", 1080, 608),
+        ("A4 300 像素/英寸", 2480, 3508),
+        ("A3 300 像素/英寸", 3508, 4961),
     ];
 
     private readonly TextBox _width = new() { Text = "1920", Width = 100 };
@@ -47,7 +47,7 @@ internal sealed class NewDocumentDialog : DialogWindow
 
     internal NewDocumentDialog()
     {
-        Title = "New Project";
+        Title = "新建项目";
         Width = 400;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
@@ -64,8 +64,8 @@ internal sealed class NewDocumentDialog : DialogWindow
             if (change.Property == TextBox.TextProperty) ShowSize();
         };
 
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         ok.Click += (_, _) => Accept();
         cancel.Click += (_, _) => Close();
         Content = new StackPanel
@@ -74,10 +74,10 @@ internal sealed class NewDocumentDialog : DialogWindow
             Spacing = 8,
             Children =
             {
-                Row("Preset", _preset),
-                Row("Width, pixels", _width),
-                Row("Height, pixels", _height),
-                Row("Resolution, per inch", _resolution),
+                Row("预设", _preset),
+                Row("宽度(像素)", _width),
+                Row("高度(像素)", _height),
+                Row("分辨率(像素/英寸)", _resolution),
                 _size,
                 new StackPanel
                 {
@@ -133,7 +133,7 @@ internal sealed class NewDocumentDialog : DialogWindow
         if (!int.TryParse(_width.Text, out var width) || !int.TryParse(_height.Text, out var height)
             || width < 1 || height < 1)
         {
-            _size.Text = "A canvas is at least one pixel each way";
+            _size.Text = "画布每边至少 1 个像素";
             return;
         }
         if (width > DocumentLimits.MaxSide || height > DocumentLimits.MaxSide)
@@ -143,10 +143,10 @@ internal sealed class NewDocumentDialog : DialogWindow
         }
         var megapixels = width * (double)height / 1_000_000;
         var megabytes = width * (long)height * 4 / 1024.0 / 1024.0;
-        _size.Text = $"{megapixels:0.#} megapixels, about {megabytes:0} MB while it is open";
+        _size.Text = $"{megapixels:0.#} 百万像素，占用约 {megabytes:0} MB 内存";
         if ((long)width * height > DocumentLimits.MaxSurfacePixels)
         {
-            _size.Text += $" — too big to hold (the most is {DocumentLimits.MaxSurfaceMegapixels} megapixels)";
+            _size.Text += $" —— 过大，无法容纳(上限为 {DocumentLimits.MaxSurfaceMegapixels} 百万像素)";
         }
     }
 

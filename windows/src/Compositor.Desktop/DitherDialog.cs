@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -49,14 +49,18 @@ internal sealed class DitherDialog : DialogWindow
 
     private static readonly string[] StyleNames =
     [
-        "Atkinson (Classic Mac)", "Floyd–Steinberg", "Bayer 2 × 2", "Bayer 4 × 4", "Bayer 8 × 8",
-        "Halftone Dots", "Halftone Lines", "Halftone Diamonds", "Mac Patterns", "ASCII",
+        "Atkinson(经典 Mac)", "Floyd–Steinberg", "Bayer 2 × 2", "Bayer 4 × 4", "Bayer 8 × 8",
+        "半调圆点", "半调网线", "半调菱形", "Mac 图案", "ASCII",
     ];
+
+    /// <summary>What that look is called, which is what its own list row and the status line both say. One
+    /// place, so the two cannot drift apart.</summary>
+    public static string StyleName(DitherStyle style) => StyleNames[(int)style];
 
     private DitherDialog(DitherStyle style, DitherSettings start)
     {
         _amounts = start.Copy();
-        Title = "Dither";
+        Title = "抖动";
         Width = 460;
         Height = 660;
         CanResize = true;
@@ -75,51 +79,51 @@ internal sealed class DitherDialog : DialogWindow
             Spacing = 8,
             Children =
             {
-                new TextBlock { Text = "Look", Width = 130, VerticalAlignment = VerticalAlignment.Center },
+                new TextBlock { Text = "外观", Width = 130, VerticalAlignment = VerticalAlignment.Center },
                 _style,
             },
         }, () => true);
 
         Heading(group, "Pixels");
-        _pixelSize = Add(group, "Pixel size", 1, 32, start.PixelSize, defaults.PixelSize,
+        _pixelSize = Add(group, "像素大小", 1, 32, start.PixelSize, defaults.PixelSize,
             (s, v) => s.PixelSize = v, "0", () => Style() != DitherStyle.Ascii);
-        Choice(group, "Pixel shape", _shape, ["Square", "Dot"], (int)start.PixelShape,
+        Choice(group, "像素形状", _shape, ["方形", "圆点"], (int)start.PixelShape,
             () => _pixelSize.Value > 1 && Style() != DitherStyle.Ascii);
 
-        Heading(group, "Tones");
-        Add(group, "Tones", 2, 8, start.Levels, defaults.Levels, (s, v) => s.Levels = v, "0",
+        Heading(group, "色阶数");
+        Add(group, "色阶数", 2, 8, start.Levels, defaults.Levels, (s, v) => s.Levels = v, "0",
             () => DitherSettings.HasTones(Style()));
-        Add(group, "Diffusion, %", 0, 100, start.Diffusion, defaults.Diffusion, (s, v) => s.Diffusion = v, "0",
+        Add(group, "扩散(%)", 0, 100, start.Diffusion, defaults.Diffusion, (s, v) => s.Diffusion = v, "0",
             () => DitherSettings.Diffuses(Style()));
-        Add(group, "Density", -100, 100, start.Density, defaults.Density, (s, v) => s.Density = v, "0.#", () => true);
-        Add(group, "Contrast", -100, 100, start.Contrast, defaults.Contrast, (s, v) => s.Contrast = v, "0.#", () => true);
+        Add(group, "密度", -100, 100, start.Density, defaults.Density, (s, v) => s.Density = v, "0.#", () => true);
+        Add(group, "对比度", -100, 100, start.Contrast, defaults.Contrast, (s, v) => s.Contrast = v, "0.#", () => true);
 
-        Heading(group, "Halftone and characters");
-        Add(group, "Cell size", 4, 64, start.CellSize, defaults.CellSize, (s, v) => s.CellSize = v, "0",
+        Heading(group, "半调和字符");
+        Add(group, "单元格大小", 4, 64, start.CellSize, defaults.CellSize, (s, v) => s.CellSize = v, "0",
             () => DitherSettings.IsHalftone(Style()));
-        Add(group, "Angle, degrees", -90, 90, start.Angle, defaults.Angle, (s, v) => s.Angle = v, "0.#",
+        Add(group, "角度(度)", -90, 90, start.Angle, defaults.Angle, (s, v) => s.Angle = v, "0.#",
             () => DitherSettings.IsHalftone(Style()));
-        Add(group, "Text size", 6, 64, start.TextSize, defaults.TextSize, (s, v) => s.TextSize = v, "0",
+        Add(group, "文字大小", 6, 64, start.TextSize, defaults.TextSize, (s, v) => s.TextSize = v, "0",
             () => Style() == DitherStyle.Ascii);
         _characters.Text = start.Characters;
         _characters.Width = 240;
-        Text(group, "Characters", _characters, () => Style() == DitherStyle.Ascii);
-        Choice(group, "Marks", _lightOnDark, start.LightOnDark, () => DitherSettings.DrawsMarks(Style()));
+        Text(group, "字符", _characters, () => Style() == DitherStyle.Ascii);
+        Choice(group, "标记", _lightOnDark, start.LightOnDark, () => DitherSettings.DrawsMarks(Style()));
 
-        Heading(group, "Colors");
-        Choice(group, "Ink and paper", _colors, ["Black & White", "Two Colors", "Original"], (int)start.Colors, () => true);
+        Heading(group, "颜色");
+        Choice(group, "油墨和纸张", _colors, ["黑白", "双色", "原样"], (int)start.Colors, () => true);
         // The two colours are swatches that open the picker, as the Mac's panel has them, where this panel used
         // to offer three numbers for each of them.
-        var dark = Swatch("Dark", (start.DarkRed, start.DarkGreen, start.DarkBlue),
-            (defaults.DarkRed, defaults.DarkGreen, defaults.DarkBlue), "Color Picker (Dither Dark Color)", "Choose the dark color",
+        var dark = Swatch("暗", (start.DarkRed, start.DarkGreen, start.DarkBlue),
+            (defaults.DarkRed, defaults.DarkGreen, defaults.DarkBlue), "拾色器(抖动 暗色)", "选择暗色",
             (s, colour) =>
             {
                 s.DarkRed = colour.Red;
                 s.DarkGreen = colour.Green;
                 s.DarkBlue = colour.Blue;
             });
-        var light = Swatch("Light", (start.LightRed, start.LightGreen, start.LightBlue),
-            (defaults.LightRed, defaults.LightGreen, defaults.LightBlue), "Color Picker (Dither Light Color)", "Choose the light color",
+        var light = Swatch("光照", (start.LightRed, start.LightGreen, start.LightBlue),
+            (defaults.LightRed, defaults.LightGreen, defaults.LightBlue), "拾色器(抖动 亮色)", "选择亮色",
             (s, colour) =>
             {
                 s.LightRed = colour.Red;
@@ -132,16 +136,16 @@ internal sealed class DitherDialog : DialogWindow
             Spacing = 8,
             Children =
             {
-                new TextBlock { Text = "Dark", VerticalAlignment = VerticalAlignment.Center },
+                new TextBlock { Text = "暗", VerticalAlignment = VerticalAlignment.Center },
                 dark,
-                new TextBlock { Text = "Light", Margin = new Thickness(10, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center },
+                new TextBlock { Text = "光照", Margin = new Thickness(10, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center },
                 light,
             },
         }, TwoColours);
 
-        var ok = new Button { Content = "Apply", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
-        var reset = new Button { Content = "Reset" };
+        var ok = new Button { Content = "应用", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
+        var reset = new Button { Content = "复位" };
         ok.Click += (_, _) => Accept();
         cancel.Click += (_, _) => Close();
         reset.Click += (_, _) => Restore(defaults);
@@ -214,7 +218,7 @@ internal sealed class DitherDialog : DialogWindow
         }, applies);
     }
 
-    /// <summary>"Light on dark" is a box, not a list, since it says yes or no.</summary>
+    /// <summary>"暗底亮字" is a box, not a list, since it says yes or no.</summary>
     private void Choice(StackPanel parent, string label, CheckBox box, bool selected, Func<bool> applies)
     {
         box.Content = label;

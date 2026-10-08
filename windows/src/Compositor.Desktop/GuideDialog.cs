@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Compositor.Core.Format;
@@ -16,18 +16,18 @@ internal sealed class GuideDialog : DialogWindow
 
     private GuideDialog(int width, int height)
     {
-        Title = "New Guide";
+        Title = "新建参考线";
         Width = 380;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        _axis.ItemsSource = new[] { "Horizontal (across)", "Vertical (up and down)" };
+        _axis.ItemsSource = new[] { "水平(横向)", "垂直(纵向)" };
         _axis.SelectedIndex = 0;
         _axis.Width = 180;
         _position = new TextBox { Text = (height / 2).ToString(), Width = 100 };
 
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         ok.Click += (_, _) => Accept(width, height);
         cancel.Click += (_, _) => Close();
 
@@ -37,11 +37,11 @@ internal sealed class GuideDialog : DialogWindow
             Spacing = 8,
             Children =
             {
-                Row("Direction", _axis),
-                Row("Position, pixels", _position),
+                Row("方向", _axis),
+                Row("位置(像素)", _position),
                 new TextBlock
                 {
-                    Text = $"The canvas is {width} x {height}. A guide may sit outside it, out in the pasteboard.",
+                    Text = $"画布为 {width} x {height}。参考线可以位于画布之外，延伸到画板区域。",
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 },
                 new StackPanel

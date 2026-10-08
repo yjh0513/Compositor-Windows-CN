@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Compositor.Core.Format;
@@ -15,7 +15,7 @@ internal sealed class ImageSizeDialog : DialogWindow
     private readonly TextBox _width;
     private readonly TextBox _height;
     private readonly TextBox _resolution;
-    private readonly CheckBox _constrain = new() { Content = "Constrain proportions", IsChecked = true };
+    private readonly CheckBox _constrain = new() { Content = "约束比例", IsChecked = true };
     private readonly ComboBox _sampling = new();
     private readonly double _aspect;
     private bool _updating;
@@ -23,7 +23,7 @@ internal sealed class ImageSizeDialog : DialogWindow
 
     private ImageSizeDialog(int width, int height, double resolution, LayerSampling sampling)
     {
-        Title = "Image Size";
+        Title = "图像大小";
         Width = 400;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
@@ -32,7 +32,7 @@ internal sealed class ImageSizeDialog : DialogWindow
         _width = new TextBox { Text = width.ToString(), Width = 100 };
         _height = new TextBox { Text = height.ToString(), Width = 100 };
         _resolution = new TextBox { Text = resolution.ToString("0.##"), Width = 100 };
-        _sampling.ItemsSource = new[] { "Bicubic (best for pictures)", "Nearest (best for pixel art)" };
+        _sampling.ItemsSource = new[] { "两次立方(适用于图片)", "邻近(适用于像素画)" };
         _sampling.SelectedIndex = sampling == LayerSampling.Nearest ? 1 : 0;
         _sampling.Width = 240;
 
@@ -48,8 +48,8 @@ internal sealed class ImageSizeDialog : DialogWindow
             Relink(fromWidth: false);
         };
 
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         ok.Click += (_, _) => Accept();
         cancel.Click += (_, _) => Close();
 
@@ -59,11 +59,11 @@ internal sealed class ImageSizeDialog : DialogWindow
             Spacing = 8,
             Children =
             {
-                Row("Width, pixels", _width),
-                Row("Height, pixels", _height),
+                Row("宽度(像素)", _width),
+                Row("高度(像素)", _height),
                 _constrain,
-                Row("Resolution, per inch", _resolution),
-                Row("Resampling", _sampling),
+                Row("分辨率(像素/英寸)", _resolution),
+                Row("重新取样", _sampling),
                 new StackPanel
                 {
                     Orientation = Orientation.Horizontal,

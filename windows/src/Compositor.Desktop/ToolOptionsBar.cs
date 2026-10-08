@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -126,7 +126,7 @@ internal sealed class ToolOptionsBar : Border
     }
 
     /// <summary>The zoom the window is showing, for the Pan and Zoom rows.</summary>
-    public void ShowZoom(double percent) => _zoom.Text = $"zoom {percent:0}%";
+    public void ShowZoom(double percent) => _zoom.Text = $"缩放 {percent:0}%";
 
     /// <summary>Whether a row is on show, which is what the self check reads to see the gating works.</summary>
     internal bool Shows(string name) => _named.TryGetValue(name, out var cells) && cells[0].IsVisible;
@@ -143,14 +143,14 @@ internal sealed class ToolOptionsBar : Border
     /// <summary>Every row's value read back off its own control, which is what the bar is showing.</summary>
     private void Refresh()
     {
-        _size.Content = $"Size {_options.Brush.Diameter:0}";
-        _hardness.Content = $"Hardness {_options.Brush.Hardness * 100:0}%";
-        _opacity.Content = $"Opacity {_options.Brush.Opacity * 100:0}%";
-        _blurRadius.Content = $"Radius {_options.Brush.BlurRadius:0.#}";
-        _tolerance.Content = $"Tolerance {_options.Wand.Tolerance}";
-        _sampleSize.Content = $"Sample {_options.Wand.Radius}";
-        _corner.Content = $"Radius {_options.ShapeCornerRadius:0}";
-        _lineWidth.Content = $"Width {_options.ShapeLineWidth:0}";
+        _size.Content = $"大小 {_options.Brush.Diameter:0}";
+        _hardness.Content = $"硬度 {_options.Brush.Hardness * 100:0}%";
+        _opacity.Content = $"不透明度 {_options.Brush.Opacity * 100:0}%";
+        _blurRadius.Content = $"半径 {_options.Brush.BlurRadius:0.#}";
+        _tolerance.Content = $"容差 {_options.Wand.Tolerance}";
+        _sampleSize.Content = $"取样 {_options.Wand.Radius}";
+        _corner.Content = $"半径 {_options.ShapeCornerRadius:0}";
+        _lineWidth.Content = $"宽度 {_options.ShapeLineWidth:0}";
         _fill.Show(_options.Brush.Red, _options.Brush.Green, _options.Brush.Blue);
         _gradientFill.Show(_options.GradientBackground.Red, _options.GradientBackground.Green,
             _options.GradientBackground.Blue);
@@ -207,46 +207,46 @@ internal sealed class ToolOptionsBar : Border
     private readonly ComboBox _brushMode = new();
     private readonly ComboBox _maskPaint = new();
     private readonly ComboBox _healMode = new();
-    private readonly CheckBox _aligned = new() { Content = "Aligned" };
+    private readonly CheckBox _aligned = new() { Content = "对齐" };
     private readonly ComboBox _cloneAll = new();
     private readonly ComboBox _marqueeShape = new();
     private readonly ComboBox _lassoKind = new();
-    private readonly CheckBox _contiguous = new() { Content = "Contiguous" };
-    private readonly CheckBox _antialias = new() { Content = "Anti-alias" };
-    private readonly CheckBox _sampleRing = new() { Content = "Sample Ring" };
+    private readonly CheckBox _contiguous = new() { Content = "连续" };
+    private readonly CheckBox _antialias = new() { Content = "消除锯齿" };
+    private readonly CheckBox _sampleRing = new() { Content = "取样环" };
     private readonly ComboBox _wandAll = new();
     private readonly ComboBox _shapeKind = new();
     private readonly ComboBox _gradientKind = new();
     private readonly ComboBox _gradientTo = new();
-    private readonly CheckBox _gradientReversed = new() { Content = "Reverse" };
+    private readonly CheckBox _gradientReversed = new() { Content = "反向" };
     private readonly ComboBox _cropRatio = new() { Width = 150 };
-    private readonly Button _cropApply = new() { Content = "Apply Crop" };
-    private readonly Button _cropCancel = new() { Content = "Cancel" };
-    private readonly Button _flipH = new() { Content = "Flip H" };
-    private readonly Button _flipV = new() { Content = "Flip V" };
-    private readonly Button _editText = new() { Content = "Edit Text…" };
+    private readonly Button _cropApply = new() { Content = "应用裁剪" };
+    private readonly Button _cropCancel = new() { Content = "取消" };
+    private readonly Button _flipH = new() { Content = "水平翻转" };
+    private readonly Button _flipV = new() { Content = "垂直翻转" };
+    private readonly Button _editText = new() { Content = "编辑文字…" };
 
     /// <summary>What each tool's strip is called, which is the Mac's own title.</summary>
     private static readonly Dictionary<Tool, string> Names = new()
     {
-        [Tool.Pan] = "Pan",
+        [Tool.Pan] = "抓手",
         [Tool.Move] = "Transform",
-        [Tool.Marquee] = "Marquee",
-        [Tool.Ellipse] = "Elliptical marquee",
-        [Tool.Lasso] = "Lasso",
-        [Tool.Polygon] = "Polygonal lasso",
-        [Tool.Wand] = "Magic wand",
-        [Tool.Brush] = "Brush",
-        [Tool.Clone] = "Clone stamp",
-        [Tool.Blur] = "Blur brush",
-        [Tool.Liquify] = "Liquify brush",
-        [Tool.Smudge] = "Smudge brush",
-        [Tool.Heal] = "Spot healing",
-        [Tool.Eyedropper] = "Eyedropper",
-        [Tool.Type] = "Type",
-        [Tool.Crop] = "Crop",
-        [Tool.Shape] = "Shape",
-        [Tool.Gradient] = "Gradient",
+        [Tool.Marquee] = "矩形选框",
+        [Tool.Ellipse] = "椭圆选框",
+        [Tool.Lasso] = "套索",
+        [Tool.Polygon] = "多边形套索",
+        [Tool.Wand] = "魔棒",
+        [Tool.Brush] = "画笔",
+        [Tool.Clone] = "仿制图章",
+        [Tool.Blur] = "模糊画笔",
+        [Tool.Liquify] = "液化",
+        [Tool.Smudge] = "涂抹",
+        [Tool.Heal] = "污点修复画笔",
+        [Tool.Eyedropper] = "吸管",
+        [Tool.Type] = "文字",
+        [Tool.Crop] = "裁剪",
+        [Tool.Shape] = "形状",
+        [Tool.Gradient] = "渐变",
     };
 
     private void Build()
@@ -274,13 +274,13 @@ internal sealed class ToolOptionsBar : Border
         _fill.Click += (_, _) => ColourAsked?.Invoke(true);
         _gradientFill.Click += (_, _) => ColourAsked?.Invoke(false);
 
-        _brushMode.ItemsSource = new[] { "Paint", "Erase" };
+        _brushMode.ItemsSource = new[] { "绘画", "擦除" };
         _brushMode.SelectedIndex = 0;
         _brushMode.SelectionChanged += (_, _) => Set(ref _options.Erase, _brushMode.SelectedIndex == 1);
-        _maskPaint.ItemsSource = new[] { "Paint Black · Hide", "Paint White · Reveal" };
+        _maskPaint.ItemsSource = new[] { "涂黑 · 隐藏", "涂白 · 显示" };
         _maskPaint.SelectedIndex = 0;
         _maskPaint.SelectionChanged += (_, _) => Set(ref _options.PaintOnMask, _maskPaint.SelectedIndex == 1);
-        _healMode.ItemsSource = new[] { "Content-Aware", "Create Texture", "Proximity Match" };
+        _healMode.ItemsSource = new[] { "内容识别", "创建纹理", "近似匹配" };
         _healMode.SelectedIndex = 0;
         _healMode.SelectionChanged += (_, _) =>
         {
@@ -298,7 +298,7 @@ internal sealed class ToolOptionsBar : Border
         _sampleRing.IsChecked = _options.ShowsSampleRing;
         _sampleRing.IsCheckedChanged += (_, _) =>
             Set(ref _options.ShowsSampleRing, _sampleRing.IsChecked == true);
-        _cloneAll.ItemsSource = new[] { "Sample: This Layer", "Sample: All Layers" };
+        _cloneAll.ItemsSource = new[] { "取样: 当前图层", "取样: 所有图层" };
         _cloneAll.SelectedIndex = 0;
         _cloneAll.SelectionChanged += (_, _) =>
         {
@@ -306,7 +306,7 @@ internal sealed class ToolOptionsBar : Border
             Set(ref _options.Brush, brush);
         };
 
-        _marqueeShape.ItemsSource = new[] { "Rectangle", "Ellipse" };
+        _marqueeShape.ItemsSource = new[] { "矩形", "椭圆" };
         _marqueeShape.SelectedIndex = 0;
         _marqueeShape.SelectionChanged += (_, _) =>
         {
@@ -314,7 +314,7 @@ internal sealed class ToolOptionsBar : Border
             _marqueeEllipse = _marqueeShape.SelectedIndex == 1;
             MarqueeShapeChosen?.Invoke(_marqueeEllipse);
         };
-        _lassoKind.ItemsSource = new[] { "Freehand", "Polygonal" };
+        _lassoKind.ItemsSource = new[] { "手绘", "多边形" };
         _lassoKind.SelectedIndex = 0;
         _lassoKind.SelectionChanged += (_, _) =>
         {
@@ -326,11 +326,11 @@ internal sealed class ToolOptionsBar : Border
             var wand = _options.Wand with { Contiguous = _contiguous.IsChecked == true };
             Set(ref _options.Wand, wand);
         };
-        _wandAll.ItemsSource = new[] { "Sample: This Layer", "Sample: All Layers" };
+        _wandAll.ItemsSource = new[] { "取样: 当前图层", "取样: 所有图层" };
         _wandAll.SelectedIndex = 0;
         _wandAll.SelectionChanged += (_, _) => Set(ref _options.WandAllLayers, _wandAll.SelectedIndex == 1);
 
-        _shapeKind.ItemsSource = new[] { "Rectangle", "Ellipse", "Line" };
+        _shapeKind.ItemsSource = new[] { "矩形", "椭圆", "直线" };
         _shapeKind.SelectedIndex = 0;
         _shapeKind.SelectionChanged += (_, _) =>
         {
@@ -341,10 +341,10 @@ internal sealed class ToolOptionsBar : Border
             On("corner", shape != ShapeKind.Line);
             On("linewidth", shape == ShapeKind.Line);
         };
-        _gradientKind.ItemsSource = new[] { "Linear", "Radial", "Angle", "Reflected", "Diamond" };
+        _gradientKind.ItemsSource = new[] { "线性", "径向", "角度", "对称", "菱形" };
         _gradientKind.SelectedIndex = 0;
         _gradientKind.SelectionChanged += (_, _) => Set(ref _options.Gradient, (GradientShape)Math.Max(0, _gradientKind.SelectedIndex));
-        _gradientTo.ItemsSource = new[] { "To nothing", "To the background color" };
+        _gradientTo.ItemsSource = new[] { "到透明", "到背景色" };
         _gradientTo.SelectedIndex = 0;
         _gradientTo.SelectionChanged += (_, _) => Set(ref _options.GradientToBackground, _gradientTo.SelectedIndex == 1);
         _gradientReversed.IsCheckedChanged += (_, _) => Set(ref _options.GradientReversed, _gradientReversed.IsChecked == true);

@@ -1,4 +1,4 @@
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Compositor.Core.Model;
 
@@ -17,7 +17,7 @@ public sealed class DocumentHistory
     private Guid _revision = Guid.NewGuid();
     private Guid? _savedRevision;
     private Snapshot? _pending;
-    private string _pendingName = "Edit";
+    private string _pendingName = "编辑";
     private int _depth;
 
     public DocumentHistory(int entryLimit = 100, int retainedByteLimit = 256 * 1024 * 1024)

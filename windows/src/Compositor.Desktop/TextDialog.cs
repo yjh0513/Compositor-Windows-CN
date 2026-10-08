@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -35,15 +35,15 @@ internal sealed class TextDialog : DialogWindow
         _colour.Text = $"{style.Red * 255:0},{style.Green * 255:0},{style.Blue * 255:0}";
         _tracking.Text = $"{style.Tracking:0.##}";
         _leading.Text = $"{style.Leading:0.##}";
-        _alignment.ItemsSource = new[] { "Left", "Centre", "Right" };
+        _alignment.ItemsSource = new[] { "左", "Centre", "右" };
         _alignment.SelectedIndex = style.Alignment switch
         {
             TextAlignment.Center => 1,
             TextAlignment.Right => 2,
             _ => 0,
         };
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         ok.Click += (_, _) => Accept(style);
         cancel.Click += (_, _) => Close();
         var rows = new StackPanel
@@ -51,14 +51,14 @@ internal sealed class TextDialog : DialogWindow
             Spacing = 6,
             Children =
             {
-                new TextBlock { Text = "Text" },
+                new TextBlock { Text = "文字" },
                 _content,
-                Row("Font", _font),
-                Row("Size in pixels", _size),
-                Row("Color, red green blue 0-255", _colour),
-                Row("Tracking, pixels between letters", _tracking),
-                Row("Leading, line to line 0 for auto", _leading),
-                new TextBlock { Text = "Alignment" },
+                Row("字体", _font),
+                Row("大小(像素)", _size),
+                Row("颜色(红 绿 蓝 0-255)", _colour),
+                Row("字距(字母间距，像素)", _tracking),
+                Row("行距(行到行，0 为自动)", _leading),
+                new TextBlock { Text = "对齐" },
                 _alignment,
                 new StackPanel
                 {

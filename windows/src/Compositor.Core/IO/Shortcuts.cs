@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Compositor.Core.IO;
@@ -84,10 +84,10 @@ public sealed record ShortcutDefinition(string ID, string Title, string Group, S
 public static class Shortcuts
 {
     /// <summary>The group of the rows that are drawn in the menus, and shown there with their key.</summary>
-    public const string Menus = "Menus";
+    public const string Menus = "菜单";
 
     /// <summary>The group of the rows the canvas and the layers answer to, which are not in any menu.</summary>
-    public const string Canvas = "Canvas & Layers";
+    public const string Canvas = "画布与图层";
 
     /// <summary>The groups in the order the list shows them, which is the Mac build's order.</summary>
     public static IReadOnlyList<string> Groups { get; } = [Menus, Canvas];
@@ -122,11 +122,11 @@ public static class Shortcuts
         {
             var chord = overrides.TryGetValue(definition.ID, out var chosen) ? chosen : definition.Original;
             if (!chord.IsBound) continue;
-            if (Mislaid(chord)) return $"{chord.Label} is not one key with modifiers Ctrl, Alt or Shift";
-            if (Reserved(chord)) return $"{chord.Label} is reserved by Windows";
+            if (Mislaid(chord)) return $"{chord.Label} 必须是一个按键，可加 Ctrl、Alt 或 Shift";
+            if (Reserved(chord)) return $"{chord.Label} 已被 Windows 占用";
             if (assigned.TryGetValue(chord, out var other))
             {
-                return $"{chord.Label} is on both {other} and {definition.Title}";
+                return $"{chord.Label} 同时用在「{other}」和「{definition.Title}」上";
             }
             assigned[chord] = definition.Title;
         }
@@ -178,99 +178,102 @@ public static class Shortcuts
                 new ShortcutChord(key, modifiers)));
 
         // The File menu, then Edit, then Layer, then the view's own switches — the Mac's order.
-        Menu("Undo", "Z", Ctrl);
-        Menu("Redo", "Z", Ctrl | Shift);
-        Menu("New Project", "N", Ctrl);
-        Menu("Open Project", "O", Ctrl);
-        Menu("Save", "S", Ctrl);
-        Menu("Save As", "S", Ctrl | Shift);
-        Menu("Export PNG", "E", Ctrl | Shift);
-        Menu("Export JPEG", "S", Ctrl | Alt | Shift);
-        Menu("Close Tab", "W", Ctrl);
-        Menu("Fit Canvas", "D0", Ctrl);
-        Menu("Actual Pixels", "D1", Ctrl);
-        Menu("Zoom In", "OemPlus", Ctrl);
-        Menu("Zoom Out", "OemMinus", Ctrl);
-        Menu("Show Transform Controls", "H", Ctrl);
-        Menu("Cut", "X", Ctrl);
-        Menu("Copy", "C", Ctrl);
-        Menu("Copy Merged", "C", Ctrl | Shift);
-        Menu("Paste", "V", Ctrl);
-        Menu("Fill with Foreground Color", "Delete", Alt);
-        Menu("Fill with Background Color", "Delete", Ctrl);
-        Menu("Content-Aware Fill", "Delete", Alt | Shift);
-        Menu("Select All", "A", Ctrl);
-        Menu("Deselect", "D", Ctrl);
-        Menu("Inverse Selection", "I", Ctrl | Shift);
-        Menu("Curves", "M", Ctrl);
-        Menu("Levels", "L", Ctrl);
-        Menu("Hue/Saturation", "U", Ctrl);
-        Menu("Invert", "I", Ctrl);
-        Menu("Canvas Size", "C", Ctrl | Alt);
-        Menu("Image Size", "I", Ctrl | Alt);
-        Menu("Layer via Copy", "J", Ctrl);
+        Menu("还原", "Z", Ctrl);
+        Menu("重做", "Z", Ctrl | Shift);
+        Menu("新建项目", "N", Ctrl);
+        Menu("打开项目", "O", Ctrl);
+        Menu("存储", "S", Ctrl);
+        Menu("存储为", "S", Ctrl | Shift);
+        Menu("导出 PNG", "E", Ctrl | Shift);
+        Menu("导出 JPEG", "S", Ctrl | Alt | Shift);
+        Menu("关闭标签页", "W", Ctrl);
+        Menu("适合画布", "D0", Ctrl);
+        Menu("实际像素", "D1", Ctrl);
+        Menu("放大", "OemPlus", Ctrl);
+        Menu("缩小", "OemMinus", Ctrl);
+        Menu("显示变换控件", "H", Ctrl);
+        Menu("剪切", "X", Ctrl);
+        Menu("拷贝", "C", Ctrl);
+        Menu("合并拷贝", "C", Ctrl | Shift);
+        Menu("粘贴", "V", Ctrl);
+        Menu("填充前景色", "Delete", Alt);
+        Menu("填充背景色", "Delete", Ctrl);
+        Menu("内容识别填充", "Delete", Alt | Shift);
+        Menu("全选", "A", Ctrl);
+        Menu("取消选择", "D", Ctrl);
+        Menu("反选", "I", Ctrl | Shift);
+        Menu("曲线", "M", Ctrl);
+        Menu("色阶", "L", Ctrl);
+        Menu("色相/饱和度", "U", Ctrl);
+        Menu("反相", "I", Ctrl);
+        Menu("画布大小", "C", Ctrl | Alt);
+        Menu("图像大小", "I", Ctrl | Alt);
+        Menu("通过拷贝的图层", "J", Ctrl);
         // The port has the Mac's one duplicate row twice over: Layer via Copy takes the copy that is bounded by
         // the selection, and the layer's own duplicate takes Shift with it rather than the same key twice.
-        Menu("Duplicate Layer", "J", Ctrl | Shift);
-        Menu("Toggle Clipping Mask", "G", Ctrl | Alt);
-        Menu("Group Layers", "G", Ctrl);
-        Menu("New Blank Layer", "N", Ctrl | Shift);
-        Menu("Move Layer Up", "OemCloseBrackets", Ctrl);
-        Menu("Move Layer Down", "OemOpenBrackets", Ctrl);
-        Menu("Merge Layers", "E", Ctrl);
-        Menu("Rename Layer", "F2");
-        Menu("Delete Layer", "Delete");
-        Menu("Show Grid", "OemQuotes", Ctrl);
-        Menu("Show Guides", "OemSemicolon", Ctrl);
-        Menu("Show Rulers", "R", Ctrl);
-        Menu("Snap", "OemSemicolon", Ctrl | Shift);
-        Menu("Lock Guides", "OemSemicolon", Ctrl | Alt);
+        Menu("复制图层", "J", Ctrl | Shift);
+        Menu("切换剪切蒙版", "G", Ctrl | Alt);
+        Menu("图层编组", "G", Ctrl);
+        Menu("新建空白图层", "N", Ctrl | Shift);
+        Menu("向上移动图层", "OemCloseBrackets", Ctrl);
+        Menu("向下移动图层", "OemOpenBrackets", Ctrl);
+        Menu("合并图层", "E", Ctrl);
+        Menu("重命名图层", "F2");
+        Menu("删除图层", "Delete");
+        Menu("显示网格", "OemQuotes", Ctrl);
+        Menu("显示参考线", "OemSemicolon", Ctrl);
+        Menu("显示标尺", "R", Ctrl);
+        Menu("对齐", "OemSemicolon", Ctrl | Shift);
+        Menu("锁定参考线", "OemSemicolon", Ctrl | Alt);
         // The port adds a guide from the View menu; the Mac gives that row no key at all, and so does this.
-        Menu("New Guide");
+        Menu("新建参考线");
 
         // The canvas's own: the tools, the colours, the brush, and what the arrows do.
-        Canvas("Hand tool", "H");
-        Canvas("Move / Transform tool", "V");
-        Canvas("Marquee tool", "M");
-        Canvas("Lasso tool", "L");
-        Canvas("Magic wand", "W");
-        Canvas("Brush tool", "B");
-        Canvas("Clone Stamp", "S");
-        Canvas("Blur / Smudge / Liquify", "R");
-        Canvas("Spot Healing", "J");
-        Canvas("Eyedropper tool", "I");
-        Canvas("Type tool", "T");
-        Canvas("Crop tool", "C");
-        Canvas("Shape tool", "U");
-        Canvas("Gradient tool", "G");
-        Canvas("Swap foreground/background", "X");
-        Canvas("Reset colors", "D");
-        Canvas("Temporary Hand tool (hold)", "Space");
-        Canvas("Decrease brush size", "OemOpenBrackets");
-        Canvas("Increase brush size", "OemCloseBrackets");
-        Canvas("Decrease brush hardness", "OemOpenBrackets", Shift);
-        Canvas("Increase brush hardness", "OemCloseBrackets", Shift);
-        Canvas("Previous blend mode", "OemMinus", Shift);
-        Canvas("Next blend mode", "OemPlus", Shift);
-        Canvas("Cycle shape kind", "U", Shift);
+        Canvas("抓手工具", "H");
+        Canvas("移动/变换工具", "V");
+        Canvas("选框工具", "M");
+        Canvas("套索工具", "L");
+        Canvas("魔棒", "W");
+        Canvas("画笔工具", "B");
+        Canvas("仿制图章", "S");
+        Canvas("模糊/涂抹/液化", "R");
+        Canvas("污点修复画笔", "J");
+        Canvas("吸管工具", "I");
+        Canvas("文字工具", "T");
+        Canvas("裁剪工具", "C");
+        Canvas("形状工具", "U");
+        Canvas("渐变工具", "G");
+        Canvas("交换前景色/背景色", "X");
+        Canvas("复位颜色", "D");
+        Canvas("临时抓手工具(按住)", "Space");
+        Canvas("减小画笔大小", "OemOpenBrackets");
+        Canvas("增大画笔大小", "OemCloseBrackets");
+        Canvas("减小画笔硬度", "OemOpenBrackets", Shift);
+        Canvas("增大画笔硬度", "OemCloseBrackets", Shift);
+        Canvas("上一个混合模式", "OemMinus", Shift);
+        Canvas("下一个混合模式", "OemPlus", Shift);
+        Canvas("切换形状类型", "U", Shift);
         for (var digit = 0; digit <= 9; digit++)
         {
-            Canvas($"Opacity digit {digit} (type two for exact %)", $"D{digit}");
+            Canvas($"不透明度数字 {digit}（连按两次可输入精确百分比）", $"D{digit}");
         }
+        // The first field says the direction the way a row reads it; the second is the key as Avalonia knows
+        // it, which is what ShortcutKeys.Known puts through Enum.TryParse<Key>. Translating the key name
+        // itself would leave the row Unbound: the menu would show no gesture and the arrow would be dead.
         foreach (var (direction, key) in new[]
                  {
-                     ("Left", "Left"), ("Right", "Right"), ("Up", "Up"), ("Down", "Down"),
+                     ("向左", "Left"), ("向右", "Right"), ("向上", "Up"), ("向下", "Down"),
                  })
         {
-            Canvas($"Nudge {direction} 1 px", key);
-            Canvas($"Nudge {direction} 10 px", key, Shift);
+            Canvas($"{direction}轻移 1 像素", key);
+            Canvas($"{direction}轻移 10 像素", key, Shift);
             // The Mac's Command-with-an-arrow rows: they move the pixels inside the selection rather than the
             // layer the plain arrows move — the one place a modifier changes what an arrow does.
-            Canvas($"Move selected pixels {direction} 1 px", key, Ctrl);
-            Canvas($"Move selected pixels {direction} 10 px", key, Ctrl | Shift);
+            Canvas($"{direction}移动选区像素 1 像素", key, Ctrl);
+            Canvas($"{direction}移动选区像素 10 像素", key, Ctrl | Shift);
         }
-        Canvas("Apply Canvas Operation", "Enter");
-        Canvas("Cancel Canvas Operation", "Escape");
+        Canvas("应用画布操作", "Enter");
+        Canvas("取消画布操作", "Escape");
         return rows;
     }
 }

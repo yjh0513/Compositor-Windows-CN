@@ -61,12 +61,12 @@ public class ShortcutTests : IDisposable
     {
         // Move Layer Up and Move Layer Down are the two rows this is done to.
         var table = Table(
-            (AnyID("Move Layer Up"), new ShortcutChord("OemCloseBrackets", ShortcutModifiers.Control)),
-            (AnyID("Move Layer Down"), new ShortcutChord("OemCloseBrackets", ShortcutModifiers.Control)));
+            (AnyID("向上移动图层"), new ShortcutChord("OemCloseBrackets", ShortcutModifiers.Control)),
+            (AnyID("向下移动图层"), new ShortcutChord("OemCloseBrackets", ShortcutModifiers.Control)));
         var problem = Shortcuts.Problem(table);
         Assert.NotNull(problem);
-        Assert.Contains("Move Layer Up", problem, StringComparison.Ordinal);
-        Assert.Contains("Move Layer Down", problem, StringComparison.Ordinal);
+        Assert.Contains("向上移动图层", problem, StringComparison.Ordinal);
+        Assert.Contains("向下移动图层", problem, StringComparison.Ordinal);
         Assert.Contains("Ctrl+]", problem, StringComparison.Ordinal);
     }
 
@@ -74,11 +74,11 @@ public class ShortcutTests : IDisposable
     public void AnOverrideThatClashesWithAnOriginalNamesBoth()
     {
         // A rebind must not land on a key some row still holds by default.
-        var table = Table((AnyID("Undo"), new ShortcutChord("E", ShortcutModifiers.Control)));
+        var table = Table((AnyID("还原"), new ShortcutChord("E", ShortcutModifiers.Control)));
         var problem = Shortcuts.Problem(table);
         Assert.NotNull(problem);
-        Assert.Contains("Undo", problem, StringComparison.Ordinal);
-        Assert.Contains("Merge Layers", problem, StringComparison.Ordinal);
+        Assert.Contains("还原", problem, StringComparison.Ordinal);
+        Assert.Contains("合并图层", problem, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -90,39 +90,39 @@ public class ShortcutTests : IDisposable
     [InlineData("B", ShortcutModifiers.Alt | ShortcutModifiers.Shift)]
     public void WhatWindowsAnswersIsRefused(string key, ShortcutModifiers modifiers)
     {
-        var table = Table((AnyID("Undo"), new ShortcutChord(key, modifiers)));
+        var table = Table((AnyID("还原"), new ShortcutChord(key, modifiers)));
         var problem = Shortcuts.Problem(table);
         Assert.NotNull(problem);
-        Assert.Contains("reserved by Windows", problem, StringComparison.Ordinal);
+        Assert.Contains("已被 Windows 占用", problem, StringComparison.Ordinal);
     }
 
     [Fact]
     public void CtrlWithAltAndALetterIsAllowed()
     {
         // The one Alt-and-a-letter that is free: Ctrl holds it away from the menus' own access keys.
-        var table = Table((AnyID("Undo"), new ShortcutChord("B", ShortcutModifiers.Control | ShortcutModifiers.Alt)));
+        var table = Table((AnyID("还原"), new ShortcutChord("B", ShortcutModifiers.Control | ShortcutModifiers.Alt)));
         Assert.Null(Shortcuts.Problem(table));
     }
 
     [Fact]
     public void ARowMayBeLeftWithNoKey()
     {
-        var table = Table((AnyID("New Guide"), ShortcutChord.Unbound));
+        var table = Table((AnyID("新建参考线"), ShortcutChord.Unbound));
         Assert.Null(Shortcuts.Problem(table));
-        Assert.False(Shortcuts.Effective(table)[AnyID("New Guide")].IsBound);
+        Assert.False(Shortcuts.Effective(table)[AnyID("新建参考线")].IsBound);
     }
 
     [Fact]
     public void AChordThatIsNotAKeyIsRefused()
     {
-        var table = Table((AnyID("Undo"), new ShortcutChord("Ctrl+Z")));
-        Assert.Contains("is not one key", Shortcuts.Problem(table)!, StringComparison.Ordinal);
+        var table = Table((AnyID("还原"), new ShortcutChord("Ctrl+Z")));
+        Assert.Contains("必须是一个按键", Shortcuts.Problem(table)!, StringComparison.Ordinal);
     }
 
     [Fact]
     public void TheTableIsTheDefaultsWithTheChangesOnTop()
     {
-        var id = AnyID("Undo");
+        var id = AnyID("还原");
         var effective = Shortcuts.Effective(Table((id, new ShortcutChord("Y", ShortcutModifiers.Control))));
         Assert.Equal(new ShortcutChord("Y", ShortcutModifiers.Control), effective[id]);
         Assert.Equal(Shortcuts.Definitions.Count, effective.Count);
@@ -134,12 +134,12 @@ public class ShortcutTests : IDisposable
         var saved = new ShortcutDefaults
         {
             Overrides = Table(
-                (AnyID("Undo"), new ShortcutChord("Y", ShortcutModifiers.Control)),
-                (AnyID("New Guide"), new ShortcutChord("G", ShortcutModifiers.Control | ShortcutModifiers.Alt | ShortcutModifiers.Shift))),
+                (AnyID("还原"), new ShortcutChord("Y", ShortcutModifiers.Control)),
+                (AnyID("新建参考线"), new ShortcutChord("G", ShortcutModifiers.Control | ShortcutModifiers.Alt | ShortcutModifiers.Shift))),
         };
         saved.Save(Path_);
         var read = ShortcutDefaults.Load(Path_);
-        Assert.Equal(new ShortcutChord("Y", ShortcutModifiers.Control), read.Overrides[AnyID("Undo")]);
+        Assert.Equal(new ShortcutChord("Y", ShortcutModifiers.Control), read.Overrides[AnyID("还原")]);
         Assert.Equal(2, read.Overrides.Count);
     }
 
@@ -148,7 +148,7 @@ public class ShortcutTests : IDisposable
     {
         var saved = new ShortcutDefaults
         {
-            Overrides = Table((AnyID("Undo"), Shortcuts.Definitions.First(row => row.ID == AnyID("Undo")).Original)),
+            Overrides = Table((AnyID("还原"), Shortcuts.Definitions.First(row => row.ID == AnyID("还原")).Original)),
         };
         saved.Save(Path_);
         Assert.Empty(ShortcutDefaults.Load(Path_).Overrides);
@@ -160,13 +160,13 @@ public class ShortcutTests : IDisposable
         var saved = new ShortcutDefaults
         {
             Overrides = Table(
-                ("Menus:Something Else Entirely", new ShortcutChord("Y", ShortcutModifiers.Control)),
-                (AnyID("Undo"), new ShortcutChord("Y", ShortcutModifiers.Control))),
+                ("菜单:完全不存在的命令", new ShortcutChord("Y", ShortcutModifiers.Control)),
+                (AnyID("还原"), new ShortcutChord("Y", ShortcutModifiers.Control))),
         };
         saved.Save(Path_);
         var read = ShortcutDefaults.Load(Path_);
         Assert.Single(read.Overrides);
-        Assert.True(read.Overrides.ContainsKey(AnyID("Undo")));
+        Assert.True(read.Overrides.ContainsKey(AnyID("还原")));
     }
 
     [Fact]
@@ -177,8 +177,8 @@ public class ShortcutTests : IDisposable
         File.WriteAllText(Path_, """
             {
               "Overrides": {
-                "Menus:Undo": { "Key": "E", "Modifiers": 1 },
-                "Menus:Redo": { "Key": "Y", "Modifiers": 1 }
+                "菜单:还原": { "Key": "E", "Modifiers": 1 },
+                "菜单:重做": { "Key": "Y", "Modifiers": 1 }
               }
             }
             """);
@@ -201,13 +201,13 @@ public class ShortcutTests : IDisposable
         var ids = Shortcuts.Definitions.Select(row => row.ID).ToHashSet();
         foreach (var title in new[]
                  {
-                     "Hand tool", "Brush tool", "Clone Stamp", "Crop tool", "Gradient tool", "Magic wand",
-                     "Temporary Hand tool (hold)", "Apply Canvas Operation", "Cancel Canvas Operation",
+                     "抓手工具", "画笔工具", "仿制图章", "裁剪工具", "渐变工具", "魔棒",
+                     "临时抓手工具(按住)", "应用画布操作", "取消画布操作",
                  })
         {
             Assert.Contains($"{Shortcuts.Canvas}:{title}", ids);
         }
-        Assert.Contains(AnyID("Undo"), ids);
-        Assert.Contains(AnyID("Save"), ids);
+        Assert.Contains(AnyID("还原"), ids);
+        Assert.Contains(AnyID("存储"), ids);
     }
 }

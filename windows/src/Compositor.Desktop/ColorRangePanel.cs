@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -24,7 +24,7 @@ internal sealed class ColorRangePanel : DialogWindow
     private readonly TextBlock _problem = new() { Foreground = Brushes.Orange, TextWrapping = TextWrapping.Wrap };
     private readonly Slider _fuzziness;
     private readonly TextBlock _readout = new() { Width = 44, VerticalAlignment = VerticalAlignment.Center };
-    private readonly CheckBox _invert = new() { Content = "Invert" };
+    private readonly CheckBox _invert = new() { Content = "反相" };
     private bool _showing;
     private bool _done;
 
@@ -40,7 +40,7 @@ internal sealed class ColorRangePanel : DialogWindow
     public ColorRangePanel(ColorRangeSession session)
     {
         _session = session;
-        Title = "Color Range";
+        Title = "色彩范围";
         Width = 340;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
@@ -49,7 +49,7 @@ internal sealed class ColorRangePanel : DialogWindow
         var modes = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
         foreach (var mode in Enum.GetValues<ColorRangeSession.Picking>())
         {
-            var button = new Button { Content = mode.ToString() };
+            var button = new Button { Content = PickingLabel(mode) };
             var picked = mode;
             button.Click += (_, _) =>
             {
@@ -58,9 +58,9 @@ internal sealed class ColorRangePanel : DialogWindow
             };
             ToolTip.SetTip(button, mode switch
             {
-                ColorRangeSession.Picking.Replace => "Click the picture to select that color",
-                ColorRangeSession.Picking.Add => "Click the picture to add that color to the selection",
-                _ => "Click the picture to take that color out of the selection",
+                ColorRangeSession.Picking.Replace => "点击画面以选择该颜色",
+                ColorRangeSession.Picking.Add => "点击画面以把该颜色加入选区",
+                _ => "点击画面以把该颜色移出选区",
             });
             _modes[mode] = button;
             modes.Children.Add(button);
@@ -90,8 +90,8 @@ internal sealed class ColorRangePanel : DialogWindow
             Changed?.Invoke();
         };
 
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         ok.Click += (_, _) =>
         {
             _done = true;
@@ -122,7 +122,7 @@ internal sealed class ColorRangePanel : DialogWindow
                     Spacing = 8,
                     Children =
                     {
-                        new TextBlock { Text = "Fuzziness", Width = 70, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = "颜色容差", Width = 70, VerticalAlignment = VerticalAlignment.Center },
                         _fuzziness,
                         _readout,
                     },
@@ -150,9 +150,9 @@ internal sealed class ColorRangePanel : DialogWindow
         ShowingMask = mask is not null;
         _mask.Show(mask);
         _hint.Text = picked == 0
-            ? "Click the picture to pick the color to select."
-            : "Shift-click adds a color, Option-click takes one away."
-                + $" {picked} color(s) picked, {taken} taken away.";
+            ? "在画面上点击以拾取要选择的颜色。"
+            : "Shift 点击添加颜色，Alt 点击移去颜色。"
+                + $" 已拾取 {picked} 种颜色，移去 {taken} 种。";
         _problem.Text = _session.Problem ?? "";
         _showing = true;
         try
@@ -179,6 +179,15 @@ internal sealed class ColorRangePanel : DialogWindow
 
     /// <summary>The panel's own button for one of its eyedroppers, which the self check presses.</summary>
     internal Button ModeButton(ColorRangeSession.Picking mode) => _modes[mode];
+
+    /// <summary>The three ways of picking more than one colour, named the way Photoshop
+    /// names them rather than after the enumeration member.</summary>
+    internal static string PickingLabel(ColorRangeSession.Picking mode) => mode switch
+    {
+        ColorRangeSession.Picking.Add => "添加到取样",
+        ColorRangeSession.Picking.Remove => "从取样中减去",
+        _ => "替换",
+    };
 
     /// <summary>
     /// The selection drawn small: white where it holds, black where it does not, in the panel's own box. A

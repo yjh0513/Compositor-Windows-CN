@@ -1,5 +1,11 @@
 # Compositor for Windows
 
+> **中文版说明（Chinese fork notice）**
+> 本仓库是 Windows 移植版的**中文汉化分支**，由 AI 汉化、`yjh0513` 分发，**发布者不维护**。
+> 中文总说明、代码来源与原作者、下载方式、已知问题，请看仓库根目录的
+> [**README.md（中文）**](../README.md) 与 [ATTRIBUTION.md](../ATTRIBUTION.md)。
+> 下面这份是移植者 chenguisen 写的英文技术文档，**保持原样未改**。
+
 A Windows build of [Compositor](https://github.com/robbietilton/Compositor), the macOS image editor. It is a
 port, not a wrapper: the document model, the tiled compositing engine, every tool, every filter and the whole
 interface are written again for Windows, and the two builds read and write the **same `.comp` project format**.

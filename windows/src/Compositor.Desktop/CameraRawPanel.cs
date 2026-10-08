@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -42,9 +42,9 @@ internal sealed class CameraRawPanel
 
     /// <summary>What is shown over the picture while the amounts are moved: clipped shadows in blue, clipped
     /// highlights in red, and the sharpening mask. None of it is ever applied on Apply.</summary>
-    private readonly CheckBox _shadowClip = new() { Content = "Clipped shadows" };
-    private readonly CheckBox _highlightClip = new() { Content = "Clipped highlights" };
-    private readonly CheckBox _sharpenMaskView = new() { Content = "Sharpening mask" };
+    private readonly CheckBox _shadowClip = new() { Content = "阴影修剪警告" };
+    private readonly CheckBox _highlightClip = new() { Content = "高光修剪警告" };
+    private readonly CheckBox _sharpenMaskView = new() { Content = "锐化蒙版" };
 
     /// <summary>The scope above the groups, and the readout of the pixel the pointer is over.</summary>
     private readonly ScopesView _scopes = new() { Height = 110 };
@@ -61,7 +61,7 @@ internal sealed class CameraRawPanel
     private readonly List<CameraRawGeometryGuide> _guides = [];
     private bool _drawing;
     private readonly ComboBox _uprightChoice = new() { Width = 160 };
-    private readonly Button _drawGuides = new() { Content = "Draw Guides" };
+    private readonly Button _drawGuides = new() { Content = "绘制参考线" };
     private readonly TextBlock _guideNote = new()
     {
         TextWrapping = Avalonia.Media.TextWrapping.Wrap,
@@ -113,7 +113,7 @@ internal sealed class CameraRawPanel
     {
         if (_drawing == drawing) return;
         _drawing = drawing;
-        _drawGuides.Content = drawing ? "Stop drawing" : "Draw Guides";
+        _drawGuides.Content = drawing ? "停止绘制" : "绘制参考线";
         RefreshGuides();
         CanvasChanged?.Invoke();
     }
@@ -122,10 +122,10 @@ internal sealed class CameraRawPanel
     private void RefreshGuides()
     {
         _guideNote.Text = _guides.Count == 0
-            ? "Drag on the picture to draw a line that should be level or upright. One line turns the "
-                + "picture; a second, steeper one adds a keystone."
+            ? "在画面上拖出一条本应水平或垂直的线。一条线会旋转"
+                + "画面；再画一条更陡的线可以校正梯形。"
             : $"{_guides.Count} line{(_guides.Count == 1 ? "" : "s")} drawn"
-                + (_drawing ? " — drag again to add another." : " — Draw Guides adds another.");
+                + (_drawing ? " —— 再次拖动可再加一条。" : " —— 「绘制参考线」可再加一条。");
     }
 
     /// <summary>The body, for the window to dock at its right edge.</summary>
@@ -224,7 +224,7 @@ internal sealed class CameraRawPanel
     }
 
     /// <summary>What one of the panel's amounts is set to, which the self check reads to see where the panel
-    /// opened: the same slider <see cref="Amount"/> hands back. The self check is the only caller.</summary>
+    /// opened: the same slider <see cref="数量"/> hands back. The self check is the only caller.</summary>
     internal double SetTo(string label) => Amount(label) is { } slider
         ? slider.Value
         : throw new InvalidOperationException($"the panel has no amount called {label}");
@@ -276,73 +276,73 @@ internal sealed class CameraRawPanel
         _scopes.ModeSwapped += () => _scopes.Vectorscope = !_scopes.Vectorscope;
         groups.Children.Add(overlays);
 
-        groups.Children.Add(Heading("Light"));
-        Add(groups, "Exposure, stops", -5, 5, start.Exposure, (s, v) => s.Exposure = v, "0.00");
-        Add(groups, "Contrast", -100, 100, start.Contrast, (s, v) => s.Contrast = v);
-        Add(groups, "Highlights", -100, 100, start.Highlights, (s, v) => s.Highlights = v);
-        Add(groups, "Shadows", -100, 100, start.Shadows, (s, v) => s.Shadows = v);
-        Add(groups, "Whites", -100, 100, start.Whites, (s, v) => s.Whites = v);
-        Add(groups, "Blacks", -100, 100, start.Blacks, (s, v) => s.Blacks = v);
+        groups.Children.Add(Heading("光照"));
+        Add(groups, "曝光度(级)", -5, 5, start.Exposure, (s, v) => s.Exposure = v, "0.00");
+        Add(groups, "对比度", -100, 100, start.Contrast, (s, v) => s.Contrast = v);
+        Add(groups, "高光", -100, 100, start.Highlights, (s, v) => s.Highlights = v);
+        Add(groups, "阴影", -100, 100, start.Shadows, (s, v) => s.Shadows = v);
+        Add(groups, "白色", -100, 100, start.Whites, (s, v) => s.Whites = v);
+        Add(groups, "黑色", -100, 100, start.Blacks, (s, v) => s.Blacks = v);
 
-        groups.Children.Add(Heading("Color"));
-        Add(groups, "Temperature, cool to warm", -100, 100, start.Temperature, (s, v) => s.Temperature = v);
-        Add(groups, "Tint, green to magenta", -100, 100, start.Tint, (s, v) => s.Tint = v);
-        Add(groups, "Vibrance", -100, 100, start.Vibrance, (s, v) => s.Vibrance = v);
-        Add(groups, "Saturation", -100, 100, start.Saturation, (s, v) => s.Saturation = v);
+        groups.Children.Add(Heading("颜色"));
+        Add(groups, "色温(冷 → 暖)", -100, 100, start.Temperature, (s, v) => s.Temperature = v);
+        Add(groups, "色调(绿 → 洋红)", -100, 100, start.Tint, (s, v) => s.Tint = v);
+        Add(groups, "自然饱和度", -100, 100, start.Vibrance, (s, v) => s.Vibrance = v);
+        Add(groups, "饱和度", -100, 100, start.Saturation, (s, v) => s.Saturation = v);
 
-        groups.Children.Add(Heading("Effects"));
-        Add(groups, "Texture", -100, 100, start.Texture, (s, v) => s.Texture = v);
-        Add(groups, "Clarity", -100, 100, start.Clarity, (s, v) => s.Clarity = v);
-        Add(groups, "Dehaze", -100, 100, start.Dehaze, (s, v) => s.Dehaze = v);
-        Add(groups, "Glow", 0, 100, start.Glow, (s, v) => s.Glow = v);
-        groups.Children.Add(Choice("Glow style", _glowStyle, ["Diffusion", "Bloom", "Halation"]));
-        Add(groups, "Glow range", 0, 100, start.GlowRange, (s, v) => s.GlowRange = v);
-        Add(groups, "Glow spread", 0, 100, start.GlowSpread, (s, v) => s.GlowSpread = v);
-        Add(groups, "Glow warmth", -100, 100, start.GlowWarmth, (s, v) => s.GlowWarmth = v);
-        Add(groups, "Vignette amount", -100, 100, start.VignetteAmount, (s, v) => s.VignetteAmount = v);
-        groups.Children.Add(Choice("Vignette style", _vignetteStyle,
-            ["Highlight priority", "Color priority", "Paint overlay"]));
-        Add(groups, "Vignette midpoint", 0, 100, start.VignetteMidpoint, (s, v) => s.VignetteMidpoint = v);
-        Add(groups, "Vignette roundness", -100, 100, start.VignetteRoundness, (s, v) => s.VignetteRoundness = v);
-        Add(groups, "Vignette feather", 0, 100, start.VignetteFeather, (s, v) => s.VignetteFeather = v);
-        Add(groups, "Vignette highlights", -100, 100, start.VignetteHighlights, (s, v) => s.VignetteHighlights = v);
-        Add(groups, "Grain amount", 0, 100, start.GrainAmount, (s, v) => s.GrainAmount = v);
-        Add(groups, "Grain size", 0, 100, start.GrainSize, (s, v) => s.GrainSize = v);
-        Add(groups, "Grain roughness", 0, 100, start.GrainRoughness, (s, v) => s.GrainRoughness = v);
+        groups.Children.Add(Heading("效果"));
+        Add(groups, "纹理", -100, 100, start.Texture, (s, v) => s.Texture = v);
+        Add(groups, "清晰度", -100, 100, start.Clarity, (s, v) => s.Clarity = v);
+        Add(groups, "去除薄雾", -100, 100, start.Dehaze, (s, v) => s.Dehaze = v);
+        Add(groups, "辉光", 0, 100, start.Glow, (s, v) => s.Glow = v);
+        groups.Children.Add(Choice("辉光样式", _glowStyle, ["漫射", "泛光", "光晕"]));
+        Add(groups, "辉光范围", 0, 100, start.GlowRange, (s, v) => s.GlowRange = v);
+        Add(groups, "辉光扩散", 0, 100, start.GlowSpread, (s, v) => s.GlowSpread = v);
+        Add(groups, "辉光暖度", -100, 100, start.GlowWarmth, (s, v) => s.GlowWarmth = v);
+        Add(groups, "晕影数量", -100, 100, start.VignetteAmount, (s, v) => s.VignetteAmount = v);
+        groups.Children.Add(Choice("晕影样式", _vignetteStyle,
+            ["高光优先", "颜色优先", "绘画叠加"]));
+        Add(groups, "晕影中点", 0, 100, start.VignetteMidpoint, (s, v) => s.VignetteMidpoint = v);
+        Add(groups, "晕影圆度", -100, 100, start.VignetteRoundness, (s, v) => s.VignetteRoundness = v);
+        Add(groups, "晕影羽化", 0, 100, start.VignetteFeather, (s, v) => s.VignetteFeather = v);
+        Add(groups, "晕影高光", -100, 100, start.VignetteHighlights, (s, v) => s.VignetteHighlights = v);
+        Add(groups, "颗粒数量", 0, 100, start.GrainAmount, (s, v) => s.GrainAmount = v);
+        Add(groups, "颗粒大小", 0, 100, start.GrainSize, (s, v) => s.GrainSize = v);
+        Add(groups, "颗粒粗糙度", 0, 100, start.GrainRoughness, (s, v) => s.GrainRoughness = v);
 
-        groups.Children.Add(Heading("Detail"));
-        Add(groups, "Sharpen amount", 0, 150, start.SharpenAmount, (s, v) => s.SharpenAmount = v);
-        Add(groups, "Sharpen radius", 0.5, 100, start.SharpenRadius, (s, v) => s.SharpenRadius = v, "0.0");
-        Add(groups, "Sharpen detail", 0, 100, start.SharpenDetail, (s, v) => s.SharpenDetail = v);
-        Add(groups, "Sharpen masking", 0, 100, start.SharpenMasking, (s, v) => s.SharpenMasking = v);
-        Add(groups, "Noise luminance", 0, 100, start.NoiseLuminance, (s, v) => s.NoiseLuminance = v);
-        Add(groups, "Noise luminance detail", 0, 100, start.NoiseLuminanceDetail, (s, v) => s.NoiseLuminanceDetail = v);
-        Add(groups, "Noise luminance contrast", 0, 100, start.NoiseLuminanceContrast, (s, v) => s.NoiseLuminanceContrast = v);
-        Add(groups, "Noise color", 0, 100, start.NoiseColor, (s, v) => s.NoiseColor = v);
-        Add(groups, "Noise color detail", 0, 100, start.NoiseColorDetail, (s, v) => s.NoiseColorDetail = v);
-        Add(groups, "Noise color smoothness", 0, 100, start.NoiseColorSmoothness, (s, v) => s.NoiseColorSmoothness = v);
+        groups.Children.Add(Heading("细节"));
+        Add(groups, "锐化 数量", 0, 150, start.SharpenAmount, (s, v) => s.SharpenAmount = v);
+        Add(groups, "锐化 半径", 0.5, 100, start.SharpenRadius, (s, v) => s.SharpenRadius = v, "0.0");
+        Add(groups, "锐化 细节", 0, 100, start.SharpenDetail, (s, v) => s.SharpenDetail = v);
+        Add(groups, "锐化 蒙版", 0, 100, start.SharpenMasking, (s, v) => s.SharpenMasking = v);
+        Add(groups, "减少杂色(明亮度)", 0, 100, start.NoiseLuminance, (s, v) => s.NoiseLuminance = v);
+        Add(groups, "明亮度 细节", 0, 100, start.NoiseLuminanceDetail, (s, v) => s.NoiseLuminanceDetail = v);
+        Add(groups, "明亮度 对比度", 0, 100, start.NoiseLuminanceContrast, (s, v) => s.NoiseLuminanceContrast = v);
+        Add(groups, "减少杂色(颜色)", 0, 100, start.NoiseColor, (s, v) => s.NoiseColor = v);
+        Add(groups, "颜色 细节", 0, 100, start.NoiseColorDetail, (s, v) => s.NoiseColorDetail = v);
+        Add(groups, "颜色 平滑度", 0, 100, start.NoiseColorSmoothness, (s, v) => s.NoiseColorSmoothness = v);
 
-        groups.Children.Add(Heading("Optics"));
-        Add(groups, "Remove chromatic aberration", 0, 1, start.RemoveChromaticAberration ? 1 : 0, (s, v) => s.RemoveChromaticAberration = v > 0.5, "0");
-        Add(groups, "Lens profile", 0, 1, start.EnableLensProfile ? 1 : 0, (s, v) => s.EnableLensProfile = v > 0.5, "0");
-        Add(groups, "Profile distortion", 0, 100, start.ProfileDistortion, (s, v) => s.ProfileDistortion = v);
-        Add(groups, "Profile vignetting", 0, 100, start.ProfileVignetting, (s, v) => s.ProfileVignetting = v);
-        Add(groups, "Distortion", -100, 100, start.Distortion, (s, v) => s.Distortion = v);
-        Add(groups, "Purple amount", 0, 100, start.PurpleAmount, (s, v) => s.PurpleAmount = v);
-        Add(groups, "Purple hue low", 0, 360, start.PurpleHueLow, (s, v) => s.PurpleHueLow = v);
-        Add(groups, "Purple hue high", 0, 360, start.PurpleHueHigh, (s, v) => s.PurpleHueHigh = v);
-        Add(groups, "Green amount", 0, 100, start.GreenAmount, (s, v) => s.GreenAmount = v);
-        Add(groups, "Green hue low", 0, 360, start.GreenHueLow, (s, v) => s.GreenHueLow = v);
-        Add(groups, "Green hue high", 0, 360, start.GreenHueHigh, (s, v) => s.GreenHueHigh = v);
-        Add(groups, "Lens vignette", -100, 100, start.OpticsVignetteAmount, (s, v) => s.OpticsVignetteAmount = v);
-        Add(groups, "Lens vignette midpoint", 0, 100, start.OpticsVignetteMidpoint, (s, v) => s.OpticsVignetteMidpoint = v);
+        groups.Children.Add(Heading("光学"));
+        Add(groups, "删除色差", 0, 1, start.RemoveChromaticAberration ? 1 : 0, (s, v) => s.RemoveChromaticAberration = v > 0.5, "0");
+        Add(groups, "镜头配置文件", 0, 1, start.EnableLensProfile ? 1 : 0, (s, v) => s.EnableLensProfile = v > 0.5, "0");
+        Add(groups, "配置文件扭曲", 0, 100, start.ProfileDistortion, (s, v) => s.ProfileDistortion = v);
+        Add(groups, "配置文件晕影", 0, 100, start.ProfileVignetting, (s, v) => s.ProfileVignetting = v);
+        Add(groups, "扭曲", -100, 100, start.Distortion, (s, v) => s.Distortion = v);
+        Add(groups, "紫边 数量", 0, 100, start.PurpleAmount, (s, v) => s.PurpleAmount = v);
+        Add(groups, "紫边 色相下限", 0, 360, start.PurpleHueLow, (s, v) => s.PurpleHueLow = v);
+        Add(groups, "紫边 色相上限", 0, 360, start.PurpleHueHigh, (s, v) => s.PurpleHueHigh = v);
+        Add(groups, "绿 数量", 0, 100, start.GreenAmount, (s, v) => s.GreenAmount = v);
+        Add(groups, "绿边 色相下限", 0, 360, start.GreenHueLow, (s, v) => s.GreenHueLow = v);
+        Add(groups, "绿边 色相上限", 0, 360, start.GreenHueHigh, (s, v) => s.GreenHueHigh = v);
+        Add(groups, "镜头暗角", -100, 100, start.OpticsVignetteAmount, (s, v) => s.OpticsVignetteAmount = v);
+        Add(groups, "镜头晕影 中点", 0, 100, start.OpticsVignetteMidpoint, (s, v) => s.OpticsVignetteMidpoint = v);
 
-        groups.Children.Add(Heading("Geometry"));
+        groups.Children.Add(Heading("几何"));
         // Guided upright is the Mac's own: a line drawn on the picture that should be level or upright. It sits
         // with the amounts it is added to, because that is what it is — the lines ask for a turn and, when one
         // of them is steep, a keystone, and the sliders add to that.
         _upright = start.Geometry.Upright;
-        _uprightChoice.ItemsSource = new[] { "Off", "Guided" };
+        _uprightChoice.ItemsSource = new[] { "关闭", "引导式" };
         _uprightChoice.SelectedIndex = (int)_upright;
         _uprightChoice.SelectionChanged += (_, _) =>
         {
@@ -350,7 +350,7 @@ internal sealed class CameraRawPanel
             RefreshPreview();
         };
         _drawGuides.Click += (_, _) => SetDrawing(!_drawing);
-        var clear = new Button { Content = "Clear guides" };
+        var clear = new Button { Content = "清除参考线" };
         clear.Click += (_, _) => ClearGuides();
         groups.Children.Add(new StackPanel
         {
@@ -358,7 +358,7 @@ internal sealed class CameraRawPanel
             Spacing = 8,
             Children =
             {
-                new TextBlock { Text = "Upright", Width = 190, VerticalAlignment = VerticalAlignment.Center },
+                new TextBlock { Text = "校正", Width = 190, VerticalAlignment = VerticalAlignment.Center },
                 _uprightChoice,
             },
         });
@@ -370,29 +370,29 @@ internal sealed class CameraRawPanel
         });
         groups.Children.Add(_guideNote);
         RefreshGuides();
-        groups.Children.Add(Choice("Projection", _geometryProjection, ["Perspective", "Rectilinear"]));
-        Add(groups, "Vertical", -100, 100, start.Geometry.Vertical, (s, v) => s.Geometry.Vertical = v);
-        Add(groups, "Horizontal", -100, 100, start.Geometry.Horizontal, (s, v) => s.Geometry.Horizontal = v);
-        Add(groups, "Rotate", -45, 45, start.Geometry.Rotate, (s, v) => s.Geometry.Rotate = v);
-        Add(groups, "Aspect", -100, 100, start.Geometry.Aspect, (s, v) => s.Geometry.Aspect = v);
-        Add(groups, "Scale", -100, 100, start.Geometry.Scale, (s, v) => s.Geometry.Scale = v);
-        Add(groups, "Offset X", -100, 100, start.Geometry.OffsetX, (s, v) => s.Geometry.OffsetX = v);
-        Add(groups, "Offset Y", -100, 100, start.Geometry.OffsetY, (s, v) => s.Geometry.OffsetY = v);
-        Add(groups, "Constrain crop", 0, 1, start.Geometry.ConstrainCrop ? 1 : 0,
+        groups.Children.Add(Choice("投影", _geometryProjection, ["透视", "直线"]));
+        Add(groups, "垂直", -100, 100, start.Geometry.Vertical, (s, v) => s.Geometry.Vertical = v);
+        Add(groups, "水平", -100, 100, start.Geometry.Horizontal, (s, v) => s.Geometry.Horizontal = v);
+        Add(groups, "旋转", -45, 45, start.Geometry.Rotate, (s, v) => s.Geometry.Rotate = v);
+        Add(groups, "比例", -100, 100, start.Geometry.Aspect, (s, v) => s.Geometry.Aspect = v);
+        Add(groups, "缩放", -100, 100, start.Geometry.Scale, (s, v) => s.Geometry.Scale = v);
+        Add(groups, "X 偏移", -100, 100, start.Geometry.OffsetX, (s, v) => s.Geometry.OffsetX = v);
+        Add(groups, "Y 偏移", -100, 100, start.Geometry.OffsetY, (s, v) => s.Geometry.OffsetY = v);
+        Add(groups, "约束裁剪", 0, 1, start.Geometry.ConstrainCrop ? 1 : 0,
             (s, v) => s.Geometry.ConstrainCrop = v > 0.5, "0");
 
-        groups.Children.Add(Heading("Calibration"));
-        Add(groups, "Process version", 1, 6, start.ProcessVersion, (s, v) => s.ProcessVersion = (int)Math.Round(v), "0");
-        Add(groups, "Shadow tint", -100, 100, start.ShadowTint, (s, v) => s.ShadowTint = v);
-        Add(groups, "Red hue", -100, 100, start.RedHue, (s, v) => s.RedHue = v);
-        Add(groups, "Red saturation", -100, 100, start.RedSaturation, (s, v) => s.RedSaturation = v);
-        Add(groups, "Green hue", -100, 100, start.GreenHue, (s, v) => s.GreenHue = v);
-        Add(groups, "Green saturation", -100, 100, start.GreenSaturation, (s, v) => s.GreenSaturation = v);
-        Add(groups, "Blue hue", -100, 100, start.BlueHue, (s, v) => s.BlueHue = v);
-        Add(groups, "Blue saturation", -100, 100, start.BlueSaturation, (s, v) => s.BlueSaturation = v);
+        groups.Children.Add(Heading("校准"));
+        Add(groups, "处理版本", 1, 6, start.ProcessVersion, (s, v) => s.ProcessVersion = (int)Math.Round(v), "0");
+        Add(groups, "阴影色调", -100, 100, start.ShadowTint, (s, v) => s.ShadowTint = v);
+        Add(groups, "红 色相", -100, 100, start.RedHue, (s, v) => s.RedHue = v);
+        Add(groups, "红 饱和度", -100, 100, start.RedSaturation, (s, v) => s.RedSaturation = v);
+        Add(groups, "绿 色相", -100, 100, start.GreenHue, (s, v) => s.GreenHue = v);
+        Add(groups, "绿 饱和度", -100, 100, start.GreenSaturation, (s, v) => s.GreenSaturation = v);
+        Add(groups, "蓝 色相", -100, 100, start.BlueHue, (s, v) => s.BlueHue = v);
+        Add(groups, "蓝 饱和度", -100, 100, start.BlueSaturation, (s, v) => s.BlueSaturation = v);
 
-        groups.Children.Add(Heading("Curve"));
-        _curveChannel.ItemsSource = new[] { "Whole picture", "Red", "Green", "Blue" };
+        groups.Children.Add(Heading("曲线"));
+        _curveChannel.ItemsSource = new[] { "整个画面", "红", "绿", "蓝" };
         _curveChannel.SelectedIndex = Math.Clamp((int)start.Curve.Channel, 0, 3);
         _curveChannel.Width = 160;
         _curve = new CurveEditor { Curves = Clone(start.Curve), Height = 220 };
@@ -400,9 +400,9 @@ internal sealed class CameraRawPanel
         _curve.Changed += RefreshPreview;
         groups.Children.Add(_curveChannel);
         groups.Children.Add(_curve);
-        Add(groups, "Refine saturation", -100, 100, start.RefineSaturation, (s, v) => s.RefineSaturation = v);
+        Add(groups, "调整饱和度", -100, 100, start.RefineSaturation, (s, v) => s.RefineSaturation = v);
 
-        groups.Children.Add(Heading("Color mixer"));
+        groups.Children.Add(Heading("颜色混合器"));
         // The hues come first in the mixer's own places and then the saturations, which is the order the
         // kernel reads them in rather than the order a panel would list them.
         var mixer = start.Mixer;
@@ -412,21 +412,21 @@ internal sealed class CameraRawPanel
             var saturation = CameraRawSettings.MixerFamilies.Length + family;
             var luminance = CameraRawSettings.MixerFamilies.Length * 2 + family;
             var name = CameraRawSettings.MixerFamilies[family];
-            Add(groups, $"{name}: hue", -100, 100, At(mixer, hue), (s, v) => s.Mixer[hue] = v);
-            Add(groups, $"{name}: saturation", -100, 100, At(mixer, saturation), (s, v) => s.Mixer[saturation] = v);
-            Add(groups, $"{name}: luminance", -100, 100, At(mixer, luminance), (s, v) => s.Mixer[luminance] = v);
+            Add(groups, $"{name}: 色相", -100, 100, At(mixer, hue), (s, v) => s.Mixer[hue] = v);
+            Add(groups, $"{name}: 饱和度", -100, 100, At(mixer, saturation), (s, v) => s.Mixer[saturation] = v);
+            Add(groups, $"{name}: 明度", -100, 100, At(mixer, luminance), (s, v) => s.Mixer[luminance] = v);
         }
 
-        groups.Children.Add(Heading("Point color"));
+        groups.Children.Add(Heading("点颜色"));
         groups.Children.Add(new TextBlock
         {
-            Text = "Pick the color the brush is set to out of the picture, then move it. The Mac build picks "
-                + "colors by clicking on the canvas, which this panel does not do.",
+            Text = "从画面中拾取画笔将要使用的颜色，然后移动它。Mac 版拾取 "
+                + "颜色靠点击画面，本面板不提供该操作。",
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Opacity = 0.75,
         });
-        var addPoint = new Button { Content = "Add the brush color" };
-        var removePoint = new Button { Content = "Remove" };
+        var addPoint = new Button { Content = "添加画笔颜色" };
+        var removePoint = new Button { Content = "移去" };
         addPoint.Click += (_, _) => AddPoint();
         removePoint.Click += (_, _) => RemovePoint();
         groups.Children.Add(new StackPanel
@@ -438,47 +438,47 @@ internal sealed class CameraRawPanel
         groups.Children.Add(_points);
         _points.SelectionChanged += (_, _) => SelectPoint();
         // The nine numbers of the one being edited, which is what the panel's sliders move.
-        Add(groups, "Hue", 0, 360, 0, (_, v) => Point(point => point.Hue = v), "0");
-        Add(groups, "Saturation", 0, 1, 0, (_, v) => Point(point => point.Saturation = v), "0.00");
-        Add(groups, "Lightness", 0, 1, 0, (_, v) => Point(point => point.Luminance = v), "0.00");
-        Add(groups, "Turn the hue", -100, 100, 0, (_, v) => Point(point => point.HueShift = v));
-        Add(groups, "Raise the saturation", -100, 100, 0, (_, v) => Point(point => point.SaturationShift = v));
-        Add(groups, "Move the lightness", -100, 100, 0, (_, v) => Point(point => point.LuminanceShift = v));
-        Add(groups, "Hue range", 5, 180, 30, (_, v) => Point(point => point.HueRange = v), "0");
-        Add(groups, "Saturation range", 0.05, 1, 0.4, (_, v) => Point(point => point.SaturationRange = v), "0.00");
-        Add(groups, "Lightness range", 0.05, 1, 0.4, (_, v) => Point(point => point.LuminanceRange = v), "0.00");
+        Add(groups, "色相", 0, 360, 0, (_, v) => Point(point => point.Hue = v), "0");
+        Add(groups, "饱和度", 0, 1, 0, (_, v) => Point(point => point.Saturation = v), "0.00");
+        Add(groups, "明度", 0, 1, 0, (_, v) => Point(point => point.Luminance = v), "0.00");
+        Add(groups, "旋转色相", -100, 100, 0, (_, v) => Point(point => point.HueShift = v));
+        Add(groups, "提高饱和度", -100, 100, 0, (_, v) => Point(point => point.SaturationShift = v));
+        Add(groups, "移动明度", -100, 100, 0, (_, v) => Point(point => point.LuminanceShift = v));
+        Add(groups, "色相范围", 5, 180, 30, (_, v) => Point(point => point.HueRange = v), "0");
+        Add(groups, "饱和度范围", 0.05, 1, 0.4, (_, v) => Point(point => point.SaturationRange = v), "0.00");
+        Add(groups, "明度范围", 0.05, 1, 0.4, (_, v) => Point(point => point.LuminanceRange = v), "0.00");
         foreach (var point in start.Points) _pointList.Add(point.Normalized());
         if (_pointList.Count > 0) _points.SelectedIndex = 0;
 
-        groups.Children.Add(Heading("Color grading"));
-        Add(groups, "Shadows: hue", 0, 360, start.ShadowHue, (s, v) => s.ShadowHue = v, "0");
-        Add(groups, "Shadows: amount", 0, 100, start.ShadowSaturation, (s, v) => s.ShadowSaturation = v, "0");
-        Add(groups, "Shadows: lightness", -100, 100, start.ShadowLuminance, (s, v) => s.ShadowLuminance = v);
-        Add(groups, "Midtones: hue", 0, 360, start.MidtoneHue, (s, v) => s.MidtoneHue = v, "0");
-        Add(groups, "Midtones: amount", 0, 100, start.MidtoneSaturation, (s, v) => s.MidtoneSaturation = v, "0");
-        Add(groups, "Midtones: lightness", -100, 100, start.MidtoneLuminance, (s, v) => s.MidtoneLuminance = v);
-        Add(groups, "Highlights: hue", 0, 360, start.HighlightHue, (s, v) => s.HighlightHue = v, "0");
-        Add(groups, "Highlights: amount", 0, 100, start.HighlightSaturation, (s, v) => s.HighlightSaturation = v, "0");
-        Add(groups, "Highlights: lightness", -100, 100, start.HighlightLuminance, (s, v) => s.HighlightLuminance = v);
-        Add(groups, "Whole picture: hue", 0, 360, start.GlobalHue, (s, v) => s.GlobalHue = v, "0");
-        Add(groups, "Whole picture: amount", 0, 100, start.GlobalSaturation, (s, v) => s.GlobalSaturation = v, "0");
-        Add(groups, "Whole picture: lightness", -100, 100, start.GlobalLuminance, (s, v) => s.GlobalLuminance = v);
-        Add(groups, "Grading blending", 0, 100, start.GradeBlending, (s, v) => s.GradeBlending = v, "0");
-        Add(groups, "Grading balance", -100, 100, start.GradeBalance, (s, v) => s.GradeBalance = v);
+        groups.Children.Add(Heading("颜色分级"));
+        Add(groups, "阴影: 色相", 0, 360, start.ShadowHue, (s, v) => s.ShadowHue = v, "0");
+        Add(groups, "阴影: 数量", 0, 100, start.ShadowSaturation, (s, v) => s.ShadowSaturation = v, "0");
+        Add(groups, "阴影: 明度", -100, 100, start.ShadowLuminance, (s, v) => s.ShadowLuminance = v);
+        Add(groups, "中间调: 色相", 0, 360, start.MidtoneHue, (s, v) => s.MidtoneHue = v, "0");
+        Add(groups, "中间调: 数量", 0, 100, start.MidtoneSaturation, (s, v) => s.MidtoneSaturation = v, "0");
+        Add(groups, "中间调: 明度", -100, 100, start.MidtoneLuminance, (s, v) => s.MidtoneLuminance = v);
+        Add(groups, "高光: 色相", 0, 360, start.HighlightHue, (s, v) => s.HighlightHue = v, "0");
+        Add(groups, "高光: 数量", 0, 100, start.HighlightSaturation, (s, v) => s.HighlightSaturation = v, "0");
+        Add(groups, "高光: 明度", -100, 100, start.HighlightLuminance, (s, v) => s.HighlightLuminance = v);
+        Add(groups, "整个画面: 色相", 0, 360, start.GlobalHue, (s, v) => s.GlobalHue = v, "0");
+        Add(groups, "整个画面: 数量", 0, 100, start.GlobalSaturation, (s, v) => s.GlobalSaturation = v, "0");
+        Add(groups, "整个画面: 明度", -100, 100, start.GlobalLuminance, (s, v) => s.GlobalLuminance = v);
+        Add(groups, "分级混合", 0, 100, start.GradeBlending, (s, v) => s.GradeBlending = v, "0");
+        Add(groups, "分级平衡", -100, 100, start.GradeBalance, (s, v) => s.GradeBalance = v);
 
         _glowStyle.SelectedIndex = start.GlowStyle;
         _vignetteStyle.SelectedIndex = start.VignetteStyle;
 
-        var ok = new Button { Content = "Apply" };
-        var cancel = new Button { Content = "Cancel" };
-        var reset = new Button { Content = "Reset" };
+        var ok = new Button { Content = "应用" };
+        var cancel = new Button { Content = "取消" };
+        var reset = new Button { Content = "复位" };
         ok.Click += (_, _) => Apply();
         cancel.Click += (_, _) => Cancel();
         reset.Click += (_, _) => Reset();
 
         var title = new TextBlock
         {
-            Text = "Camera Raw Filter",
+            Text = "Camera Raw 滤镜",
             Margin = new Thickness(16, 12, 16, 4),
             Foreground = Skin.LabelBrush,
             FontWeight = FontWeight.SemiBold,
@@ -616,8 +616,8 @@ internal sealed class CameraRawPanel
         {
             var at = _points.SelectedIndex;
             _points.ItemsSource = _pointList
-                .Select((point, index) => $"{index + 1}: hue {point.Hue:0}°, saturation {point.Saturation:0.00}, "
-                    + $"lightness {point.Luminance:0.00}")
+                .Select((point, index) => $"{index + 1}: 色相 {point.Hue:0}°, 饱和度 {point.Saturation:0.00}, "
+                    + $"明度 {point.Luminance:0.00}")
                 .ToList();
             _points.SelectedIndex = at;
         }

@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
@@ -66,8 +66,8 @@ internal sealed class ColorPickerDialog : DialogWindow
         _hue = new HueStrip(_hsb);
         _hue.Changed += Refresh;
 
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         Ok = ok;
         Cancel = cancel;
         ok.Click += (_, _) =>
@@ -155,7 +155,7 @@ internal sealed class ColorPickerDialog : DialogWindow
                 numbers,
                 new TextBlock
                 {
-                    Text = "Click the canvas to sample",
+                    Text = "在画布上点击以取色",
                     Foreground = Skin.SecondaryBrush,
                     FontSize = 11,
                 },

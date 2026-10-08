@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Input;
@@ -154,7 +154,7 @@ internal static class Program
                  {
                      ("New Project", "new-project.png", 400, new NewDocumentDialog().TakeBody()),
                      ("Grid Settings", "grid-settings.png", 380, new GridSettingsDialog(new LayoutGrid()).TakeBody()),
-                     ("Controls", "controls.png", 420, Controls()),
+                     ("控件", "controls.png", 420, Controls()),
                  })
         {
             Draw(name, Path.Combine(folder, file), width, body);
@@ -178,7 +178,7 @@ internal static class Program
         var built = panel.Children.Count;
         // A look is chosen by its name rather than its place in the list: the list draws a rule between its
         // groups, so an item's index is not the look's.
-        foreach (var name in new[] { "Atkinson (Classic Mac)", "Bayer 2 × 2", "Halftone Dots", "Mac Patterns", "ASCII" })
+        foreach (var name in new[] { "Atkinson(经典 Mac)", "Bayer 2 × 2", "半调圆点", "Mac 图案", "ASCII" })
         {
             var chosen = look.Items.OfType<ComboBoxItem>().ToList().FindIndex(item => (item.Content as string) == name);
             if (chosen < 0)
@@ -200,29 +200,29 @@ internal static class Program
     /// </summary>
     private static Control Controls()
     {
-        var selected = new ListBoxItem { Content = "A selected row", IsSelected = true };
+        var selected = new ListBoxItem { Content = "选中行", IsSelected = true };
         return new StackPanel
         {
             Margin = new Thickness(16),
             Spacing = 10,
             Children =
             {
-                new TextBlock { Text = "A label" },
-                new TextBlock { Text = "A second line", Foreground = Skin.SecondaryBrush },
+                new TextBlock { Text = "标签" },
+                new TextBlock { Text = "第二行", Foreground = Skin.SecondaryBrush },
                 new Slider { Minimum = 0, Maximum = 100, Value = 40 },
-                new CheckBox { Content = "A tick box", IsChecked = true },
-                new RadioButton { Content = "A radio button", IsChecked = true },
+                new CheckBox { Content = "复选框", IsChecked = true },
+                new RadioButton { Content = "单选按钮", IsChecked = true },
                 new ComboBox
                 {
-                    ItemsSource = new[] { "A pop-up", "Another choice" },
+                    ItemsSource = new[] { "下拉菜单", "另一个选项" },
                     SelectedIndex = 0,
                 },
-                new ListBox { ItemsSource = new object[] { "A row", selected }, Height = 72 },
+                new ListBox { ItemsSource = new object[] { "行", selected }, Height = 72 },
                 new StackPanel
                 {
                     Orientation = Orientation.Horizontal,
                     Spacing = 8,
-                    Children = { new Button { Content = "Cancel" }, new Button { Content = "OK" } },
+                    Children = { new Button { Content = "取消" }, new Button { Content = "确定" } },
                 },
             },
         };

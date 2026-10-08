@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Compositor.Core.Document;
@@ -28,7 +28,7 @@ internal sealed class GridSettingsDialog : DialogWindow
 
     internal GridSettingsDialog(LayoutGrid start)
     {
-        Title = "Grid Settings";
+        Title = "网格设置";
         Width = 380;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
@@ -36,8 +36,8 @@ internal sealed class GridSettingsDialog : DialogWindow
         _spacing = new TextBox { Text = start.Spacing.ToString(), Width = 100 };
         _subdivisions = new TextBox { Text = start.Subdivisions.ToString(), Width = 100 };
 
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         ok.Click += (_, _) => Accept();
         cancel.Click += (_, _) => Close();
 
@@ -47,12 +47,12 @@ internal sealed class GridSettingsDialog : DialogWindow
             Spacing = 8,
             Children =
             {
-                Row("Spacing, pixels", _spacing),
-                Row("Subdivisions", _subdivisions),
+                Row("间距(像素)", _spacing),
+                Row("子网格", _subdivisions),
                 new TextBlock
                 {
-                    Text = $"Between {LayoutGrid.LeastSpacing} and {LayoutGrid.MostSpacing} pixels apart, "
-                        + $"split into at most {LayoutGrid.MostSubdivisions}.",
+                    Text = $"间距在 {LayoutGrid.LeastSpacing} 到 {LayoutGrid.MostSpacing} 像素之间，"
+                        + $"最多分成 {LayoutGrid.MostSubdivisions} 份。",
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                 },
                 new StackPanel

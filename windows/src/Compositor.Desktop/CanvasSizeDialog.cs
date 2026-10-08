@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Compositor.Core.Document;
@@ -19,7 +19,7 @@ internal sealed class CanvasSizeDialog : DialogWindow
 
     private CanvasSizeDialog(int width, int height, int anchor)
     {
-        Title = "Canvas Size";
+        Title = "画布大小";
         Width = 380;
         SizeToContent = SizeToContent.Height;
         CanResize = false;
@@ -29,15 +29,15 @@ internal sealed class CanvasSizeDialog : DialogWindow
         // Row-major from the top left, the order CanvasEdits numbers its anchors in.
         _anchor.ItemsSource = new[]
         {
-            "Top left", "Top", "Top right",
-            "Left", "Centre", "Right",
-            "Bottom left", "Bottom", "Bottom right",
+            "左上角", "顶部", "右上角",
+            "左", "Centre", "右",
+            "左下角", "底部", "右下角",
         };
         _anchor.SelectedIndex = Math.Clamp(anchor, 0, 8);
         _anchor.Width = 140;
 
-        var ok = new Button { Content = "OK", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var ok = new Button { Content = "确定", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         ok.Click += (_, _) => Accept();
         cancel.Click += (_, _) => Close();
 
@@ -47,9 +47,9 @@ internal sealed class CanvasSizeDialog : DialogWindow
             Spacing = 8,
             Children =
             {
-                Row("Width, pixels", _width),
-                Row("Height, pixels", _height),
-                Row("Anchor", _anchor),
+                Row("宽度(像素)", _width),
+                Row("高度(像素)", _height),
+                Row("定位", _anchor),
                 new StackPanel
                 {
                     Orientation = Orientation.Horizontal,

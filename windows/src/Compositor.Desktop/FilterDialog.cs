@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -19,7 +19,7 @@ internal sealed class FilterDialog : DialogWindow
     /// </summary>
     public Action<FilterSettings?>? Preview { get; set; }
 
-    private readonly CheckBox _preview = new() { Content = "Preview", IsChecked = true };
+    private readonly CheckBox _preview = new() { Content = "预览", IsChecked = true };
 
     private readonly List<(Slider Slider, Action<FilterSettings, double> Set)> _rows = [];
     private readonly List<double> _fallbacks = [];
@@ -34,19 +34,23 @@ internal sealed class FilterDialog : DialogWindow
     private readonly FilterSettings _amounts;
     private FilterSettings? _result;
 
+    /// <summary>What that filter is called, which is what its window, its menu row and its
+    /// undo step all say. One place, so the three cannot drift apart.</summary>
+    public static string Label(FilterKind kind) => kind switch
+    {
+        FilterKind.GaussianBlur => "高斯模糊",
+        FilterKind.MotionBlur => "动感模糊",
+        FilterKind.BloomGlow => "泛光/辉光",
+        FilterKind.AddNoise => "添加杂色",
+        FilterKind.Vignette => "暗角",
+        FilterKind.TonalContrast => "色调对比度",
+        _ => "镜头校正",
+    };
+
     private FilterDialog(FilterKind kind, FilterSettings start)
     {
         _amounts = start.Copy();
-        Title = kind switch
-        {
-            FilterKind.GaussianBlur => "Gaussian Blur",
-            FilterKind.MotionBlur => "Motion Blur",
-            FilterKind.BloomGlow => "Bloom / Glow",
-            FilterKind.AddNoise => "Add Noise",
-            FilterKind.Vignette => "Vignette",
-            FilterKind.TonalContrast => "Tonal Contrast",
-            _ => "Lens Correction",
-        };
+        Title = Label(kind);
         Width = 420;
         Height = 360;
         CanResize = true;
@@ -57,53 +61,53 @@ internal sealed class FilterDialog : DialogWindow
         switch (kind)
         {
             case FilterKind.GaussianBlur:
-                Add(group, "Radius, pixels", 0.1, 250, start.BlurRadius, defaults.BlurRadius, (s, v) => s.BlurRadius = v);
+                Add(group, "半径(像素)", 0.1, 250, start.BlurRadius, defaults.BlurRadius, (s, v) => s.BlurRadius = v);
                 break;
             case FilterKind.BloomGlow:
-                Add(group, "Amount", 0, 100, start.BloomAmount, defaults.BloomAmount, (s, v) => s.BloomAmount = v);
-                Add(group, "Radius, pixels", 1, 150, start.BloomRadius, defaults.BloomRadius, (s, v) => s.BloomRadius = v, "0");
+                Add(group, "数量", 0, 100, start.BloomAmount, defaults.BloomAmount, (s, v) => s.BloomAmount = v);
+                Add(group, "半径(像素)", 1, 150, start.BloomRadius, defaults.BloomRadius, (s, v) => s.BloomRadius = v, "0");
                 break;
             case FilterKind.MotionBlur:
-                Add(group, "Angle, degrees", -90, 90, start.MotionAngle, defaults.MotionAngle, (s, v) => s.MotionAngle = v);
-                Add(group, "Distance, pixels", 1, 2000, start.MotionDistance, defaults.MotionDistance, (s, v) => s.MotionDistance = v, "0");
+                Add(group, "角度(度)", -90, 90, start.MotionAngle, defaults.MotionAngle, (s, v) => s.MotionAngle = v);
+                Add(group, "距离(像素)", 1, 2000, start.MotionDistance, defaults.MotionDistance, (s, v) => s.MotionDistance = v, "0");
                 break;
             case FilterKind.AddNoise:
-                Add(group, "Amount, %", 0.1, 400, start.NoiseAmount, defaults.NoiseAmount, (s, v) => s.NoiseAmount = v);
-                Check(group, "Gaussian", start.NoiseGaussian, (s, v) => s.NoiseGaussian = v);
-                Check(group, "Monochromatic", start.NoiseMonochromatic, (s, v) => s.NoiseMonochromatic = v);
+                Add(group, "数量(%)", 0.1, 400, start.NoiseAmount, defaults.NoiseAmount, (s, v) => s.NoiseAmount = v);
+                Check(group, "高斯分布", start.NoiseGaussian, (s, v) => s.NoiseGaussian = v);
+                Check(group, "单色", start.NoiseMonochromatic, (s, v) => s.NoiseMonochromatic = v);
                 break;
             case FilterKind.Vignette:
                 // The colour is a swatch that opens the picker, as the Mac's sheet has it, where this panel
                 // used to offer three numbers for it.
-                Swatch(group, "Color", (start.VignetteRed, start.VignetteGreen, start.VignetteBlue),
+                Swatch(group, "颜色", (start.VignetteRed, start.VignetteGreen, start.VignetteBlue),
                     (defaults.VignetteRed, defaults.VignetteGreen, defaults.VignetteBlue),
                     (s, colour) =>
                     {
                         s.VignetteRed = colour.Red;
                         s.VignetteGreen = colour.Green;
                         s.VignetteBlue = colour.Blue;
-                    }, "Color Picker (Vignette Color)", "Choose the vignette color");
-                Add(group, "Amount", 0, 100, start.VignetteAmount, defaults.VignetteAmount, (s, v) => s.VignetteAmount = v);
-                Add(group, "Midpoint", 0, 100, start.VignetteMidpoint, defaults.VignetteMidpoint, (s, v) => s.VignetteMidpoint = v);
-                Add(group, "Roundness", -100, 100, start.VignetteRoundness, defaults.VignetteRoundness, (s, v) => s.VignetteRoundness = v);
-                Add(group, "Feather", 0, 100, start.VignetteFeather, defaults.VignetteFeather, (s, v) => s.VignetteFeather = v);
-                Add(group, "Highlights", 0, 100, start.VignetteHighlights, defaults.VignetteHighlights, (s, v) => s.VignetteHighlights = v);
+                    }, "拾色器(暗角颜色)", "选择暗角颜色");
+                Add(group, "数量", 0, 100, start.VignetteAmount, defaults.VignetteAmount, (s, v) => s.VignetteAmount = v);
+                Add(group, "中点", 0, 100, start.VignetteMidpoint, defaults.VignetteMidpoint, (s, v) => s.VignetteMidpoint = v);
+                Add(group, "圆度", -100, 100, start.VignetteRoundness, defaults.VignetteRoundness, (s, v) => s.VignetteRoundness = v);
+                Add(group, "羽化", 0, 100, start.VignetteFeather, defaults.VignetteFeather, (s, v) => s.VignetteFeather = v);
+                Add(group, "高光", 0, 100, start.VignetteHighlights, defaults.VignetteHighlights, (s, v) => s.VignetteHighlights = v);
                 break;
             case FilterKind.TonalContrast:
-                Add(group, "Amount", 0, 100, start.TonalAmount, defaults.TonalAmount, (s, v) => s.TonalAmount = v);
-                Add(group, "Radius, pixels", 1, 100, start.TonalRadius, defaults.TonalRadius, (s, v) => s.TonalRadius = v, "0");
-                Add(group, "Shadows", -100, 100, start.TonalShadows, defaults.TonalShadows, (s, v) => s.TonalShadows = v);
-                Add(group, "Midtones", -100, 100, start.TonalMidtones, defaults.TonalMidtones, (s, v) => s.TonalMidtones = v);
-                Add(group, "Highlights", -100, 100, start.TonalHighlights, defaults.TonalHighlights, (s, v) => s.TonalHighlights = v);
+                Add(group, "数量", 0, 100, start.TonalAmount, defaults.TonalAmount, (s, v) => s.TonalAmount = v);
+                Add(group, "半径(像素)", 1, 100, start.TonalRadius, defaults.TonalRadius, (s, v) => s.TonalRadius = v, "0");
+                Add(group, "阴影", -100, 100, start.TonalShadows, defaults.TonalShadows, (s, v) => s.TonalShadows = v);
+                Add(group, "中间调", -100, 100, start.TonalMidtones, defaults.TonalMidtones, (s, v) => s.TonalMidtones = v);
+                Add(group, "高光", -100, 100, start.TonalHighlights, defaults.TonalHighlights, (s, v) => s.TonalHighlights = v);
                 break;
             default:
-                Add(group, "Distortion", -100, 100, start.Distortion, defaults.Distortion, (s, v) => s.Distortion = v);
+                Add(group, "扭曲", -100, 100, start.Distortion, defaults.Distortion, (s, v) => s.Distortion = v);
                 break;
         }
 
-        var ok = new Button { Content = "Apply", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
-        var reset = new Button { Content = "Reset" };
+        var ok = new Button { Content = "应用", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
+        var reset = new Button { Content = "复位" };
         ok.Click += (_, _) => Accept();
         cancel.Click += (_, _) => Close();
         reset.Click += (_, _) => Restore();

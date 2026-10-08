@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -24,7 +24,7 @@ internal sealed class ShortcutDialog : DialogWindow
     private readonly Dictionary<string, ShortcutChord> _draft;
     /// <summary>The table the sheet opened with, which Restore Defaults puts back.</summary>
     private readonly Dictionary<string, ShortcutChord> _opened;
-    private readonly TextBox _search = new() { PlaceholderText = "Search shortcuts", Width = 400 };
+    private readonly TextBox _search = new() { PlaceholderText = "搜索快捷键", Width = 400 };
     private readonly StackPanel _list = new() { Spacing = 2 };
     /// <summary>What scrolls the list, kept so that the check can take the list out of it to be drawn.</summary>
     private readonly ScrollViewer _scroller = new() { Margin = new Thickness(0, 6, 0, 6) };
@@ -34,14 +34,14 @@ internal sealed class ShortcutDialog : DialogWindow
         TextWrapping = TextWrapping.Wrap,
         IsVisible = false,
     };
-    private readonly Button _save = new() { Content = "Save", IsDefault = true };
+    private readonly Button _save = new() { Content = "存储", IsDefault = true };
     /// <summary>The row being recorded, or null when the keys are the sheet's own again.</summary>
     private string? _recording;
     private Dictionary<string, ShortcutChord>? _result;
 
     internal ShortcutDialog(IReadOnlyDictionary<string, ShortcutChord> overrides)
     {
-        Title = "Keyboard Shortcuts";
+        Title = "键盘快捷键";
         Width = 660;
         Height = 560;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -49,8 +49,8 @@ internal sealed class ShortcutDialog : DialogWindow
         _opened = new Dictionary<string, ShortcutChord>(_draft);
         _search.TextChanged += (_, _) => ShowRows();
 
-        var restore = new Button { Content = "Restore Defaults", HorizontalAlignment = HorizontalAlignment.Left };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
+        var restore = new Button { Content = "恢复默认值", HorizontalAlignment = HorizontalAlignment.Left };
+        var cancel = new Button { Content = "取消", IsCancel = true };
         restore.Click += (_, _) => RestoreDefaults();
         cancel.Click += (_, _) => Close();
         _save.Click += (_, _) => Keep();
@@ -73,8 +73,8 @@ internal sealed class ShortcutDialog : DialogWindow
             {
                 new TextBlock
                 {
-                    Text = "Click a key, then press the one you want. Backspace clears a row and Escape stops "
-                        + "recording; the changes apply when you save.",
+                    Text = "先点一个按键格，再按下你要的键。退格清除该行，Esc 取消 "
+                        + "正在记录；存储后生效。",
                     TextWrapping = TextWrapping.Wrap,
                 },
                 _search,
@@ -126,7 +126,7 @@ internal sealed class ShortcutDialog : DialogWindow
         var chord = _draft[definition.ID];
         var button = new Button
         {
-            Content = _recording == definition.ID ? "Press keys…" : chord.IsBound ? chord.Label : "—",
+            Content = _recording == definition.ID ? "请按键…" : chord.IsBound ? chord.Label : "—",
             Width = 150,
             HorizontalContentAlignment = HorizontalAlignment.Center,
         };
@@ -168,7 +168,7 @@ internal sealed class ShortcutDialog : DialogWindow
         if (ShortcutKeys.Bare(e.Key)) return;
         if (e.KeyModifiers.HasFlag(KeyModifiers.Meta))
         {
-            _complaint.Text = "The Windows key is reserved by Windows";
+            _complaint.Text = "Windows 键已被系统保留";
             _complaint.IsVisible = true;
             return;
         }

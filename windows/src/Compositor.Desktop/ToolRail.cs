@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -141,8 +141,8 @@ internal sealed class ToolRail : Grid
         Canvas.SetTop(front, 4);
         swatches.Children.Add(back);
         swatches.Children.Add(front);
-        var swap = Small("⇄", "Swap the foreground and background colors");
-        var reset = Small("↺", "Put them back to black and white");
+        var swap = Small("⇄", "交换前景色与背景色");
+        var reset = Small("↺", "恢复为黑/白");
         swap.Click += (_, _) => ColoursSwapped?.Invoke();
         reset.Click += (_, _) => ColoursReset?.Invoke();
         var row = new StackPanel
@@ -173,7 +173,7 @@ internal sealed class ToolRail : Grid
             BorderThickness = new Thickness(1),
             BorderBrush = new SolidColorBrush(Colors.White, 0.35),
         };
-        ToolTip.SetTip(button, foreground ? "Foreground color" : "Background color");
+        ToolTip.SetTip(button, foreground ? "前景色" : "背景色");
         button.Click += (_, _) => ColourChosen?.Invoke(foreground);
         if (foreground) _front = button;
         else _back = button;
@@ -199,24 +199,24 @@ internal sealed class ToolRail : Grid
     /// <summary>What each button says it is, which is also what the Tools menu calls the tool.</summary>
     private static readonly Dictionary<Tool, string> Names = new()
     {
-        [Tool.Pan] = "Pan — drag to scroll",
-        [Tool.Move] = "Move — drag the layer, or a handle to scale and turn it",
-        [Tool.Marquee] = "Marquee — drag a rectangle",
-        [Tool.Ellipse] = "Elliptical marquee — drag an oval",
-        [Tool.Lasso] = "Lasso — drag round a shape",
-        [Tool.Polygon] = "Polygonal lasso — click each corner",
-        [Tool.Wand] = "Magic wand — click a color",
-        [Tool.Brush] = "Brush",
-        [Tool.Clone] = "Clone stamp — Alt-click a source first",
-        [Tool.Blur] = "Blur brush",
-        [Tool.Liquify] = "Liquify brush — push the pixels around",
-        [Tool.Smudge] = "Smudge brush — drag the color along",
-        [Tool.Heal] = "Spot healing",
-        [Tool.Eyedropper] = "Eyedropper — click the canvas",
-        [Tool.Type] = "Type — click where the text goes",
-        [Tool.Crop] = "Crop — drag a frame, then apply it",
-        [Tool.Shape] = "Shape — drag out a rectangle, ellipse or line",
-        [Tool.Gradient] = "Gradient — drag the line it runs along",
+        [Tool.Pan] = "抓手 —— 拖动画布",
+        [Tool.Move] = "移动 —— 拖动图层，或拖动控制点缩放与旋转",
+        [Tool.Marquee] = "矩形选框 —— 拖出矩形",
+        [Tool.Ellipse] = "椭圆选框 —— 拖出椭圆",
+        [Tool.Lasso] = "套索 —— 沿形状拖动",
+        [Tool.Polygon] = "多边形套索 —— 逐点单击",
+        [Tool.Wand] = "魔棒 —— 点击一个颜色",
+        [Tool.Brush] = "画笔",
+        [Tool.Clone] = "仿制图章 —— 先 Alt 点击取样",
+        [Tool.Blur] = "模糊画笔",
+        [Tool.Liquify] = "液化 —— 推动像素",
+        [Tool.Smudge] = "涂抹 —— 沿方向拖动颜色",
+        [Tool.Heal] = "污点修复画笔",
+        [Tool.Eyedropper] = "吸管 —— 在画布上点击",
+        [Tool.Type] = "横排文字 —— 点击文字位置",
+        [Tool.Crop] = "裁剪 —— 拖出框后应用",
+        [Tool.Shape] = "形状 —— 拖出矩形、椭圆或直线",
+        [Tool.Gradient] = "渐变 —— 拖出渐变方向线",
     };
 
     /// <summary>

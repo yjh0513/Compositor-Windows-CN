@@ -79,7 +79,7 @@ public class LayerMergeTests
 
         var plan = LayerMerge.Plan(document, [top.ID], top.ID);
         Assert.NotNull(plan);
-        Assert.Equal("Merge Down", plan.Action);
+        Assert.Equal("向下合并", plan.Action);
         Assert.Equal(new[] { bottom.ID, top.ID }, plan.Members);
         Assert.Equal("Bottom", plan.Name);
         Assert.Null(plan.Parent);
@@ -148,7 +148,7 @@ public class LayerMergeTests
 
         var plan = LayerMerge.Plan(document, [folder.ID], folder.ID);
         Assert.NotNull(plan);
-        Assert.Equal("Merge Group", plan.Action);
+        Assert.Equal("合并组", plan.Action);
         Assert.Equal(new[] { folder.ID, inside.ID }, plan.Members);
         Assert.Equal("Folder", plan.Name);
 
@@ -178,7 +178,7 @@ public class LayerMergeTests
 
         var plan = LayerMerge.Plan(document, [middle.ID, top.ID], top.ID);
         Assert.NotNull(plan);
-        Assert.Equal("Merge Layers", plan.Action);
+        Assert.Equal("合并图层", plan.Action);
         Assert.Equal(new[] { middle.ID, top.ID }, plan.Members);
         // Named and placed by the topmost layer among the ones selected.
         Assert.Equal("Top", plan.Name);

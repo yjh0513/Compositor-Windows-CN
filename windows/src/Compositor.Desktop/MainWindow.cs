@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Input;
@@ -97,7 +97,7 @@ public sealed class MainWindow : Window
     /// <summary>The clipping, mask and visibility rows, whose names and availability follow the selection.</summary>
     private readonly MenuItem _visibility = new();
     private readonly MenuItem _showGrid = new();
-    private readonly MenuItem _recentMenu = new() { Header = "Open _Recent" };
+    private readonly MenuItem _recentMenu = new() { Header = "打开最近使用的(_R)" };
     private readonly RecentProjects _recent = new(RecentProjects.DefaultPath);
     private readonly MenuItem _snapToCanvas = new();
     private readonly MenuItem _snapToGuides = new();
@@ -146,12 +146,12 @@ public sealed class MainWindow : Window
 
     /// <summary>The blend modes in the order the menu lists them, which is the order the enum declares.</summary>
     private static readonly LayerBlendMode[] BlendModes = Enum.GetValues<LayerBlendMode>();
-    private readonly MenuItem _adjustmentMenu = new() { Header = "New _Adjustment Layer" };
-    private readonly MenuItem _effectsMenu = new() { Header = "Layer _Effects" };
+    private readonly MenuItem _adjustmentMenu = new() { Header = "新建调整图层(_A)" };
+    private readonly MenuItem _effectsMenu = new() { Header = "图层样式(_E)" };
     private MenuItem _adjustmentSettings = new();
     private MenuItem _clearEffects = new();
     private readonly MenuItem _clipping = new();
-    private readonly MenuItem _addMask = new() { Header = "Add _Mask" };
+    private readonly MenuItem _addMask = new() { Header = "添加蒙版(_M)" };
     private readonly MenuItem _maskToggle = new();
     private readonly MenuItem _maskLink = new();
 
@@ -165,13 +165,13 @@ public sealed class MainWindow : Window
     private TextSession? _text;
 
     /// <summary>The Gradient tool's own rows in the Tools menu, which the options bar also shows.</summary>
-    private readonly MenuItem _gradientMenu = new() { Header = "Gradient _options" };
+    private readonly MenuItem _gradientMenu = new() { Header = "渐变选项" };
 
     /// <summary>The Shape tool's own rows in the Tools menu, which the options bar also shows.</summary>
-    private readonly MenuItem _shapeKinds = new() { Header = "Shape _kind" };
+    private readonly MenuItem _shapeKinds = new() { Header = "形状类型" };
 
     /// <summary>The crop frame's shape: the canvas's own, or one of the fixed ratios.</summary>
-    private readonly MenuItem _cropRatios = new() { Header = "Crop _ratio" };
+    private readonly MenuItem _cropRatios = new() { Header = "裁剪比例" };
 
     /// <summary>The crop frame while the Crop tool is in hand; null is the whole canvas.</summary>
     private SKRectI? _cropFrame;
@@ -183,14 +183,14 @@ public sealed class MainWindow : Window
     /// <summary>Whether a brush stroke goes on the active layer's mask instead of its pixels.</summary>
     private readonly MenuItem _paintOnMask = new()
     {
-        Header = "Paint on the layer _mask",
+        Header = "在图层蒙版上绘画(_M)",
         ToggleType = MenuItemToggleType.CheckBox,
     };
 
     /// <summary>Whether the brush paints or erases; on a mask, that is white or black.</summary>
     private readonly MenuItem _eraseToggle = new()
     {
-        Header = "Brush _erases",
+        Header = "画笔擦除",
         ToggleType = MenuItemToggleType.CheckBox,
     };
 
@@ -222,7 +222,7 @@ public sealed class MainWindow : Window
         public int SelectedRow { get; set; }
 
         /// <summary>What the tab is called: the project's name, or what it is until it is saved.</summary>
-        public string Name => Path is { } path ? System.IO.Path.GetFileName(path) : "Untitled";
+        public string Name => Path is { } path ? System.IO.Path.GetFileName(path) : "未命名";
     }
 
     private readonly List<Tab> _tabs = [];
@@ -380,10 +380,10 @@ public sealed class MainWindow : Window
         _grid = _tools.Grid();
         _gridVisible = _tools.ShowGrid;
         _canvas.Grid = _gridVisible ? _grid : null;
-        _showGrid.Header = _gridVisible ? "_Hide Grid" : "Show _Grid";
+        _showGrid.Header = _gridVisible ? "隐藏网格(_H)" : "显示网格(_G)";
         _showGrid.Click += (_, _) => ShowGrid();
         _rulersVisible = _tools.ShowRulers;
-        _showRulers.Header = "R_ulers";
+        _showRulers.Header = "标尺(_U)";
         _showRulers.ToggleType = MenuItemToggleType.CheckBox;
         _showRulers.IsChecked = _rulersVisible;
         _showRulers.Click += (_, _) => ShowRulers();
@@ -392,11 +392,11 @@ public sealed class MainWindow : Window
         _transformShown = _tools.ShowTransformControls;
         _pixelGridShown = _tools.PixelGrid;
         _snappingOn = _tools.Snapping;
-        Toggle("_Guides", _showGuides, _guidesVisible, () => ShowGuides());
-        Toggle("_Lock Guides", _lockGuides, _guidesLocked, () => LockGuides());
-        Toggle("Show _Transform Controls", _showTransform, _transformShown, () => ShowTransformControls());
-        Toggle("_Pixel Grid (800% and above)", _pixelGrid, _pixelGridShown, () => ShowPixelGrid());
-        Toggle("S_nap", _snapping, _snappingOn, () => ShowSnapping());
+        Toggle("参考线(_G)", _showGuides, _guidesVisible, () => ShowGuides());
+        Toggle("锁定参考线(_L)", _lockGuides, _guidesLocked, () => LockGuides());
+        Toggle("显示变换控件(_T)", _showTransform, _transformShown, () => ShowTransformControls());
+        Toggle("像素网格(800% 及以上)(_P)", _pixelGrid, _pixelGridShown, () => ShowPixelGrid());
+        Toggle("对齐(_N)", _snapping, _snappingOn, () => ShowSnapping());
         PushViewSwitches();
         _canvas.ViewportChanged = UpdateRulers;
         foreach (var (item, flag, label) in SnapRows())
@@ -411,8 +411,8 @@ public sealed class MainWindow : Window
         _clipping.Click += (_, _) => ToggleClipping();
         _maskToggle.Click += (_, _) => ToggleMask();
         _maskLink.Click += (_, _) => ToggleMaskLink();
-        _addMask.Items.Add(Command("_Reveal All (White)", () => AddMask(revealing: true)));
-        _addMask.Items.Add(Command("_Hide All (Black)", () => AddMask(revealing: false)));
+        _addMask.Items.Add(Command("全部显示(白)(_R)", () => AddMask(revealing: true)));
+        _addMask.Items.Add(Command("全部隐藏(黑)(_H)", () => AddMask(revealing: false)));
         _layers.SelectionChanged += (_, _) => UpdateLayerMenu();
         _tabs.Add(_open);
         Content = Layout();
@@ -430,7 +430,7 @@ public sealed class MainWindow : Window
         // it would either fire twice or fire on a key the table no longer holds. One handler, one table.
         AddHandler(KeyDownEvent, KeyPressed, RoutingStrategies.Tunnel);
         AddHandler(KeyUpEvent, KeyLetGo, RoutingStrategies.Tunnel);
-        Say("File ▸ New Project… for a blank canvas, or File ▸ Open project folder… to load a .comp");
+        Say("文件 ▸ 新建项目… 新建空白画布，或 文件 ▸ 打开项目文件夹… 载入 .comp");
     }
 
     private Control Layout()
@@ -441,78 +441,78 @@ public sealed class MainWindow : Window
             {
                 new MenuItem
                 {
-                    Header = "_File",
+                    Header = "文件(_F)",
                     Items =
                     {
-                        Command("_New Project…", () => _ = NewProject(), "New Project"),
-                        Command("_Open project folder…", OpenProject, "Open Project"),
+                        Command("新建项目(_N)…", () => _ = NewProject(), "新建项目"),
+                        Command("打开项目文件夹(_O)…", OpenProject, "打开项目"),
                         _recentMenu,
-                        Command("_Import image…", () => _ = ImportImage()),
-                        Command("_Save", Save, "Save"),
-                        Command("Save _As…", SaveAs, "Save As"),
+                        Command("导入图像(_I)…", () => _ = ImportImage()),
+                        Command("存储(_S)", Save, "存储"),
+                        Command("存储为(_A)…", SaveAs, "存储为"),
                         new Separator(),
-                        Command("_Export PNG…", ExportPng, "Export PNG"),
-                        Command("Export _JPEG…", () => _ = ExportJpeg(), "Export JPEG"),
+                        Command("导出 PNG(_E)…", ExportPng, "导出 PNG"),
+                        Command("导出 JPEG(_J)…", () => _ = ExportJpeg(), "导出 JPEG"),
                         new Separator(),
-                        Command("_Close Tab", () => _ = CloseTab(_open), "Close Tab"),
-                        Command("E_xit", Close),
+                        Command("关闭标签页(_C)", () => _ = CloseTab(_open), "关闭标签页"),
+                        Command("退出(_X)", Close),
                     },
                 },
                 new MenuItem
                 {
-                    Header = "_Edit",
+                    Header = "编辑(_E)",
                     Items =
                     {
-                        Command("_Undo", Undo, "Undo"),
-                        Command("_Redo", Redo, "Redo"),
+                        Command("还原(_U)", Undo, "还原"),
+                        Command("重做(_R)", Redo, "重做"),
                         new Separator(),
-                        Command("Cu_t", Cut, "Cut"),
-                        Command("_Copy", Copy, "Copy"),
-                        Command("Copy _Merged", CopyMerged, "Copy Merged"),
-                        Command("_Paste", Paste, "Paste"),
-                        Command("Layer via Cop_y", LayerViaCopy, "Layer via Copy"),
+                        Command("剪切(_T)", Cut, "剪切"),
+                        Command("拷贝(_C)", Copy, "拷贝"),
+                        Command("合并拷贝(_M)", CopyMerged, "合并拷贝"),
+                        Command("粘贴(_P)", Paste, "粘贴"),
+                        Command("通过拷贝的图层(_Y)", LayerViaCopy, "通过拷贝的图层"),
                         new Separator(),
-                        Command("Fill with _Foreground Color", () => FillPixels(BrushColour(), "Fill"),
-                            "Fill with Foreground Color"),
-                        Command("Fill with _Background Color", () => FillPixels(BackgroundColour(), "Fill"),
-                            "Fill with Background Color"),
-                        Command("_Clear Selection Pixels", ClearPixels),
+                        Command("填充前景色(_F)", () => FillPixels(BrushColour(), "Fill"),
+                            "填充前景色"),
+                        Command("填充背景色(_B)", () => FillPixels(BackgroundColour(), "Fill"),
+                            "填充背景色"),
+                        Command("清除选区内像素(_C)", ClearPixels),
                         new Separator(),
-                        Command("Flip Layer _Horizontal", () => Flip(horizontal: true, canvas: false)),
-                        Command("Flip Layer _Vertical", () => Flip(horizontal: false, canvas: false)),
-                        Command("Flip _Canvas Horizontal", () => Flip(horizontal: true, canvas: true)),
-                        Command("Flip Canvas _Vertical", () => Flip(horizontal: false, canvas: true)),
+                        Command("水平翻转图层(_H)", () => Flip(horizontal: true, canvas: false)),
+                        Command("垂直翻转图层(_V)", () => Flip(horizontal: false, canvas: false)),
+                        Command("水平翻转画布(_C)", () => Flip(horizontal: true, canvas: true)),
+                        Command("垂直翻转画布(_V)", () => Flip(horizontal: false, canvas: true)),
                         new Separator(),
-                        Command("_Keyboard Shortcuts…", () => _ = KeyboardShortcuts()),
+                        Command("键盘快捷键(_K)…", () => _ = KeyboardShortcuts()),
                     },
                 },
                 new MenuItem
                 {
-                    Header = "_Layer",
+                    Header = "图层(_L)",
                     Items =
                     {
-                        LayerCommand("_Duplicate Layer", DuplicateLayer, "Duplicate Layer"),
-                        LayerCommand("_Rename Layer…", () => _ = RenameLayer(), "Rename Layer"),
-                        LayerCommand("_Delete Layer", DeleteLayer, "Delete Layer"),
+                        LayerCommand("复制图层(_D)", DuplicateLayer, "复制图层"),
+                        LayerCommand("重命名图层(_R)…", () => _ = RenameLayer(), "重命名图层"),
+                        LayerCommand("删除图层(_D)", DeleteLayer, "删除图层"),
                         new Separator(),
-                        LayerCommand("Move Layer _Up", () => MoveLayer(1), "Move Layer Up"),
-                        LayerCommand("Move Layer _Down", () => MoveLayer(-1), "Move Layer Down"),
+                        LayerCommand("向上移动图层(_U)", () => MoveLayer(1), "向上移动图层"),
+                        LayerCommand("向下移动图层(_D)", () => MoveLayer(-1), "向下移动图层"),
                         new Separator(),
                         _clipping,
-                        LayerCommand("_Group Selected Layers", GroupSelected, "Group Layers",
+                        LayerCommand("对所选图层编组(_G)", GroupSelected, "图层编组",
                             (document, layer) => document.Layers.Count < LayerPlacement.MaxLayers),
-                        LayerCommand("Move _Out of Folder", MoveOutOfFolder, null,
+                        LayerCommand("移出组(_O)", MoveOutOfFolder, null,
                             (_, layer) => layer.ParentID is not null),
                         _merge,
                         new Separator(),
                         _addMask,
                         _maskToggle,
-                        LayerCommand("_Delete Mask", DeleteMask, null, (_, layer) => layer.Mask is not null),
-                        LayerCommand("Edit _Text…", () => _ = EditText(), null, (_, layer) => layer.Text is not null),
+                        LayerCommand("删除蒙版(_D)", DeleteMask, null, (_, layer) => layer.Mask is not null),
+                        LayerCommand("编辑文字(_T)…", () => _ = EditText(), null, (_, layer) => layer.Text is not null),
                         _maskLink,
                         new Separator(),
-                        LayerCommand("New Blank Layer", NewBlankLayer, "New Blank Layer"),
-                        LayerCommand("New F_older", NewFolder, null,
+                        LayerCommand("新建空白图层", NewBlankLayer, "新建空白图层"),
+                        LayerCommand("新建组(_O)", NewFolder, null,
                             (document, _) => document.Layers.Count < LayerPlacement.MaxLayers),
                         _adjustmentMenu,
                         _adjustmentSettings,
@@ -523,80 +523,80 @@ public sealed class MainWindow : Window
                 },
                 new MenuItem
                 {
-                    Header = "_Image",
+                    Header = "图像(_I)",
                     Items =
                     {
-                        Command("_Hue/Saturation…", () => _ = ImageAdjustment(AdjustmentKind.HueSaturation),
-                            "Hue/Saturation"),
-                        Command("_Levels…", () => _ = ImageAdjustment(AdjustmentKind.Levels), "Levels"),
+                        Command("色相/饱和度(_H)…", () => _ = ImageAdjustment(AdjustmentKind.HueSaturation),
+                            "色相/饱和度"),
+                        Command("色阶(_L)…", () => _ = ImageAdjustment(AdjustmentKind.Levels), "色阶"),
                         new MenuItem
                         {
-                            Header = "_Auto Levels",
+                            Header = "自动色阶(_A)",
                             Items =
                             {
-                                Command("Auto _Contrast", () => AutoLevels(LevelsAuto.Contrast)),
-                                Command("Auto C_olour", () => AutoLevels(LevelsAuto.Color)),
-                                Command("Auto Color + Neutral _Midtones", () => AutoLevels(LevelsAuto.Neutral)),
+                                Command("自动对比度(_C)", () => AutoLevels(LevelsAuto.Contrast)),
+                                Command("自动颜色(_O)", () => AutoLevels(LevelsAuto.Color)),
+                                Command("自动颜色 + 中和中间调(_M)", () => AutoLevels(LevelsAuto.Neutral)),
                             },
                         },
-                        Command("C_urves…", () => _ = ImageAdjustment(AdjustmentKind.Curves), "Curves"),
-                        Command("_Exposure…", () => _ = ImageAdjustment(AdjustmentKind.Exposure)),
-                        Command("Black & _White…", () => _ = ImageAdjustment(AdjustmentKind.BlackWhite)),
-                        Command("_Gradient Map…", () => _ = ImageAdjustment(AdjustmentKind.GradientMap)),
-                        Command("C_olor Balance…", () => _ = ImageAdjustment(AdjustmentKind.ColorBalance)),
+                        Command("曲线(_U)…", () => _ = ImageAdjustment(AdjustmentKind.Curves), "曲线"),
+                        Command("曝光度(_E)…", () => _ = ImageAdjustment(AdjustmentKind.Exposure)),
+                        Command("黑白(_W)…", () => _ = ImageAdjustment(AdjustmentKind.BlackWhite)),
+                        Command("渐变映射(_G)…", () => _ = ImageAdjustment(AdjustmentKind.GradientMap)),
+                        Command("色彩平衡(_O)…", () => _ = ImageAdjustment(AdjustmentKind.ColorBalance)),
                         new Separator(),
-                        Command("_Grain…", () => _ = ImageAdjustment(AdjustmentKind.Grain)),
-                        Command("_Invert", () => _ = ImageAdjustment(AdjustmentKind.Invert), "Invert"),
+                        Command("颗粒(_G)…", () => _ = ImageAdjustment(AdjustmentKind.Grain)),
+                        Command("反相(_I)", () => _ = ImageAdjustment(AdjustmentKind.Invert), "反相"),
                         new Separator(),
-                        Command("_Canvas Size…", () => _ = CanvasSize(), "Canvas Size"),
-                        Command("_Image Size…", () => _ = ImageSize(), "Image Size"),
-                        Command("_Trim…", () => _ = Trim()),
+                        Command("画布大小(_C)…", () => _ = CanvasSize(), "画布大小"),
+                        Command("图像大小(_I)…", () => _ = ImageSize(), "图像大小"),
+                        Command("裁切(_T)…", () => _ = Trim()),
                     },
                 },
                 new MenuItem
                 {
-                    Header = "_Filter",
+                    Header = "滤镜(_T)",
                     Items =
                     {
-                        Command("_Camera Raw Filter…", CameraRawFilter),
+                        Command("Camera Raw 滤镜(_C)…", CameraRawFilter),
                         new Separator(),
-                        Command("_Gaussian Blur…", () => _ = ApplyFilter(FilterKind.GaussianBlur)),
-                        Command("_Motion Blur…", () => _ = ApplyFilter(FilterKind.MotionBlur)),
-                        Command("Add _Noise…", () => _ = ApplyFilter(FilterKind.AddNoise)),
-                        Command("_Bloom / Glow…", () => _ = ApplyFilter(FilterKind.BloomGlow)),
-                        Command("_Dither…", () => _ = DitherFilter()),
+                        Command("高斯模糊(_G)…", () => _ = ApplyFilter(FilterKind.GaussianBlur)),
+                        Command("动感模糊(_M)…", () => _ = ApplyFilter(FilterKind.MotionBlur)),
+                        Command("添加杂色(_N)…", () => _ = ApplyFilter(FilterKind.AddNoise)),
+                        Command("泛光/辉光(_B)…", () => _ = ApplyFilter(FilterKind.BloomGlow)),
+                        Command("抖动(_D)…", () => _ = DitherFilter()),
                         new Separator(),
-                        Command("_Content-Aware Fill", ContentAwareFill, "Content-Aware Fill"),
+                        Command("内容识别填充(_C)", ContentAwareFill, "内容识别填充"),
                         new Separator(),
-                        Command("_Vignette…", () => _ = ApplyFilter(FilterKind.Vignette)),
-                        Command("_Tonal Contrast…", () => _ = ApplyFilter(FilterKind.TonalContrast)),
-                        Command("Lens _Correction…", () => _ = ApplyFilter(FilterKind.LensCorrection)),
+                        Command("暗角(_V)…", () => _ = ApplyFilter(FilterKind.Vignette)),
+                        Command("色调对比度(_T)…", () => _ = ApplyFilter(FilterKind.TonalContrast)),
+                        Command("镜头校正(_C)…", () => _ = ApplyFilter(FilterKind.LensCorrection)),
                     },
                 },
                 new MenuItem
                 {
-                    Header = "_Tools",
+                    Header = "工具(_O)",
                     Items =
                     {
-                        ToolItem("_Pan (drag to scroll)", Tool.Pan, "Hand tool"),
-                        ToolItem("_Move (drag the layer; Ctrl-drag a corner to distort it)", Tool.Move,
-                            "Move / Transform tool"),
-                        ToolItem("Marquee (_rectangular selection)", Tool.Marquee, "Marquee tool"),
-                        ToolItem("_Elliptical marquee", Tool.Ellipse),
-                        ToolItem("_Lasso (freehand)", Tool.Lasso, "Lasso tool"),
-                        ToolItem("_Polygonal lasso (click each corner)", Tool.Polygon),
-                        ToolItem("Magic _wand (click a color)", Tool.Wand, "Magic wand"),
-                        ToolItem("_Brush", Tool.Brush, "Brush tool"),
-                        ToolItem("_Clone stamp (Alt-click a source first)", Tool.Clone, "Clone Stamp"),
-                        ToolItem("Blur brush", Tool.Blur, "Blur / Smudge / Liquify"),
-                        ToolItem("_Liquify brush (push the pixels around)", Tool.Liquify),
-                        ToolItem("S_mudge brush (drag the color along)", Tool.Smudge),
-                        ToolItem("Spot _healing", Tool.Heal, "Spot Healing"),
-                        ToolItem("_Eyedropper (click the canvas)", Tool.Eyedropper, "Eyedropper tool"),
-                        ToolItem("_Type (click where the text goes)", Tool.Type, "Type tool"),
-                        ToolItem("_Crop (drag a frame, then apply it)", Tool.Crop, "Crop tool"),
-                        ToolItem("_Shape (drag out a rectangle, ellipse or line)", Tool.Shape, "Shape tool"),
-                        ToolItem("_Gradient (drag the line it runs along)", Tool.Gradient, "Gradient tool"),
+                        ToolItem("抓手(_H)", Tool.Pan, "抓手工具"),
+                        ToolItem("移动(_V)(拖动图层；Ctrl 拖动角点可变形)", Tool.Move,
+                            "移动/变换工具"),
+                        ToolItem("矩形选框(_M)", Tool.Marquee, "选框工具"),
+                        ToolItem("椭圆选框(_E)", Tool.Ellipse),
+                        ToolItem("套索(_L)", Tool.Lasso, "套索工具"),
+                        ToolItem("多边形套索(_P)", Tool.Polygon),
+                        ToolItem("魔棒(_W)", Tool.Wand, "魔棒"),
+                        ToolItem("画笔(_B)", Tool.Brush, "画笔工具"),
+                        ToolItem("仿制图章(_S)", Tool.Clone, "仿制图章"),
+                        ToolItem("模糊画笔", Tool.Blur, "模糊/涂抹/液化"),
+                        ToolItem("液化(_Q)", Tool.Liquify),
+                        ToolItem("涂抹(_M)", Tool.Smudge),
+                        ToolItem("污点修复画笔(_J)", Tool.Heal, "污点修复画笔"),
+                        ToolItem("吸管(_I)", Tool.Eyedropper, "吸管工具"),
+                        ToolItem("横排文字(_T)", Tool.Type, "文字工具"),
+                        ToolItem("裁剪(_C)", Tool.Crop, "裁剪工具"),
+                        ToolItem("形状(_U)", Tool.Shape, "形状工具"),
+                        ToolItem("渐变(_G)", Tool.Gradient, "渐变工具"),
                         new Separator(),
                         _gradientMenu,
                         new Separator(),
@@ -609,49 +609,49 @@ public sealed class MainWindow : Window
                         new Separator(),
                         new MenuItem
                         {
-                            Header = "_Brush settings",
+                            Header = "画笔设置(_B)",
                             Items =
                             {
-                                Command("_Size…", () => _ = SetBrush(BrushSetting.Size)),
-                                Command("_Hardness…", () => _ = SetBrush(BrushSetting.Hardness)),
-                                Command("_Opacity…", () => _ = SetBrush(BrushSetting.Opacity)),
-                                Command("_Color…", () => _ = SetBrush(BrushSetting.Colour)),
+                                Command("大小(_S)…", () => _ = SetBrush(BrushSetting.Size)),
+                                Command("硬度(_H)…", () => _ = SetBrush(BrushSetting.Hardness)),
+                                Command("不透明度(_O)…", () => _ = SetBrush(BrushSetting.Opacity)),
+                                Command("颜色(_C)…", () => _ = SetBrush(BrushSetting.Colour)),
                                 new Separator(),
-                                Command("Spot healing: _Content-Aware", () => Heal(HealingMode.ContentAware)),
-                                Command("Spot healing: Create _Texture", () => Heal(HealingMode.CreateTexture)),
-                                Command("Spot healing: Proximity _Match", () => Heal(HealingMode.ProximityMatch)),
+                                Command("污点修复: 内容识别(_C)", () => Heal(HealingMode.ContentAware)),
+                                Command("污点修复: 创建纹理(_T)", () => Heal(HealingMode.CreateTexture)),
+                                Command("污点修复: 近似匹配(_M)", () => Heal(HealingMode.ProximityMatch)),
                             },
                         },
                     },
                 },
                 new MenuItem
                 {
-                    Header = "_Select",
+                    Header = "选择(_S)",
                     Items =
                     {
-                        Command("Select _All", () => Change("Select All", SelectionEdits.SelectAll), "Select All"),
-                        Command("_Deselect", Deselect, "Deselect"),
-                        Command("_Inverse", () => Change("Inverse", SelectionEdits.Invert), "Inverse Selection"),
+                        Command("全选(_A)", () => Change("全选", SelectionEdits.SelectAll), "全选"),
+                        Command("取消选择(_D)", Deselect, "取消选择"),
+                        Command("反选(_I)", () => Change("Inverse", SelectionEdits.Invert), "反选"),
                         new Separator(),
-                        Command("_Expand…", () => _ = ModifySelection(SelectionAmount.Expand)),
-                        Command("_Contract…", () => _ = ModifySelection(SelectionAmount.Contract)),
-                        Command("_Feather…", () => _ = ModifySelection(SelectionAmount.Feather)),
+                        Command("扩展(_E)…", () => _ = ModifySelection(SelectionAmount.Expand)),
+                        Command("收缩(_C)…", () => _ = ModifySelection(SelectionAmount.Contract)),
+                        Command("羽化(_F)…", () => _ = ModifySelection(SelectionAmount.Feather)),
                         new Separator(),
-                        Command("Layer's _Pixels", SelectLayerPixels),
-                        Command("_Mask's Black Areas", SelectMaskBlack),
+                        Command("图层的像素(_P)", SelectLayerPixels),
+                        Command("蒙版的黑色区域(_M)", SelectMaskBlack),
                         new Separator(),
-                        Command("Color _Range…", ColorRange),
+                        Command("色彩范围(_R)…", ColorRange),
                     },
                 },
                 new MenuItem
                 {
-                    Header = "_View",
+                    Header = "视图(_V)",
                     Items =
                     {
-                        Command("Zoom _in", () => { _canvas.ZoomBy(1.25); Say(); }, "Zoom In"),
-                        Command("Zoom _out", () => { _canvas.ZoomBy(1 / 1.25); Say(); }, "Zoom Out"),
-                        Command("_Fit on screen", () => { _canvas.Fit(); Say(); }, "Fit Canvas"),
-                        Command("Actual _pixels", () => { _canvas.ActualSize(); Say(); }, "Actual Pixels"),
+                        Command("放大(_I)", () => { _canvas.ZoomBy(1.25); Say(); }, "放大"),
+                        Command("缩小(_O)", () => { _canvas.ZoomBy(1 / 1.25); Say(); }, "缩小"),
+                        Command("适合屏幕(_F)", () => { _canvas.Fit(); Say(); }, "适合画布"),
+                        Command("实际像素(_P)", () => { _canvas.ActualSize(); Say(); }, "实际像素"),
                         new Separator(),
                         _showGrid,
                         _showRulers,
@@ -660,22 +660,22 @@ public sealed class MainWindow : Window
                         _showTransform,
                         _pixelGrid,
                         _snapping,
-                        Command("_Grid Settings…", () => _ = GridSettings()),
+                        Command("网格设置(_G)…", () => _ = GridSettings()),
                         _snapToCanvas,
                         _snapToGuides,
                         _snapToLayers,
                         _snapToGrid,
                         new Separator(),
-                        Command("New _Guide…", () => _ = NewGuide(), "New Guide"),
-                        Command("_Clear Guides", ClearGuides),
+                        Command("新建参考线(_G)…", () => _ = NewGuide(), "新建参考线"),
+                        Command("清除参考线(_C)", ClearGuides),
                     },
                 },
                 new MenuItem
                 {
-                    Header = "_Help",
+                    Header = "帮助(_H)",
                     Items =
                     {
-                        Command("_Check for Updates…", () => _ = CheckForUpdates()),
+                        Command("检查更新(_C)…", () => _ = CheckForUpdates()),
                     },
                 },
             },
@@ -684,7 +684,7 @@ public sealed class MainWindow : Window
         var layers = new DockPanel();
         layers.Children.Add(new TextBlock
         {
-            Text = "Layers",
+            Text = "图层",
             Margin = new Thickness(10, 8, 10, 6),
             Foreground = Ink,
             FontWeight = FontWeight.SemiBold,
@@ -745,7 +745,7 @@ public sealed class MainWindow : Window
     private Control Toolbar()
     {
         var add = new Button { Content = "＋", Padding = new Thickness(8, 0, 8, 0) };
-        ToolTip.SetTip(add, "New canvas");
+        ToolTip.SetTip(add, "新建画布");
         add.Click += (_, _) => _ = NewProject();
         var zooms = new StackPanel
         {
@@ -753,10 +753,10 @@ public sealed class MainWindow : Window
             Spacing = 4,
             Children =
             {
-                ViewButton("Fit", "Fit the canvas in the window", () => _canvas.Fit()),
-                ViewButton("100%", "Show the canvas at actual pixels", () => _canvas.ActualSize()),
-                ViewButton("−", "Zoom out", () => _canvas.ZoomBy(1 / 1.25)),
-                ViewButton("＋", "Zoom in", () => _canvas.ZoomBy(1.25)),
+                ViewButton("适合", "使画布适合窗口", () => _canvas.Fit()),
+                ViewButton("100%", "以实际像素显示画布", () => _canvas.ActualSize()),
+                ViewButton("−", "缩小", () => _canvas.ZoomBy(1 / 1.25)),
+                ViewButton("＋", "放大", () => _canvas.ZoomBy(1.25)),
             },
         };
         var bar = new DockPanel();
@@ -882,14 +882,14 @@ public sealed class MainWindow : Window
     {
         foreach (var (item, key) in new (MenuItem, string)[]
                  {
-                     (_showGrid, "Show Grid"),
-                     (_showRulers, "Show Rulers"),
-                     (_showGuides, "Show Guides"),
-                     (_lockGuides, "Lock Guides"),
-                     (_showTransform, "Show Transform Controls"),
-                     (_snapping, "Snap"),
-                     (_merge, "Merge Layers"),
-                     (_clipping, "Toggle Clipping Mask"),
+                     (_showGrid, "显示网格"),
+                     (_showRulers, "显示标尺"),
+                     (_showGuides, "显示参考线"),
+                     (_lockGuides, "锁定参考线"),
+                     (_showTransform, "显示变换控件"),
+                     (_snapping, "对齐"),
+                     (_merge, "合并图层"),
+                     (_clipping, "切换剪切蒙版"),
                  })
         {
             ShowKey(item, key);
@@ -923,7 +923,7 @@ public sealed class MainWindow : Window
         }
         if (unknown > 0)
         {
-            Say($"{unknown} shortcut rows name a key this build does not know, so they are not in force");
+            Say($"有 {unknown} 行快捷键使用了本版无法识别的按键，因此未生效");
         }
     }
 
@@ -995,99 +995,99 @@ public sealed class MainWindow : Window
         void When(string title, Func<bool> action, string group = Shortcuts.Menus) =>
             _verbs[$"{group}:{title}"] = _ => action();
 
-        Does("Undo", Undo);
-        Does("Redo", Redo);
-        Does("New Project", () => _ = NewProject());
-        Does("Open Project", OpenProject);
-        Does("Save", Save);
-        Does("Save As", SaveAs);
-        Does("Export PNG", ExportPng);
-        Does("Export JPEG", () => _ = ExportJpeg());
-        Does("Close Tab", () => _ = CloseTab(_open));
-        Does("Fit Canvas", () => { _canvas.Fit(); Say(); });
-        Does("Actual Pixels", () => { _canvas.ActualSize(); Say(); });
-        Does("Zoom In", () => { _canvas.ZoomBy(1.25); Say(); });
-        Does("Zoom Out", () => { _canvas.ZoomBy(1 / 1.25); Say(); });
-        Does("Show Transform Controls", ShowTransformControls);
-        Does("Cut", Cut);
-        Does("Copy", Copy);
-        Does("Copy Merged", CopyMerged);
-        Does("Paste", Paste);
-        Does("Fill with Foreground Color", () => FillPixels(BrushColour(), "Fill"));
-        Does("Fill with Background Color", () => FillPixels(BackgroundColour(), "Fill"));
-        Does("Content-Aware Fill", ContentAwareFill);
-        Does("Select All", () => Change("Select All", SelectionEdits.SelectAll));
-        Does("Deselect", Deselect);
-        Does("Inverse Selection", () => Change("Inverse", SelectionEdits.Invert));
-        Does("Curves", () => _ = ImageAdjustment(AdjustmentKind.Curves));
-        Does("Levels", () => _ = ImageAdjustment(AdjustmentKind.Levels));
-        Does("Hue/Saturation", () => _ = ImageAdjustment(AdjustmentKind.HueSaturation));
-        Does("Invert", () => _ = ImageAdjustment(AdjustmentKind.Invert));
-        Does("Canvas Size", () => _ = CanvasSize());
-        Does("Image Size", () => _ = ImageSize());
-        Does("Layer via Copy", LayerViaCopy);
-        Does("Duplicate Layer", DuplicateLayer);
-        Does("Toggle Clipping Mask", ToggleClipping);
-        Does("Group Layers", GroupSelected);
-        Does("Merge Layers", MergeLayers);
-        Does("New Blank Layer", NewBlankLayer);
-        Does("Move Layer Up", () => MoveLayer(1));
-        Does("Move Layer Down", () => MoveLayer(-1));
-        Does("Rename Layer", () => _ = RenameLayer());
-        Does("Delete Layer", DeleteLayer);
-        Does("Show Grid", ShowGrid);
-        Does("Show Rulers", ShowRulers);
-        Does("Show Guides", ShowGuides);
-        Does("Lock Guides", LockGuides);
-        Does("Snap", ShowSnapping);
-        Does("New Guide", () => _ = NewGuide());
+        Does("还原", Undo);
+        Does("重做", Redo);
+        Does("新建项目", () => _ = NewProject());
+        Does("打开项目", OpenProject);
+        Does("存储", Save);
+        Does("存储为", SaveAs);
+        Does("导出 PNG", ExportPng);
+        Does("导出 JPEG", () => _ = ExportJpeg());
+        Does("关闭标签页", () => _ = CloseTab(_open));
+        Does("适合画布", () => { _canvas.Fit(); Say(); });
+        Does("实际像素", () => { _canvas.ActualSize(); Say(); });
+        Does("放大", () => { _canvas.ZoomBy(1.25); Say(); });
+        Does("缩小", () => { _canvas.ZoomBy(1 / 1.25); Say(); });
+        Does("显示变换控件", ShowTransformControls);
+        Does("剪切", Cut);
+        Does("拷贝", Copy);
+        Does("合并拷贝", CopyMerged);
+        Does("粘贴", Paste);
+        Does("填充前景色", () => FillPixels(BrushColour(), "Fill"));
+        Does("填充背景色", () => FillPixels(BackgroundColour(), "Fill"));
+        Does("内容识别填充", ContentAwareFill);
+        Does("全选", () => Change("全选", SelectionEdits.SelectAll));
+        Does("取消选择", Deselect);
+        Does("反选", () => Change("Inverse", SelectionEdits.Invert));
+        Does("曲线", () => _ = ImageAdjustment(AdjustmentKind.Curves));
+        Does("色阶", () => _ = ImageAdjustment(AdjustmentKind.Levels));
+        Does("色相/饱和度", () => _ = ImageAdjustment(AdjustmentKind.HueSaturation));
+        Does("反相", () => _ = ImageAdjustment(AdjustmentKind.Invert));
+        Does("画布大小", () => _ = CanvasSize());
+        Does("图像大小", () => _ = ImageSize());
+        Does("通过拷贝的图层", LayerViaCopy);
+        Does("复制图层", DuplicateLayer);
+        Does("切换剪切蒙版", ToggleClipping);
+        Does("图层编组", GroupSelected);
+        Does("合并图层", MergeLayers);
+        Does("新建空白图层", NewBlankLayer);
+        Does("向上移动图层", () => MoveLayer(1));
+        Does("向下移动图层", () => MoveLayer(-1));
+        Does("重命名图层", () => _ = RenameLayer());
+        Does("删除图层", DeleteLayer);
+        Does("显示网格", ShowGrid);
+        Does("显示标尺", ShowRulers);
+        Does("显示参考线", ShowGuides);
+        Does("锁定参考线", LockGuides);
+        Does("对齐", ShowSnapping);
+        Does("新建参考线", () => _ = NewGuide());
 
         // The tools. A letter that stands for a family — the two marquees, the three brushes — walks the family
         // when it is pressed again, which is what the Mac build's own letters do.
-        Does("Hand tool", () => SetTool(Tool.Pan), Shortcuts.Canvas);
-        Does("Move / Transform tool", () => SetTool(Tool.Move), Shortcuts.Canvas);
-        Does("Marquee tool", () => ChooseTool(Tool.Marquee, Tool.Ellipse), Shortcuts.Canvas);
-        Does("Lasso tool", () => ChooseTool(Tool.Lasso, Tool.Polygon), Shortcuts.Canvas);
-        Does("Magic wand", () => SetTool(Tool.Wand), Shortcuts.Canvas);
-        Does("Brush tool", () => SetTool(Tool.Brush), Shortcuts.Canvas);
-        Does("Clone Stamp", () => SetTool(Tool.Clone), Shortcuts.Canvas);
-        Does("Blur / Smudge / Liquify", () => ChooseTool(Tool.Blur, Tool.Smudge, Tool.Liquify), Shortcuts.Canvas);
-        Does("Spot Healing", () => SetTool(Tool.Heal), Shortcuts.Canvas);
-        Does("Eyedropper tool", () => SetTool(Tool.Eyedropper), Shortcuts.Canvas);
-        Does("Type tool", () => SetTool(Tool.Type), Shortcuts.Canvas);
-        Does("Crop tool", () => SetTool(Tool.Crop), Shortcuts.Canvas);
-        Does("Shape tool", () => SetTool(Tool.Shape), Shortcuts.Canvas);
-        Does("Gradient tool", () => SetTool(Tool.Gradient), Shortcuts.Canvas);
-        Does("Swap foreground/background", SwapColours, Shortcuts.Canvas);
-        Does("Reset colors", ResetColours, Shortcuts.Canvas);
-        When("Temporary Hand tool (hold)", TakeHand, Shortcuts.Canvas);
-        When("Decrease brush size", () => StepBrushSize(false), Shortcuts.Canvas);
-        When("Increase brush size", () => StepBrushSize(true), Shortcuts.Canvas);
-        When("Decrease brush hardness", () => StepBrushHardness(false), Shortcuts.Canvas);
-        When("Increase brush hardness", () => StepBrushHardness(true), Shortcuts.Canvas);
-        When("Previous blend mode", () => StepBlend(-1), Shortcuts.Canvas);
-        When("Next blend mode", () => StepBlend(1), Shortcuts.Canvas);
-        When("Cycle shape kind", CycleShapeKind, Shortcuts.Canvas);
+        Does("抓手工具", () => SetTool(Tool.Pan), Shortcuts.Canvas);
+        Does("移动/变换工具", () => SetTool(Tool.Move), Shortcuts.Canvas);
+        Does("选框工具", () => ChooseTool(Tool.Marquee, Tool.Ellipse), Shortcuts.Canvas);
+        Does("套索工具", () => ChooseTool(Tool.Lasso, Tool.Polygon), Shortcuts.Canvas);
+        Does("魔棒", () => SetTool(Tool.Wand), Shortcuts.Canvas);
+        Does("画笔工具", () => SetTool(Tool.Brush), Shortcuts.Canvas);
+        Does("仿制图章", () => SetTool(Tool.Clone), Shortcuts.Canvas);
+        Does("模糊/涂抹/液化", () => ChooseTool(Tool.Blur, Tool.Smudge, Tool.Liquify), Shortcuts.Canvas);
+        Does("污点修复画笔", () => SetTool(Tool.Heal), Shortcuts.Canvas);
+        Does("吸管工具", () => SetTool(Tool.Eyedropper), Shortcuts.Canvas);
+        Does("文字工具", () => SetTool(Tool.Type), Shortcuts.Canvas);
+        Does("裁剪工具", () => SetTool(Tool.Crop), Shortcuts.Canvas);
+        Does("形状工具", () => SetTool(Tool.Shape), Shortcuts.Canvas);
+        Does("渐变工具", () => SetTool(Tool.Gradient), Shortcuts.Canvas);
+        Does("交换前景色/背景色", SwapColours, Shortcuts.Canvas);
+        Does("复位颜色", ResetColours, Shortcuts.Canvas);
+        When("临时抓手工具(按住)", TakeHand, Shortcuts.Canvas);
+        When("减小画笔大小", () => StepBrushSize(false), Shortcuts.Canvas);
+        When("增大画笔大小", () => StepBrushSize(true), Shortcuts.Canvas);
+        When("减小画笔硬度", () => StepBrushHardness(false), Shortcuts.Canvas);
+        When("增大画笔硬度", () => StepBrushHardness(true), Shortcuts.Canvas);
+        When("上一个混合模式", () => StepBlend(-1), Shortcuts.Canvas);
+        When("下一个混合模式", () => StepBlend(1), Shortcuts.Canvas);
+        When("切换形状类型", CycleShapeKind, Shortcuts.Canvas);
         for (var digit = 0; digit <= 9; digit++)
         {
             var value = digit;
-            var id = CanvasKey($"Opacity digit {value} (type two for exact %)");
+            var id = CanvasKey($"不透明度数字 {value}（连按两次可输入精确百分比）");
             _opacityRows.Add(id);
             _verbs[id] = _ => { OpacityDigit(value); return true; };
         }
         foreach (var (direction, dx, dy) in new[]
                  {
-                     ("Left", -1.0, 0.0), ("Right", 1.0, 0.0), ("Up", 0.0, -1.0), ("Down", 0.0, 1.0),
+                     ("向左", -1.0, 0.0), ("向右", 1.0, 0.0), ("向上", 0.0, -1.0), ("向下", 0.0, 1.0),
                  })
         {
-            When($"Nudge {direction} 1 px", () => Nudge(dx, dy), Shortcuts.Canvas);
-            When($"Nudge {direction} 10 px", () => Nudge(dx * 10, dy * 10), Shortcuts.Canvas);
-            When($"Move selected pixels {direction} 1 px", () => MovePixels(dx, dy), Shortcuts.Canvas);
-            When($"Move selected pixels {direction} 10 px", () => MovePixels(dx * 10, dy * 10), Shortcuts.Canvas);
+            When($"{direction}轻移 1 像素", () => Nudge(dx, dy), Shortcuts.Canvas);
+            When($"{direction}轻移 10 像素", () => Nudge(dx * 10, dy * 10), Shortcuts.Canvas);
+            When($"{direction}移动选区像素 1 像素", () => MovePixels(dx, dy), Shortcuts.Canvas);
+            When($"{direction}移动选区像素 10 像素", () => MovePixels(dx * 10, dy * 10), Shortcuts.Canvas);
         }
-        When("Apply Canvas Operation",
+        When("应用画布操作",
             () => { if (_cropFrame is null) return false; ApplyCrop(); return true; }, Shortcuts.Canvas);
-        When("Cancel Canvas Operation",
+        When("取消画布操作",
             () => { if (_cropFrame is null) return false; CancelCrop(); return true; }, Shortcuts.Canvas);
     }
 
@@ -1111,10 +1111,10 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return false;
         if (_canvas.Selection != SelectionTool.None && document.Selection.Path is not null)
         {
-            return Edit("Move Selection", () => SelectionEdits.Move(document, dx, dy));
+            return Edit("移动选区", () => SelectionEdits.Move(document, dx, dy));
         }
         if (_tool != Tool.Move || Selected is not { } id) return false;
-        return Edit("Move Layer", () => LayerEdits.Move(document, id, dx, dy));
+        return Edit("移动图层", () => LayerEdits.Move(document, id, dx, dy));
     }
 
     /// <summary>The pixels a drag is carrying, and how far it has taken them.</summary>
@@ -1132,14 +1132,14 @@ public sealed class MainWindow : Window
         if (document.Selection.Path is not { } path || !path.Contains(at.X, at.Y)) return false;
         if (SelectionEdits.LiftPixels(document, id) is not { } floating)
         {
-            Say("There is nothing inside the selection to move");
+            Say("选区内没有可移动的内容");
             return false;
         }
         _moving = floating;
         _movedBy = (0, 0);
-        _history.Begin("Move Pixels", document, id);
+        _history.Begin("移动像素", document, id);
         _canvas.Floating = (floating, 0, 0);
-        Say("Dragging the pixels inside the selection");
+        Say("正在拖动选区内的像素");
         return true;
     }
 
@@ -1152,7 +1152,7 @@ public sealed class MainWindow : Window
         // The outline goes with them, so what is selected is what is being carried.
         document.Selection = moving.Origin.Translated(dx, dy);
         _canvas.InvalidateVisual();
-        Say($"Moving the pixels {dx}, {dy}");
+        Say($"正在移动像素 {dx}, {dy}");
     }
 
     /// <summary>
@@ -1176,7 +1176,7 @@ public sealed class MainWindow : Window
         _movedBy = (0, 0);
         _history.End(document, Selected);
         Refresh();
-        if (moved is not (0, 0)) Say($"Pixels moved {moved.Dx}, {moved.Dy}");
+        if (moved is not (0, 0)) Say($"已移动像素 {moved.Dx}, {moved.Dy}");
     }
 
     /// <summary>
@@ -1186,7 +1186,7 @@ public sealed class MainWindow : Window
     private bool MovePixels(double dx, double dy)
     {
         if (_document is not { } document || Selected is not { } id) return false;
-        return Edit("Move Pixels",
+        return Edit("移动像素",
             () => SelectionEdits.MovePixels(document, id, (int)Math.Round(dx), (int)Math.Round(dy)));
     }
 
@@ -1197,8 +1197,8 @@ public sealed class MainWindow : Window
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { } layer) return false;
         var at = Array.IndexOf(BlendModes, layer.BlendMode);
         var next = BlendModes[((at + step) % BlendModes.Length + BlendModes.Length) % BlendModes.Length];
-        Edit("Blend Mode", () => LayerEdits.SetBlendMode(document, id, next));
-        Say($"Blend mode: {Spell(next)}");
+        Edit("混合模式", () => LayerEdits.SetBlendMode(document, id, next));
+        Say($"混合模式：{BlendLabel(next)}");
         return true;
     }
 
@@ -1208,7 +1208,7 @@ public sealed class MainWindow : Window
         var kinds = Enum.GetValues<ShapeKind>();
         var at = Array.IndexOf(kinds, _options.Shape);
         SetShapeKind(kinds[(at + 1) % kinds.Length]);
-        Say($"Shape: {_options.Shape}");
+        Say($"形状：{Labels.Shape(_options.Shape)}");
         return true;
     }
 
@@ -1225,7 +1225,7 @@ public sealed class MainWindow : Window
             : Math.Min(current - 1, Math.Round(current / 1.2));
         _options.Brush = _options.Brush with { Diameter = Math.Clamp(stepped, 1, 2000) };
         OptionsChanged();
-        Say($"Brush: {_options.Brush.Diameter:0} pixels");
+        Say($"画笔：{_options.Brush.Diameter:0} 像素");
         return true;
     }
 
@@ -1237,7 +1237,7 @@ public sealed class MainWindow : Window
         var step = increase ? Math.Floor(quarter + 0.001) + 1 : Math.Ceiling(quarter - 0.001) - 1;
         _options.Brush = _options.Brush with { Hardness = Math.Clamp(step, 0, 4) / 4 };
         OptionsChanged();
-        Say($"Brush: {_options.Brush.Hardness * 100:0}% hard");
+        Say($"画笔：{_options.Brush.Hardness * 100:0}% 硬度");
         return true;
     }
 
@@ -1252,7 +1252,7 @@ public sealed class MainWindow : Window
         if (_opacityTyped.Length == 2) percent = int.Parse(_opacityTyped);
         _options.Brush = _options.Brush with { Opacity = percent / 100.0 };
         OptionsChanged();
-        Say($"Brush opacity {_options.Brush.Opacity * 100:0}%");
+        Say($"画笔不透明度 {_options.Brush.Opacity * 100:0}%");
     }
 
     /// <summary>
@@ -1278,8 +1278,8 @@ public sealed class MainWindow : Window
         _shortcutSettings.Save(ShortcutDefaults.DefaultPath);
         ShowKeys();
         Say(chosen.Count == 0
-            ? "Keyboard shortcuts back to their defaults"
-            : $"{chosen.Count} keyboard shortcut{(chosen.Count == 1 ? "" : "s")} changed");
+            ? "键盘快捷键已恢复默认值"
+            : $"已更改 {chosen.Count} 项键盘快捷键");
     }
 
     private async void OpenProject()
@@ -1288,7 +1288,7 @@ public sealed class MainWindow : Window
         {
             var picked = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
             {
-                Title = "Open a Compositor project folder",
+                Title = "打开 Compositor 项目文件夹",
                 AllowMultiple = false,
             });
             if (picked.Count == 0 || picked[0].TryGetLocalPath() is not { } path) return;
@@ -1296,7 +1296,7 @@ public sealed class MainWindow : Window
         }
         catch (Exception error)
         {
-            Say($"Could not open: {error.Message}");
+            Say($"无法打开: {error.Message}");
         }
     }
 
@@ -1314,8 +1314,8 @@ public sealed class MainWindow : Window
         _history.Reset();
         NoteRecent(path);
         Show(_open);
-        Say($"{System.IO.Path.GetFileName(path)} — {_document.Width} by {_document.Height}, " +
-            $"{_document.Layers.Count} layers, {_document.Resolution:0} pixels per inch");
+        Say($"{System.IO.Path.GetFileName(path)} — {_document.Width} × {_document.Height}，" +
+            $"{_document.Layers.Count} 个图层，{_document.Resolution:0} 像素/英寸");
     }
 
     /// <summary>
@@ -1364,7 +1364,7 @@ public sealed class MainWindow : Window
         if (_tabs.Count != 1) throw new InvalidOperationException("closing the last tab left nothing to work in");
         if (_document is not null) throw new InvalidOperationException("the last tab still holds a document");
         if (_rows.Count != 0) throw new InvalidOperationException("the panel still holds rows with nothing open");
-        if (_open.Name != "Untitled") throw new InvalidOperationException("the tab left behind is not a fresh one");
+        if (_open.Name != "未命名") throw new InvalidOperationException("the tab left behind is not a fresh one");
         return string.Join(Environment.NewLine, report);
     }
 
@@ -1395,8 +1395,8 @@ public sealed class MainWindow : Window
         // An amount moved and the preview run the way the window's timer runs it: what the canvas would draw is
         // then what the panel asked for, while the layer's own pixels are not touched until Apply.
         var was = target.Asset!.Image.GetPixel(0, 0);
-        panel.Move("Exposure, stops", 1.5);
-        panel.Move("Contrast", 40);
+        panel.Move("曝光度(级)", 1.5);
+        panel.Move("对比度", 40);
         ShowPreviewOnce(null, EventArgs.Empty);
         if (_preview is null) throw new InvalidOperationException("moving an amount did not start a preview");
         if (_history.IsModified) throw new InvalidOperationException("the preview wrote into the document's history");
@@ -1501,7 +1501,7 @@ public sealed class MainWindow : Window
         if (_cameraRaw is not null) throw new InvalidOperationException("Apply did not put the panel away");
         if (_cameraRawHost.IsVisible) throw new InvalidOperationException("the panel's column is still showing");
         if (!_layersSide.IsVisible) throw new InvalidOperationException("the Layers panel did not come back");
-        if (!_history.CanUndo || _history.UndoName != "Camera Raw Filter")
+        if (!_history.CanUndo || _history.UndoName != "Camera Raw 滤镜")
         {
             throw new InvalidOperationException("Apply did not leave one undo step named for the filter");
         }
@@ -1516,15 +1516,15 @@ public sealed class MainWindow : Window
         var applied = target.Asset.Image.GetPixel(0, 0);
         CameraRawFilter();
         if (_cameraRaw is not { } again) throw new InvalidOperationException("the panel did not open a second time");
-        if (again.SetTo("Exposure, stops") != 1.5 || again.SetTo("Contrast") != 40)
+        if (again.SetTo("曝光度(级)") != 1.5 || again.SetTo("对比度") != 40)
         {
             throw new InvalidOperationException(
-                $"the panel opened with exposure {again.SetTo("Exposure, stops")} and contrast "
-                + $"{again.SetTo("Contrast")} rather than what it was last used with");
+                $"the panel opened with exposure {again.SetTo("曝光度(级)")} and contrast "
+                + $"{again.SetTo("对比度")} rather than what it was last used with");
         }
-        report.Add($"opened again where it was left: exposure {again.SetTo("Exposure, stops")}, "
-            + $"contrast {again.SetTo("Contrast")}");
-        again.Move("Exposure, stops", -1);
+        report.Add($"opened again where it was left: exposure {again.SetTo("曝光度(级)")}, "
+            + $"contrast {again.SetTo("对比度")}");
+        again.Move("曝光度(级)", -1);
         ShowPreviewOnce(null, EventArgs.Empty);
         again.Cancel();
         if (_cameraRaw is not null) throw new InvalidOperationException("Cancel did not put the panel away");
@@ -1540,12 +1540,12 @@ public sealed class MainWindow : Window
         if (_cameraRaw is not { } shown) throw new InvalidOperationException("the panel did not stay open");
         // The amount the cancelled panel was moved to is not the one it is opened with: a Cancel keeps the
         // amounts that were last applied.
-        if (shown.SetTo("Exposure, stops") != 1.5)
+        if (shown.SetTo("曝光度(级)") != 1.5)
         {
             throw new InvalidOperationException("the amount a cancelled panel was moved to was kept");
         }
-        shown.Move("Exposure, stops", 0.8);
-        shown.Move("Clarity", 30);
+        shown.Move("曝光度(级)", 0.8);
+        shown.Move("清晰度", 30);
         shown.PressDrawGuides();
         _canvas.UprightDrawn!(box.Point(0.1, 0.75), box.Point(0.9, 0.75 - 0.8 * Math.Tan(8 * Math.PI / 180)));
         ShowPreviewOnce(null, EventArgs.Empty);
@@ -1627,11 +1627,11 @@ public sealed class MainWindow : Window
         // A few keys pressed the way the keyboard presses them, and the row each one reached.
         foreach (var (title, chord) in new (string, ShortcutChord)[]
                  {
-                     ("Undo", new("Z", ShortcutModifiers.Control)),
-                     ("Redo", new("Z", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
-                     ("Brush tool", new("B")),
-                     ("Crop tool", new("C")),
-                     ("Decrease brush size", new("OemOpenBrackets")),
+                     ("还原", new("Z", ShortcutModifiers.Control)),
+                     ("重做", new("Z", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+                     ("画笔工具", new("B")),
+                     ("裁剪工具", new("C")),
+                     ("减小画笔大小", new("OemOpenBrackets")),
                  })
         {
             var id = _verbs.ContainsKey(MenuKey(title)) ? MenuKey(title) : CanvasKey(title);
@@ -1641,14 +1641,14 @@ public sealed class MainWindow : Window
         }
 
         // A key that is a menu row only with the modifiers its row asks for: the plain key is not the row.
-        if (Press(new ShortcutChord("Z")) is { } plain && plain == MenuKey("Undo"))
+        if (Press(new ShortcutChord("Z")) is { } plain && plain == MenuKey("还原"))
         {
             throw new InvalidOperationException("plain Z reached Undo, which is Ctrl+Z's row");
         }
         report.Add("plain Z reaches nothing, as only Ctrl+Z is Undo's");
 
         // A rebind, made the way the sheet makes one: the new key delivers the row and the old key lets it go.
-        var undo = MenuKey("Undo");
+        var undo = MenuKey("还原");
         _shortcutSettings.Overrides[undo] = new ShortcutChord("Y", ShortcutModifiers.Control);
         ShowKeys();
         if (Press(new ShortcutChord("Y", ShortcutModifiers.Control)) != undo)
@@ -1857,7 +1857,7 @@ public sealed class MainWindow : Window
             + $"{outlineNow.Left:0},{outlineNow.Top:0}, one \"{_history.UndoName}\" step");
         if (_canvas.Floating is not null) throw new InvalidOperationException("the pixels were not put down");
         if (outlineNow.Left == outlineWas.Left) throw new InvalidOperationException("the outline stayed put");
-        if (_history.UndoName != "Move Pixels")
+        if (_history.UndoName != "移动像素")
         {
             throw new InvalidOperationException($"the drag made a \"{_history.UndoName}\" step");
         }
@@ -1948,7 +1948,7 @@ public sealed class MainWindow : Window
         report.Add($"a Control-drag on the transform box's top-left corner: the layer's pixels "
             + $"{(inkedNow == inked ? "did NOT change" : "were resampled")}, one \"{_history.UndoName}\" step");
         if (inkedNow == inked) throw new InvalidOperationException("the corner drag did not distort the layer");
-        if (_history.UndoName != "Distort")
+        if (_history.UndoName != "变形")
         {
             throw new InvalidOperationException($"the distort made a \"{_history.UndoName}\" step");
         }
@@ -1974,7 +1974,7 @@ public sealed class MainWindow : Window
         {
             throw new InvalidOperationException($"the canvas is {document.Width}x{document.Height}, not cropped");
         }
-        if (_history.UndoName != "Crop") throw new InvalidOperationException($"the crop made a \"{_history.UndoName}\" step");
+        if (_history.UndoName != "裁剪") throw new InvalidOperationException($"the crop made a \"{_history.UndoName}\" step");
 
         // The Layers panel's blend pop-up: a click opens it, and a click elsewhere closes it. A pop-up is a
         // window of its own rather than part of this one, which is why nothing else here touches it.
@@ -2034,7 +2034,7 @@ public sealed class MainWindow : Window
         // The panel's amounts are inside a scroll view, whose content is only attached when a layout pass runs —
         // so without this the sliders are built, docked, and still nowhere a pointer can reach.
         UpdateLayout();
-        if (raw.Amount("Exposure, stops") is not { } exposure)
+        if (raw.Amount("曝光度(级)") is not { } exposure)
         {
             throw new InvalidOperationException("the panel has no Exposure amount to click");
         }
@@ -2066,13 +2066,13 @@ public sealed class MainWindow : Window
             ?? throw new InvalidOperationException("the Filter menu's verb opened no panel");
         // Its amounts are inside a scroll view, whose content is only attached when a layout pass runs.
         filterPanel.UpdateLayout();
-        var vignetteAmount = AmountIn(filterPanel, "Amount");
+        var vignetteAmount = AmountIn(filterPanel, "数量");
         ClickIn(filterPanel, vignetteAmount, 0.85);
         var asked = filterPanel.Current().VignetteAmount;
         if (asked < 60) throw new InvalidOperationException($"the click left the amount at {asked}, near where it started");
         // Reset puts the panel back to what the filter is made with, the colour included — which is the one
         // place the two kinds of control share.
-        PressIn(filterPanel, "Reset");
+        PressIn(filterPanel, "复位");
         var reset = filterPanel.Current();
         report.Add($"the panel's Reset: amount {reset.VignetteAmount:0.#}, colour "
             + $"{reset.VignetteRed:0.00},{reset.VignetteGreen:0.00},{reset.VignetteBlue:0.00}");
@@ -2141,14 +2141,14 @@ public sealed class MainWindow : Window
         // The panel's buttons are below the fold of its own scroll view, and a click outside the viewport does
         // not reach them: the view is scrolled the way a hand would scroll it first.
         ScrollToEnd(filterPanel);
-        PressIn(filterPanel, "Apply");
+        PressIn(filterPanel, "应用");
         Dispatcher.UIThread.RunJobs();
         if (!filtering.IsCompletedSuccessfully) throw new InvalidOperationException("the filter verb never finished");
         var inkedAfterFilter = InkOf(document.Layers.First(one => one.ID == target.ID).Asset!.Image);
         report.Add($"the filter panel's own amount clicked and its Apply pressed: the amount went to {asked:0.#}, "
             + $"the layer's ink {inkedForFilter} → {inkedAfterFilter}, one \"{_history.UndoName}\" step");
         if (inkedAfterFilter == inkedForFilter) throw new InvalidOperationException("the filter changed nothing");
-        if (_history.UndoName != "Vignette Filter") throw new InvalidOperationException($"the filter made a \"{_history.UndoName}\" step");
+        if (_history.UndoName != "暗角滤镜") throw new InvalidOperationException($"the filter made a \"{_history.UndoName}\" step");
         // And the amounts the panel was left with are the ones the window remembers for the next time.
         if (_filterAmounts.VignetteAmount != asked)
         {
@@ -2175,14 +2175,14 @@ public sealed class MainWindow : Window
             new Point(curve.Bounds.Width / 2, curve.Bounds.Height / 2),
             new Point(curve.Bounds.Width / 2, curve.Bounds.Height / 4));
         ScrollToEnd(curvePanel);
-        PressIn(curvePanel, "Apply");
+        PressIn(curvePanel, "应用");
         Dispatcher.UIThread.RunJobs();
         if (!adjusting.IsCompletedSuccessfully) throw new InvalidOperationException("the Curves verb never finished");
         var inkedAfterCurve = InkOf(document.Layers.First(one => one.ID == target.ID).Asset!.Image);
         report.Add($"the curve editor dragged and its Apply pressed: the layer's ink "
             + $"{inkedForCurve} → {inkedAfterCurve}, one \"{_history.UndoName}\" step");
         if (inkedAfterCurve == inkedForCurve) throw new InvalidOperationException("the curve changed nothing");
-        if (_history.UndoName != "Curves") throw new InvalidOperationException($"the curve made a \"{_history.UndoName}\" step");
+        if (_history.UndoName != "曲线") throw new InvalidOperationException($"the curve made a \"{_history.UndoName}\" step");
 
         // The Gradient Map's two ends are swatches over the bar they make, and each opens the picker: the same
         // path as the panels', inside a different dialog, so it is driven the same way.
@@ -2204,14 +2204,14 @@ public sealed class MainWindow : Window
         Press(mapPicker, At(mapPicker, mapPicker.Ok, 0.5));
         Dispatcher.UIThread.RunJobs();
         ScrollToEnd(mapPanel);
-        PressIn(mapPanel, "Apply");
+        PressIn(mapPanel, "应用");
         Dispatcher.UIThread.RunJobs();
         if (!mapping.IsCompletedSuccessfully) throw new InvalidOperationException("the Gradient Map verb never finished");
         var inkedAfterMap = InkOf(document.Layers.First(one => one.ID == target.ID).Asset!.Image);
         report.Add($"the Gradient Map's shadows swatch opened the picker and its Apply pressed: the layer's ink "
             + $"{inkedForMap} → {inkedAfterMap}, one \"{_history.UndoName}\" step");
         if (inkedAfterMap == inkedForMap) throw new InvalidOperationException("the gradient map changed nothing");
-        if (_history.UndoName != "Gradient Map") throw new InvalidOperationException($"the map made a \"{_history.UndoName}\" step");
+        if (_history.UndoName != "渐变映射") throw new InvalidOperationException($"the map made a \"{_history.UndoName}\" step");
 
         // The Dither panel, driven the same way, and opened a second time to see that it opens where it was
         // left: the look and the amounts the last Apply used are the ones the Mac's one set of filter settings
@@ -2227,15 +2227,15 @@ public sealed class MainWindow : Window
         {
             throw new InvalidOperationException("the Dither panel has no list of looks");
         }
-        var halftone = look.Items.Cast<object>().ToList().FindIndex(item => LabelOf(item) == "Halftone Dots");
+        var halftone = look.Items.Cast<object>().ToList().FindIndex(item => LabelOf(item) == "半调圆点");
         if (halftone < 0) throw new InvalidOperationException("the Dither panel has no Halftone Dots look");
         look.SelectedIndex = halftone;
         // Two Colors is the choice whose ink and paper are the panel's own, so it is the one that shows the
         // two swatches; the ink is then chosen through the picker, as the Mac's panel does it.
         var inkAndPaper = ditherPanel.GetVisualDescendants().OfType<ComboBox>()
-            .FirstOrDefault(box => box.Items.Cast<object>().Any(item => LabelOf(item) == "Two Colors"))
+            .FirstOrDefault(box => box.Items.Cast<object>().Any(item => LabelOf(item) == "双色"))
             ?? throw new InvalidOperationException("the Dither panel has no Ink and paper list");
-        inkAndPaper.SelectedIndex = inkAndPaper.Items.Cast<object>().ToList().FindIndex(item => LabelOf(item) == "Two Colors");
+        inkAndPaper.SelectedIndex = inkAndPaper.Items.Cast<object>().ToList().FindIndex(item => LabelOf(item) == "双色");
         Dispatcher.UIThread.RunJobs();
         if (ditherPanel.GetVisualDescendants().OfType<ColorSwatch>().FirstOrDefault() is not { } ink)
         {
@@ -2254,19 +2254,19 @@ public sealed class MainWindow : Window
         if (inkNow.DarkRed <= 0.5) throw new InvalidOperationException("the picker's colour never reached the ink");
         if (inkNow.Colors != DitherColors.TwoColors) throw new InvalidOperationException("the ink choice was lost");
         // Contrast is an amount every look shows, so it is the one to click.
-        var contrast = AmountIn(ditherPanel, "Contrast");
+        var contrast = AmountIn(ditherPanel, "对比度");
         ClickIn(ditherPanel, contrast, 0.9);
         var wantedContrast = ditherPanel.Current().Contrast;
         if (Math.Abs(wantedContrast) < 20) throw new InvalidOperationException($"the click left contrast at {wantedContrast}");
         ScrollToEnd(ditherPanel);
-        PressIn(ditherPanel, "Apply");
+        PressIn(ditherPanel, "应用");
         Dispatcher.UIThread.RunJobs();
         if (!dithering.IsCompletedSuccessfully) throw new InvalidOperationException("the Dither verb never finished");
         var inkedAfterDither = InkOf(document.Layers.First(one => one.ID == target.ID).Asset!.Image);
         report.Add($"the Dither panel's look chosen and its Contrast clicked: the layer's ink "
             + $"{inkedForDither} → {inkedAfterDither}, one \"{_history.UndoName}\" step");
         if (inkedAfterDither == inkedForDither) throw new InvalidOperationException("the dither changed nothing");
-        if (_history.UndoName != "Dither") throw new InvalidOperationException($"the dither made a \"{_history.UndoName}\" step");
+        if (_history.UndoName != "抖动") throw new InvalidOperationException($"the dither made a \"{_history.UndoName}\" step");
 
         // Opened again, on the look and amounts it was left with rather than on the ones it opens with.
         var ditheringAgain = DitherFilter();
@@ -2286,7 +2286,7 @@ public sealed class MainWindow : Window
                 $"the Dither panel opened with contrast {kept.Contrast} rather than {wantedContrast}");
         }
         ScrollToEnd(reopened);
-        PressIn(reopened, "Cancel");
+        PressIn(reopened, "取消");
         Dispatcher.UIThread.RunJobs();
         if (!ditheringAgain.IsCompletedSuccessfully) throw new InvalidOperationException("the dismissed Dither panel never finished");
 
@@ -2409,7 +2409,7 @@ public sealed class MainWindow : Window
 
         // The panel's own Fuzziness is not only one of its amounts: it is what the selection is rebuilt from, so
         // moving it has to move the selection.
-        var rangeFuzziness = AmountIn(range, "Fuzziness");
+        var rangeFuzziness = AmountIn(range, "颜色容差");
         var coveredWas = Covered();
         ClickIn(range, rangeFuzziness, 0.05);
         var coveredNow = Covered();
@@ -2419,7 +2419,7 @@ public sealed class MainWindow : Window
         if (coveredNow >= coveredWas) throw new InvalidOperationException("the fuzziness changed nothing");
 
         // Add, and Alt held while a click is made, are the panel's two ways of picking more than one colour.
-        PressIn(range, "Add");
+        PressIn(range, "添加到取样");
         Click(Aim(new SKPoint(90, 50)));
         report.Add($"a second click with Add chosen makes the range {_colorRange?.Include.Count} colour(s)");
         if (_colorRange is not { Include.Count: 2 }) throw new InvalidOperationException("Add did not join the range");
@@ -2435,10 +2435,10 @@ public sealed class MainWindow : Window
 
         // OK keeps the selection as one step; the panel and its sample go with it.
         var stood = document.Selection.Path?.Bounds ?? SKRect.Empty;
-        PressIn(range, "OK");
+        PressIn(range, "确定");
         Dispatcher.UIThread.RunJobs();
         if (_colorRange is not null) throw new InvalidOperationException("OK left the panel up");
-        if (_history.UndoName != "Color Range") throw new InvalidOperationException($"the range made a \"{_history.UndoName}\" step");
+        if (_history.UndoName != "色彩范围") throw new InvalidOperationException($"the range made a \"{_history.UndoName}\" step");
         report.Add($"OK: the panel is away and the history holds \"{_history.UndoName}\"");
 
         // Opened again and cancelled, the selection there was stands and no step is added for it.
@@ -2451,13 +2451,13 @@ public sealed class MainWindow : Window
         // A second panel starts with no colours of its own: the ones that made the selection went with the panel.
         if (second.ShowingMask) throw new InvalidOperationException("the second panel started with a selection of its own");
         Click(Aim(new SKPoint(30, 30)));
-        PressIn(second, "Cancel");
+        PressIn(second, "取消");
         Dispatcher.UIThread.RunJobs();
         if (_colorRange is not null) throw new InvalidOperationException("Cancel left the panel up");
         var back = document.Selection.Path?.Bounds ?? SKRect.Empty;
         report.Add($"cancelled: the selection is back at {back.Left:0},{back.Top:0} {back.Width:0}x{back.Height:0}");
         if (!back.Equals(stood)) throw new InvalidOperationException("Cancel did not put the selection back");
-        if (_history.UndoName != "Color Range") throw new InvalidOperationException($"Cancel added a \"{_history.UndoName}\" step");
+        if (_history.UndoName != "色彩范围") throw new InvalidOperationException($"Cancel added a \"{_history.UndoName}\" step");
 
         // And the picker opened once more on the background colour and left up, so the caller can photograph it:
         // it is a window of its own, so the picture of the main window does not hold it.
@@ -2773,7 +2773,7 @@ public sealed class MainWindow : Window
         {
             RefreshTabs();
         }
-        Say($"{tab.Name} closed");
+        Say($"{tab.Name} 已关闭");
     }
 
     /// <summary>The tab strip: a button a tab, the one in front marked, and a way to start another.</summary>
@@ -2822,7 +2822,7 @@ public sealed class MainWindow : Window
         var made = LayerPlacement.NewDocument(asked.Width, asked.Height, asked.Resolution);
         if (made is null)
         {
-            Say("That size is too large for a canvas");
+            Say("该尺寸超出画布上限");
             return;
         }
         _open = TabForNew();
@@ -2831,7 +2831,7 @@ public sealed class MainWindow : Window
         _history.Reset();
         Show(_open);
         if (_document.Layers.Count > 0) Reselect(_document.Layers[^1].ID);
-        Say($"New {_document.Width} by {_document.Height} canvas at {_document.Resolution:0.##} per inch, not saved yet");
+        Say($"新建 {_document.Width} × {_document.Height} 画布，{_document.Resolution:0.##} 像素/英寸，尚未存储");
     }
 
     /// <summary>
@@ -2844,9 +2844,9 @@ public sealed class MainWindow : Window
         if (which.Document is null || !which.History.IsModified) return true;
         var named = which.Path is { } path
             ? $"{System.IO.Path.GetFileName(path)} has been changed since it was last saved."
-            : "This project has not been saved.";
-        return await ConfirmDialog.Ask(this, "Discard unsaved changes?",
-            $"{named} Anything not saved is lost.", "Discard", "Keep");
+            : "此项目尚未存储。";
+        return await ConfirmDialog.Ask(this, "要放弃未存储的更改吗？",
+            $"{named} 未存储的内容都会丢失。", "放弃", "保留");
     }
 
     /// <summary>The layer the panel has selected, or the top one when nothing is: what an edit acts on.</summary>
@@ -2911,7 +2911,7 @@ public sealed class MainWindow : Window
         // The list is grouped as the Mac's pop-up is, with a rule between the groups, so an item is not the
         // mode at its index: _blendRows says what each one is.
         _blendRows.Clear();
-        _blendRows.AddRange(GroupedChoice.Fill(_blend, LayerEdits.BlendGroups, mode => Spell(mode)));
+        _blendRows.AddRange(GroupedChoice.Fill(_blend, LayerEdits.BlendGroups, mode => BlendLabel(mode)));
         _blend.Width = 150;
         _blend.SelectionChanged += (_, _) =>
         {
@@ -2919,7 +2919,7 @@ public sealed class MainWindow : Window
             var index = _blend.SelectedIndex;
             if (index < 0 || index >= _blendRows.Count || _blendRows[index] is not { } mode) return;
             if (_document is not { } document || Selected is not { } id) return;
-            Edit("Blend Mode", () => LayerEdits.SetBlendMode(document, id, mode));
+            Edit("混合模式", () => LayerEdits.SetBlendMode(document, id, mode));
         };
 
         _opacity.PropertyChanged += (_, change) =>
@@ -2933,13 +2933,13 @@ public sealed class MainWindow : Window
                 ApplyOpacity();
                 return;
             }
-            Edit("Opacity", ApplyOpacity);
+            Edit("不透明度", ApplyOpacity);
         };
         _opacity.PointerPressed += (_, _) =>
         {
             if (_document is not { } document || Selected is not { } id) return;
             _opacityDragging = true;
-            _history.Begin("Opacity", document, Selected);
+            _history.Begin("不透明度", document, Selected);
         };
         _opacity.PointerReleased += (_, _) =>
         {
@@ -2964,7 +2964,7 @@ public sealed class MainWindow : Window
                     Spacing = 6,
                     Children =
                     {
-                        new TextBlock { Text = "Opacity", Width = 52, VerticalAlignment = VerticalAlignment.Center },
+                        new TextBlock { Text = "不透明度", Width = 52, VerticalAlignment = VerticalAlignment.Center },
                         _opacity,
                         _opacityReadout,
                     },
@@ -3010,17 +3010,17 @@ public sealed class MainWindow : Window
         }
 
         var plan = document is not null && layer is not null ? LayerMerge.Plan(document, SelectedLayers, layer.ID) : null;
-        _merge.Header = "_" + (plan?.Action ?? "Merge Down");
+        _merge.Header = $"{(plan?.Action ?? "向下合并")}(_M)";
         _merge.IsEnabled = plan is not null;
-        _visibility.Header = layer?.IsVisible == false ? "_Show Layer" : "_Hide Layer";
+        _visibility.Header = layer?.IsVisible == false ? "显示图层(_S)" : "隐藏图层(_H)";
         _visibility.IsEnabled = layer is not null;
         ShowAppearance(layer);
-        _clipping.Header = layer?.MaskSourceID is not null ? "Release _Clipping Mask" : "Create _Clipping Mask";
+        _clipping.Header = layer?.MaskSourceID is not null ? "释放剪切蒙版(_C)" : "创建剪切蒙版(_C)";
         _clipping.IsEnabled = document is not null && layer is not null && LayerMaskEdits.CanToggle(document, layer.ID);
         _addMask.IsEnabled = layer is { Mask: null };
-        _maskToggle.Header = layer?.Mask?.IsEnabled == false ? "_Enable Mask" : "_Disable Mask";
+        _maskToggle.Header = layer?.Mask?.IsEnabled == false ? "启用蒙版(_E)" : "停用蒙版(_D)";
         _maskToggle.IsEnabled = layer?.Mask is not null;
-        _maskLink.Header = layer?.Mask?.IsLinked == false ? "Li_nk Mask" : "Un_ink Mask";
+        _maskLink.Header = layer?.Mask?.IsLinked == false ? "链接蒙版(_N)" : "取消链接蒙版(_I)";
         _maskLink.IsEnabled = layer is { IsGroup: false, Mask: not null };
     }
 
@@ -3038,12 +3038,12 @@ public sealed class MainWindow : Window
     private void DuplicateLayer()
     {
         if (_document is not { } document || Selected is not { } id) return;
-        _history.Begin("Duplicate Layer", document, id);
+        _history.Begin("复制图层", document, id);
         var copy = LayerEdits.Duplicate(document, id);
         _history.End(document, id);
         if (copy is null)
         {
-            Say("That layer could not be copied: there is no room for another 10,000 layers.");
+            Say("该图层无法拷贝：图层数已达 10,000 上限。");
             return;
         }
         Reselect(copy);
@@ -3062,13 +3062,13 @@ public sealed class MainWindow : Window
         // does. Several go as one step, each with its contents.
         var anchor = Selected ?? ids[0];
         var index = document.Layers.FindIndex(layer => layer.ID == anchor);
-        _history.Begin(ids.Count > 1 ? "Delete Layers" : "Delete Layer", document, anchor);
+        _history.Begin(ids.Count > 1 ? "删除多个图层" : "删除图层", document, anchor);
         var refused = 0;
         foreach (var id in ids) if (!LayerEdits.Delete(document, id)) refused++;
         _history.End(document, anchor);
         if (refused > 0)
         {
-            Say("A layer that stayed is clipped to one that went; macOS offers to bake or unlink it and this build cannot yet");
+            Say("留下来的图层被剪切蒙版关联到已移走的图层；macOS 会提示拼合或取消关联，本版暂不支持");
         }
         if (refused == ids.Count) return;
         var left = document.Layers;
@@ -3079,14 +3079,14 @@ public sealed class MainWindow : Window
     {
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { } layer) return;
-        if (await TextPrompt.Ask(this, "Rename Layer", "Layer name", layer.Name) is not { } name) return;
+        if (await TextPrompt.Ask(this, "重命名图层", "图层名称", layer.Name) is not { } name) return;
         if (_document is not { } current) return;
-        _history.Begin("Rename Layer", current, id);
+        _history.Begin("重命名图层", current, id);
         var renamed = LayerEdits.Rename(current, id, name);
         _history.End(current, id);
         if (!renamed)
         {
-            Say("That name was blank, or was already the layer's name");
+            Say("名称为空，或与原名称相同");
             return;
         }
         Reselect(id);
@@ -3096,7 +3096,7 @@ public sealed class MainWindow : Window
     private void MoveLayer(int offset)
     {
         if (_document is not { } document || Selected is not { } id) return;
-        Edit(offset > 0 ? "Move Layer Up" : "Move Layer Down", () => LayerEdits.MoveBy(document, id, offset));
+        Edit(offset > 0 ? "向上移动图层" : "向下移动图层", () => LayerEdits.MoveBy(document, id, offset));
         Reselect(id);
     }
 
@@ -3105,7 +3105,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { } layer) return;
         var visible = !layer.IsVisible;
-        Edit(visible ? "Show Layer" : "Hide Layer", () => LayerEdits.SetVisible(document, id, visible));
+        Edit(visible ? "显示图层" : "隐藏图层", () => LayerEdits.SetVisible(document, id, visible));
         Reselect(id);
     }
 
@@ -3113,20 +3113,20 @@ public sealed class MainWindow : Window
     private void NewBlankLayer()
     {
         if (_document is not { } document) return;
-        _history.Begin("New Blank Layer", document, Selected);
+        _history.Begin("新建空白图层", document, Selected);
         var made = LayerPlacement.AddBlank(document, Selected);
         _history.End(document, Selected);
-        if (made is null) { Say("This document already holds as many layers as it may."); return; }
+        if (made is null) { Say("本文档的图层数量已达上限。"); return; }
         Reselect(made);
     }
 
     private void NewFolder()
     {
         if (_document is not { } document) return;
-        _history.Begin("New Folder", document, Selected);
+        _history.Begin("新建组", document, Selected);
         var made = LayerPlacement.AddFolder(document, Selected);
         _history.End(document, Selected);
-        if (made is null) { Say("This document already holds as many layers as it may."); return; }
+        if (made is null) { Say("本文档的图层数量已达上限。"); return; }
         Reselect(made);
     }
 
@@ -3136,17 +3136,17 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         var ids = SelectedLayers;
         if (ids.Count == 0) return;
-        _history.Begin("Group Layers", document, Selected);
+        _history.Begin("图层编组", document, Selected);
         var folder = LayerPlacement.GroupSelected(document, ids);
         _history.End(document, Selected);
-        if (folder is null) { Say("Those layers could not be wrapped in a folder."); return; }
+        if (folder is null) { Say("无法把这些图层放入组中。"); return; }
         Reselect(folder);
     }
 
     private void MoveOutOfFolder()
     {
         if (_document is not { } document || Selected is not { } id) return;
-        Edit("Move Layer", () => LayerPlacement.MoveOutOfFolder(document, id));
+        Edit("移动图层", () => LayerPlacement.MoveOutOfFolder(document, id));
         Reselect(id);
     }
 
@@ -3155,7 +3155,7 @@ public sealed class MainWindow : Window
     {
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { } layer) return;
-        Edit(layer.MaskSourceID is not null ? "Release Clipping Mask" : "Create Clipping Mask",
+        Edit(layer.MaskSourceID is not null ? "释放剪切蒙版" : "创建剪切蒙版",
             () => LayerMaskEdits.Toggle(document, id));
         Reselect(id);
     }
@@ -3163,7 +3163,7 @@ public sealed class MainWindow : Window
     private void AddMask(bool revealing)
     {
         if (_document is not { } document || Selected is not { } id) return;
-        Edit(revealing ? "Add Reveal-All Mask" : "Add Hide-All Mask", () => LayerMaskEdits.Add(document, id, revealing));
+        Edit(revealing ? "添加显示全部蒙版" : "添加隐藏全部蒙版", () => LayerMaskEdits.Add(document, id, revealing));
         Reselect(id);
     }
 
@@ -3172,14 +3172,14 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id)?.Mask is not { } mask) return;
         var enabled = !mask.IsEnabled;
-        Edit(enabled ? "Enable Layer Mask" : "Disable Layer Mask", () => LayerMaskEdits.SetEnabled(document, id, enabled));
+        Edit(enabled ? "启用图层蒙版" : "停用图层蒙版", () => LayerMaskEdits.SetEnabled(document, id, enabled));
         Reselect(id);
     }
 
     private void DeleteMask()
     {
         if (_document is not { } document || Selected is not { } id) return;
-        Edit("Delete Layer Mask", () => LayerMaskEdits.Remove(document, id));
+        Edit("删除图层蒙版", () => LayerMaskEdits.Remove(document, id));
         Reselect(id);
     }
 
@@ -3188,7 +3188,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id)?.Mask is not { } mask) return;
         var linked = !mask.IsLinked;
-        Edit(linked ? "Link Layer Mask" : "Unlink Layer Mask", () => LayerMaskEdits.SetLinked(document, id, linked));
+        Edit(linked ? "链接图层蒙版" : "取消链接图层蒙版", () => LayerMaskEdits.SetLinked(document, id, linked));
         Reselect(id);
     }
 
@@ -3207,7 +3207,7 @@ public sealed class MainWindow : Window
         _history.End(document, id);
         if (made is not { } merged)
         {
-            Say("Nothing to merge");
+            Say("没有可合并的图层");
             return;
         }
         Reselect(merged);
@@ -3218,7 +3218,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         var ids = SelectedLayers;
         if (ids.Count == 0) return;
-        Edit(canvas ? $"Flip Canvas {(horizontal ? "Horizontal" : "Vertical")}" : $"Flip {(horizontal ? "Horizontal" : "Vertical")}",
+        Edit(canvas ? $"{(horizontal ? "水平" : "垂直")}翻转画布" : $"{(horizontal ? "水平" : "垂直")}翻转",
             () =>
             {
                 if (canvas)
@@ -3290,32 +3290,32 @@ public sealed class MainWindow : Window
         RefreshOptionsBar();
         Say(tool switch
         {
-            Tool.Brush => $"Brush: {_options.Brush.Diameter:0} pixels, {Spell(_options.Brush)} — drag on the canvas",
+            Tool.Brush => $"画笔：{_options.Brush.Diameter:0} 像素，{Spell(_options.Brush)} —— 在画布上拖动",
             Tool.Clone => _cloneSource is null
-                ? "Clone stamp — Alt-click where it should copy from first"
-                : $"Clone stamp copying from {_cloneSource.Value.X:0},{_cloneSource.Value.Y:0} — drag on the canvas",
-            Tool.Blur => $"Blur brush: {_options.Brush.Diameter:0} pixels — drag over what should soften",
-            Tool.Liquify => $"Liquify brush: {_options.Brush.Diameter:0} pixels — drag the pixels where they should go",
-            Tool.Smudge => $"Smudge brush: {_options.Brush.Diameter:0} pixels — drag the color along",
-            Tool.Heal => $"Spot healing ({_options.Brush.Healing}): {_options.Brush.Diameter:0} pixels — drag over what should go",
-            Tool.Eyedropper => "Eyedropper — click the canvas to take its color",
-            Tool.Type => "Type — click where the text goes, then type it",
-            Tool.Crop => "Crop — drag a frame, Alt to grow it from the middle, then Crop ▸ Apply",
-            Tool.Shape => $"Shape ({_options.Shape}) — drag it out; Shift squares it, Alt grows it from the middle",
-            Tool.Gradient => $"Gradient ({_options.Gradient}, {(_options.GradientToBackground ? "to the background colour" : "to nothing")}) — drag the line it runs along",
-            Tool.Move => "Move — drag the layer, or a handle to scale and turn it",
-            Tool.Marquee => "Marquee — drag a rectangle; Shift adds, Alt subtracts",
-            Tool.Ellipse => "Elliptical marquee — drag an oval; Shift adds, Alt subtracts",
-            Tool.Lasso => "Lasso — drag round a shape; Shift adds, Alt subtracts",
-            Tool.Polygon => "Polygonal lasso — click each corner, double-click to close",
-            Tool.Wand => "Magic wand — click a color to take everything like it",
-            _ => "Pan — drag to scroll",
+                ? "仿制图章 —— 先 Alt 点击取样点"
+                : $"仿制图章：从 {_cloneSource.Value.X:0},{_cloneSource.Value.Y:0} 取样 —— 在画布上拖动",
+            Tool.Blur => $"模糊画笔：{_options.Brush.Diameter:0} 像素 —— 在要柔化的地方拖动",
+            Tool.Liquify => $"液化画笔：{_options.Brush.Diameter:0} 像素 —— 把像素拖到目标位置",
+            Tool.Smudge => $"涂抹画笔：{_options.Brush.Diameter:0} 像素 —— 沿拖动方向涂抹颜色",
+            Tool.Heal => $"污点修复（{Labels.Healing(_options.Brush.Healing)}）：{_options.Brush.Diameter:0} 像素 —— 在要去掉的地方拖动",
+            Tool.Eyedropper => "吸管 —— 在画布上点击取色",
+            Tool.Type => "横排文字 —— 点击文字位置后输入",
+            Tool.Crop => "裁剪 —— 拖出框，按 Alt 从中心扩展，再用「裁剪 ▸ 应用」",
+            Tool.Shape => $"形状（{Labels.Shape(_options.Shape)}）—— 拖出形状；Shift 约束为正方形，Alt 从中心扩展",
+            Tool.Gradient => $"渐变（{Labels.Gradient(_options.Gradient)}，{(_options.GradientToBackground ? "到背景色" : "到透明")}）—— 拖出渐变走向线",
+            Tool.Move => "移动 —— 拖动图层，或拖动控制点缩放与旋转",
+            Tool.Marquee => "矩形选框 —— 拖出矩形；Shift 加选，Alt 减选",
+            Tool.Ellipse => "椭圆选框 —— 拖出椭圆；Shift 加选，Alt 减选",
+            Tool.Lasso => "套索 —— 沿形状拖动；Shift 加选，Alt 减选",
+            Tool.Polygon => "多边形套索 —— 逐点单击，双击闭合",
+            Tool.Wand => "魔棒 —— 点击一个颜色以选中所有相近颜色",
+            _ => "抓手 —— 拖动画布",
         });
     }
 
     /// <summary>What the brush is set to, in words, for the status line.</summary>
     private static string Spell(BrushSettings brush) =>
-        (brush.Hardness >= 1 ? "hard" : $"{brush.Hardness * 100:0}% hard") +
+        (brush.Hardness >= 1 ? "硬度 100%" : $"{brush.Hardness * 100:0}% hard") +
         (brush.Opacity < 1 ? $", {brush.Opacity * 100:0}%" : "") +
         $", color {brush.Red * 255:0},{brush.Green * 255:0},{brush.Blue * 255:0}";
 
@@ -3324,7 +3324,7 @@ public sealed class MainWindow : Window
     {
         if (which == WandSetting.Tolerance)
         {
-            if (await Ask("Wand tolerance", "How far off the color still counts, 0 to 255",
+            if (await Ask("魔棒容差", "颜色差异在此范围内仍算选中，0 到 255",
                     $"{_options.Wand.Tolerance}", 0, 255) is not { } tolerance)
             {
                 return;
@@ -3333,7 +3333,7 @@ public sealed class MainWindow : Window
         }
         else
         {
-            if (await Ask("Wand sample size", "How wide a patch is read around the click, 0 to 100",
+            if (await Ask("魔棒取样大小", "点击处周围读取的范围，0 到 100",
                     $"{_options.Wand.Radius}", 0, 100) is not { } radius)
             {
                 return;
@@ -3341,7 +3341,7 @@ public sealed class MainWindow : Window
             _options.Wand = _options.Wand with { Radius = (int)Math.Round(radius) };
         }
         OptionsChanged();
-        Say($"Magic wand: tolerance {_options.Wand.Tolerance}, sampling {_options.Wand.Radius} pixels");
+        Say($"魔棒: 容差 {_options.Wand.Tolerance}, 取样 {_options.Wand.Radius} 像素");
     }
 
     /// <summary>Asks for one of the Shape tool's amounts, as the options bar's own buttons do.</summary>
@@ -3349,7 +3349,7 @@ public sealed class MainWindow : Window
     {
         if (which == ShapeSetting.CornerRadius)
         {
-            if (await Ask("Corner radius", "Pixels, 0 for square corners", $"{_options.ShapeCornerRadius:0}", 0, 1000)
+            if (await Ask("角半径", "像素，0 为直角", $"{_options.ShapeCornerRadius:0}", 0, 1000)
                 is { } radius)
             {
                 _options.ShapeCornerRadius = radius;
@@ -3357,13 +3357,13 @@ public sealed class MainWindow : Window
         }
         else
         {
-            if (await Ask("Line width", "Pixels, 1 to 200", $"{_options.ShapeLineWidth:0}", 1, 200) is { } width)
+            if (await Ask("线宽", "像素，1 到 200", $"{_options.ShapeLineWidth:0}", 1, 200) is { } width)
             {
                 _options.ShapeLineWidth = width;
             }
         }
         OptionsChanged();
-        Say($"Shape: {_options.Shape}, radius {_options.ShapeCornerRadius:0}, width {_options.ShapeLineWidth:0}");
+        Say($"形状：{Labels.Shape(_options.Shape)}，圆角 {_options.ShapeCornerRadius:0}，线宽 {_options.ShapeLineWidth:0}");
     }
 
     /// <summary>
@@ -3426,7 +3426,7 @@ public sealed class MainWindow : Window
         _options.GradientBackground = (_options.Brush.Red, _options.Brush.Green, _options.Brush.Blue);
         _options.Brush = _options.Brush with { Red = red, Green = green, Blue = blue };
         PushBrush();
-        Say("Swapped the foreground and background colors");
+        Say("已交换前景色与背景色");
     }
 
     /// <summary>Puts the colours back to black and white, as the Mac's palette does with D.</summary>
@@ -3435,7 +3435,7 @@ public sealed class MainWindow : Window
         _options.Brush = _options.Brush with { Red = 0, Green = 0, Blue = 0 };
         _options.GradientBackground = (1, 1, 1);
         PushBrush();
-        Say("Foreground black and background white");
+        Say("前景色黑，背景色白");
     }
 
     /// <summary>
@@ -3462,16 +3462,16 @@ public sealed class MainWindow : Window
             ? (_options.Brush.Red, _options.Brush.Green, _options.Brush.Blue)
             : _options.GradientBackground;
         var picker = new ColorPickerDialog(
-            foreground ? "Color Picker (Foreground Color)" : "Color Picker (Background Color)", start);
+            foreground ? "拾色器(前景色)" : "拾色器(背景色)", start);
         picker.Applied += colour => TakeColour(foreground, toBackground, colour);
         picker.Cancelled += () =>
         {
             _picker = null;
-            Say($"The {(foreground ? "foreground" : "background")} color was left as it was");
+            Say($"{(foreground ? "前景色" : "背景色")}保持原样");
         };
         _picker = picker;
         picker.Show(this);
-        Say($"Picking the {(foreground ? "foreground" : "background")} color — click the canvas to sample one");
+        Say($"正在拾取{(foreground ? "前景色" : "背景色")} —— 在画布上点击以取样");
     }
 
     /// <summary>Takes the colour the picker ended on: the brush's, or the background's and the gradient's.</summary>
@@ -3488,7 +3488,7 @@ public sealed class MainWindow : Window
             if (toBackground) _options.GradientToBackground = true;
         }
         PushBrush();
-        Say($"{(foreground ? "Foreground" : "Background")} color: "
+        Say($"{(foreground ? "前景色" : "背景色")}: "
             + $"{colour.Red * 255:0},{colour.Green * 255:0},{colour.Blue * 255:0}");
     }
 
@@ -3500,11 +3500,11 @@ public sealed class MainWindow : Window
             _gradientMenu.Items.Add(Command($"_{shape}", () => SetGradient(shape, null, null)));
         }
         _gradientMenu.Items.Add(new Separator());
-        _gradientMenu.Items.Add(Command("_To the background color", () => SetGradient(null, true, null)));
-        _gradientMenu.Items.Add(Command("To _nothing", () => SetGradient(null, false, null)));
+        _gradientMenu.Items.Add(Command("到背景色(_T)", () => SetGradient(null, true, null)));
+        _gradientMenu.Items.Add(Command("无(_N)", () => SetGradient(null, false, null)));
         _gradientMenu.Items.Add(new Separator());
-        _gradientMenu.Items.Add(Command("_Reversed", () => SetGradient(null, null, !_options.GradientReversed)));
-        _gradientMenu.Items.Add(Command("_Background color…", SetGradientBackground));
+        _gradientMenu.Items.Add(Command("反向(_R)", () => SetGradient(null, null, !_options.GradientReversed)));
+        _gradientMenu.Items.Add(Command("背景色(_B)…", SetGradientBackground));
     }
 
     private void SetGradient(GradientShape? shape, bool? toBackground, bool? reversed)
@@ -3512,8 +3512,8 @@ public sealed class MainWindow : Window
         if (shape is { } wanted) _options.Gradient = wanted;
         if (toBackground is { } fade) _options.GradientToBackground = fade;
         if (reversed is { } turn) _options.GradientReversed = turn;
-        Say($"Gradient: {_options.Gradient}, {(_options.GradientToBackground ? "to the background colour" : "to nothing")}" +
-            (_options.GradientReversed ? ", reversed" : "") + ", opacity as the brush's");
+        Say($"渐变：{Labels.Gradient(_options.Gradient)}，{(_options.GradientToBackground ? "到背景色" : "到透明")}" +
+            (_options.GradientReversed ? "，反向" : "") + "，不透明度与画笔一致");
         SetTool(_tool);
     }
 
@@ -3570,14 +3570,14 @@ public sealed class MainWindow : Window
         StopPreview();
         if (!GradientEdits.HasLine(start, end))
         {
-            Say("Drag the line the gradient should run along");
+            Say("请拖出渐变的方向线");
             return;
         }
         var (mask, from, to, opacity, shape) = GradientPlan(document, id);
-        Edit(mask ? "Gradient Mask" : "Gradient",
+        Edit(mask ? "渐变蒙版" : "渐变",
             () => GradientEdits.Fill(document, id, mask, start, end, from, to, opacity, shape));
         Reselect(id);
-        Say($"Gradient over {Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2)):0} pixels");
+        Say($"渐变长度 {Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2)):0} 像素");
     }
 
     /// <summary>The shapes the Shape tool draws, and the two numbers that shape them.</summary>
@@ -3590,8 +3590,8 @@ public sealed class MainWindow : Window
             _shapeKindItems[kind] = item;
         }
         _shapeKinds.Items.Add(new Separator());
-        _shapeKinds.Items.Add(Command("Corner _radius…", () => _ = SetShapeNumber(ShapeNumber.CornerRadius)));
-        _shapeKinds.Items.Add(Command("_Line width…", () => _ = SetShapeNumber(ShapeNumber.LineWidth)));
+        _shapeKinds.Items.Add(Command("角半径(_R)…", () => _ = SetShapeNumber(ShapeNumber.CornerRadius)));
+        _shapeKinds.Items.Add(Command("线宽(_L)…", () => _ = SetShapeNumber(ShapeNumber.LineWidth)));
         SetShapeKind(ShapeKind.Rectangle);
     }
 
@@ -3608,14 +3608,14 @@ public sealed class MainWindow : Window
     {
         var corner = which == ShapeNumber.CornerRadius;
         var current = corner ? _options.ShapeCornerRadius : _options.ShapeLineWidth;
-        if (await Ask(corner ? "Corner radius" : "Line width", "Document pixels, 0 to 1000",
+        if (await Ask(corner ? "角半径" : "线宽", "文档像素，0 到 1000",
                 $"{current:0.##}", 0, 1000) is not { } value)
         {
             return;
         }
         if (corner) _options.ShapeCornerRadius = value;
         else _options.ShapeLineWidth = Math.Max(1, value);
-        Say($"Shape: {_options.Shape}, {(corner ? "corner radius" : "line width")} {value:0.##} pixels");
+        Say($"形状：{Labels.Shape(_options.Shape)}，{(corner ? "圆角" : "线宽")} {value:0.##} 像素");
     }
 
     private enum ShapeNumber
@@ -3652,7 +3652,7 @@ public sealed class MainWindow : Window
         }
         if (ShapeEdits.TooLarge(target.Width, target.Height))
         {
-            Say("That shape is too large to draw as one layer");
+            Say("该形状过大，无法作为单个图层绘制");
             return;
         }
         _history.Begin(_options.Shape.ToString(), document, Selected);
@@ -3660,11 +3660,11 @@ public sealed class MainWindow : Window
         _history.End(document, Selected);
         if (made is null)
         {
-            Say("That shape could not be drawn");
+            Say("该形状无法绘制");
             return;
         }
         Reselect(made);
-        Say($"{_options.Shape}: {target.Width}x{target.Height} at {target.Left},{target.Top}");
+        Say($"{Labels.Shape(_options.Shape)}：{target.Width} × {target.Height}，位于 {target.Left},{target.Top}");
     }
 
     /// <summary>Where a document point sits in a box, as a fraction of its sides.</summary>
@@ -3683,7 +3683,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { Asset: not null, IsGroup: false })
         {
-            Say("Camera Raw needs a layer with pixels of its own");
+            Say("Camera Raw 需要自带像素的图层");
             return;
         }
         CloseCameraRaw();
@@ -3707,7 +3707,7 @@ public sealed class MainWindow : Window
         panel.CanvasChanged += UprightCanvasChanged;
         _canvas.UprightDrawn = UprightDrawn;
         panel.Show();
-        Say("Camera Raw: the panel is docked on the right and the canvas shows what it is doing");
+        Say("Camera Raw：面板停靠在右侧，画布实时显示效果");
     }
 
     /// <summary>
@@ -3764,11 +3764,11 @@ public sealed class MainWindow : Window
         }
         if (Fraction(layer, start) is not { } from || Fraction(layer, end) is not { } to)
         {
-            Say("A guide has to be drawn inside the layer it straightens");
+            Say("参考线必须画在它要校正的图层范围内");
             return;
         }
         panel.AddGuide(new CameraRawGeometryGuide(from.X, from.Y, to.X, to.Y));
-        Say($"Upright: {panel.Guides.Count} line(s) drawn; the picture is turned by what they ask for");
+        Say($"校正：已绘制 {panel.Guides.Count} 条线；画面按线的走向校直");
     }
 
     /// <summary>The lines the panel has, in document pixels, for the canvas to draw over the picture.</summary>
@@ -3804,10 +3804,10 @@ public sealed class MainWindow : Window
         // Kept for the next time the panel is opened, as the Mac's filter settings keep the last grade.
         _cameraRawAmounts = settings;
         if (_document is not { } current || id is not { } layer || settings.IsIdentity) return;
-        Edit("Camera Raw Filter", () => CameraRawEdits.Apply(current, layer, settings));
+        Edit("Camera Raw 滤镜", () => CameraRawEdits.Apply(current, layer, settings));
         Reselect(layer);
-        Say($"Camera Raw: exposure {settings.Exposure:0.##}, contrast {settings.Contrast:0}, " +
-            $"saturation {settings.Saturation:0}");
+        Say($"Camera Raw：曝光 {settings.Exposure:0.##}，对比度 {settings.Contrast:0}，" +
+            $"饱和度 {settings.Saturation:0}");
     }
 
     /// <summary>
@@ -3840,7 +3840,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { Asset: not null, IsGroup: false })
         {
-            Say($"{kind} needs a layer with pixels of its own");
+            Say($"{FilterDialog.Label(kind)}需要自带像素的图层");
             return;
         }
         StartPreview(document, id);
@@ -3859,9 +3859,9 @@ public sealed class MainWindow : Window
         // of filter settings does.
         _filterAmounts = settings;
         if (_document is not { } current) return;
-        Edit($"{kind} Filter", () => FilterEdits.Apply(current, id, kind, settings));
+        Edit($"{FilterDialog.Label(kind)}滤镜", () => FilterEdits.Apply(current, id, kind, settings));
         Reselect(id);
-        Say($"{kind} applied");
+        Say($"{FilterDialog.Label(kind)} 已应用");
     }
 
     /// <summary>
@@ -3873,7 +3873,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { Asset: not null, IsGroup: false })
         {
-            Say("Dither needs a layer with pixels of its own");
+            Say("抖动需要自带像素的图层");
             return;
         }
         StartPreview(document, id);
@@ -3885,9 +3885,9 @@ public sealed class MainWindow : Window
         _ditherLook = chosen.Style;
         _ditherAmounts = chosen.Settings;
         if (_document is not { } current) return;
-        Edit("Dither", () => DitherEdits.Apply(current, id, chosen.Style, chosen.Settings));
+        Edit("抖动", () => DitherEdits.Apply(current, id, chosen.Style, chosen.Settings));
         Reselect(id);
-        Say($"Dither: {chosen.Style}, {chosen.Settings.Levels:0} tones");
+        Say($"抖动：{DitherDialog.StyleName(chosen.Style)}，{chosen.Settings.Levels:0} 个色阶");
     }
 
     /// <summary>
@@ -3899,21 +3899,21 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Selection.Path is null)
         {
-            Say("Content-Aware Fill needs a selection to fill");
+            Say("内容识别填充需要先建立选区");
             return;
         }
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { Asset: not null, IsGroup: false })
         {
-            Say("Content-Aware Fill needs a layer with pixels of its own");
+            Say("内容识别填充需要自带像素的图层");
             return;
         }
-        if (!Edit("Content-Aware Fill", () => ContentFillEdits.Apply(document, id)))
+        if (!Edit("内容识别填充", () => ContentFillEdits.Apply(document, id)))
         {
-            Say("Content-Aware Fill found nothing to fill from: make the selection smaller");
+            Say("内容识别填充找不到可参考的内容：请把选区缩小");
             return;
         }
         Reselect(id);
-        Say("Content-Aware Fill applied");
+        Say("已应用内容识别填充");
     }
 
     /// <summary>
@@ -3923,23 +3923,23 @@ public sealed class MainWindow : Window
     {
         foreach (var (label, kind) in new (string Label, AdjustmentKind Kind)[]
                  {
-                     ("_Hue/Saturation", AdjustmentKind.HueSaturation),
-                     ("_Levels", AdjustmentKind.Levels),
-                     ("C_urves", AdjustmentKind.Curves),
-                     ("_Exposure", AdjustmentKind.Exposure),
-                     ("_Black & White", AdjustmentKind.BlackWhite),
-                     ("_Gradient Map", AdjustmentKind.GradientMap),
-                     ("_Grain", AdjustmentKind.Grain),
-                     ("_Add Noise", AdjustmentKind.AddNoise),
-                     ("_Gaussian Blur", AdjustmentKind.GaussianBlur),
-                     ("_Motion Blur", AdjustmentKind.MotionBlur),
-                     ("C_olor Balance", AdjustmentKind.ColorBalance),
-                     ("_Invert", AdjustmentKind.Invert),
+                     ("色相/饱和度(_H)", AdjustmentKind.HueSaturation),
+                     ("色阶(_L)", AdjustmentKind.Levels),
+                     ("曲线(_C)", AdjustmentKind.Curves),
+                     ("曝光度(_E)", AdjustmentKind.Exposure),
+                     ("黑白(_B)", AdjustmentKind.BlackWhite),
+                     ("渐变映射(_G)", AdjustmentKind.GradientMap),
+                     ("颗粒(_R)", AdjustmentKind.Grain),
+                     ("添加杂色(_A)", AdjustmentKind.AddNoise),
+                     ("高斯模糊(_G)", AdjustmentKind.GaussianBlur),
+                     ("动感模糊(_M)", AdjustmentKind.MotionBlur),
+                     ("色彩平衡(_O)", AdjustmentKind.ColorBalance),
+                     ("反相(_I)", AdjustmentKind.Invert),
                  })
         {
             _adjustmentMenu.Items.Add(Command(label, () => _ = NewAdjustment(kind)));
         }
-        _adjustmentSettings = LayerCommand("Adjustment _Settings…", () => _ = EditAdjustment(), null,
+        _adjustmentSettings = LayerCommand("调整设置(_S)…", () => _ = EditAdjustment(), null,
             (_, layer) => layer.Adjustment is not null);
         BuildEffectsMenu();
     }
@@ -3957,7 +3957,7 @@ public sealed class MainWindow : Window
                 (_, layer) => layer.IsGroup == false));
         }
         _effectsMenu.Items.Add(new Separator());
-        _clearEffects = LayerCommand("_Clear Effects", ClearEffects, null, (_, layer) => layer.Effects is not null);
+        _clearEffects = LayerCommand("清除图层样式(_C)", ClearEffects, null, (_, layer) => layer.Effects is not null);
         _effectsMenu.Items.Add(_clearEffects);
     }
 
@@ -3978,23 +3978,23 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id)?.Effects is null)
         {
-            Say("This layer has no effects");
+            Say("该图层没有图层样式");
             return;
         }
-        Edit("Clear Effects", () => LayerEdits.SetEffects(document, id, null));
-        Say("Effects cleared");
+        Edit("清除图层样式", () => LayerEdits.SetEffects(document, id, null));
+        Say("图层样式已清除");
     }
 
     /// <summary>A new adjustment layer over the selected one, with its settings asked for straight away.</summary>
     private async Task NewAdjustment(AdjustmentKind kind)
     {
         if (_document is not { } document) return;
-        _history.Begin("New Adjustment Layer", document, Selected);
+        _history.Begin("新建调整图层", document, Selected);
         var made = LayerPlacement.AddAdjustment(document, kind, Selected);
         _history.End(document, Selected);
         if (made is null)
         {
-            Say("This document already holds as many layers as it may.");
+            Say("本文档的图层数量已达上限。");
             return;
         }
         Reselect(made);
@@ -4012,9 +4012,9 @@ public sealed class MainWindow : Window
         StopPreview();
         if (asked is not { } changed) return;
         if (_document is not { } current) return;
-        Edit($"{LayerPlacement.Name(changed.Kind)} Adjustment", () => LayerAdjustmentEdits.Set(current, id, changed));
+        Edit($"{LayerPlacement.Name(changed.Kind)}调整图层", () => LayerAdjustmentEdits.Set(current, id, changed));
         Reselect(id);
-        Say($"{LayerPlacement.Name(changed.Kind)} adjustment set");
+        Say($"{LayerPlacement.Name(changed.Kind)}调整图层已设置");
     }
 
     /// <summary>
@@ -4027,7 +4027,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { Asset: not null, IsGroup: false, Adjustment: null })
         {
-            Say($"{LayerPlacement.Name(kind)} needs a layer with pixels of its own");
+            Say($"{LayerPlacement.Name(kind)}需要自带像素的图层");
             return;
         }
         StartPreview(document, id);
@@ -4038,7 +4038,7 @@ public sealed class MainWindow : Window
         if (_document is not { } current) return;
         Edit(LayerPlacement.Name(kind), () => FilterEdits.ApplyAdjustment(current, id, settings));
         Reselect(id);
-        Say($"{LayerPlacement.Name(kind)} applied");
+        Say($"{LayerPlacement.Name(kind)} 已应用");
     }
 
     /// <summary>Edit ▸ Copy: the selected pixels of the active layer, held for a paste.</summary>
@@ -4048,11 +4048,11 @@ public sealed class MainWindow : Window
         var copied = SelectionClipboard.Copy(document, id);
         if (copied is null)
         {
-            Say("Select something on a layer with pixels of its own first");
+            Say("请先在自带像素的图层上选中内容");
             return;
         }
         Adopt(copied);
-        Say($"Copied {copied.Region.Width} x {copied.Region.Height}");
+        Say($"已拷贝 {copied.Region.Width} x {copied.Region.Height}");
     }
 
     /// <summary>Edit ▸ Copy Merged: the selected pixels of everything that is drawn.</summary>
@@ -4062,11 +4062,11 @@ public sealed class MainWindow : Window
         var copied = SelectionClipboard.CopyMerged(document);
         if (copied is null)
         {
-            Say("Select something to copy first");
+            Say("请先选中要拷贝的内容");
             return;
         }
         Adopt(copied);
-        Say($"Copied {copied.Region.Width} x {copied.Region.Height} from the flattened picture");
+        Say($"已从拼合图像拷贝 {copied.Region.Width} x {copied.Region.Height}");
     }
 
     /// <summary>Edit ▸ Cut: the selected pixels taken off, and held for a paste.</summary>
@@ -4074,12 +4074,12 @@ public sealed class MainWindow : Window
     {
         if (_document is not { } document || Selected is not { } id) return;
         ClipboardImage? copied;
-        _history.Begin("Cut", document, Selected);
+        _history.Begin("剪切", document, Selected);
         try
         {
             if (!SelectionClipboard.Cut(document, id, out copied) || copied is null)
             {
-                Say("Select something on a layer with pixels of its own first");
+                Say("请先在自带像素的图层上选中内容");
                 return;
             }
         }
@@ -4089,7 +4089,7 @@ public sealed class MainWindow : Window
         }
         Adopt(copied);
         Reselect(id);
-        Say($"Cut {copied.Region.Width} x {copied.Region.Height}");
+        Say($"已剪切 {copied.Region.Width} x {copied.Region.Height}");
     }
 
     /// <summary>Edit ▸ Paste: the clipboard as a layer, where on the document it came from.</summary>
@@ -4098,11 +4098,11 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (_clipboard is not { } clipboard)
         {
-            Say("There is nothing to paste");
+            Say("没有可粘贴的内容");
             return;
         }
         Guid? made = null;
-        _history.Begin("Paste", document, Selected);
+        _history.Begin("粘贴", document, Selected);
         try
         {
             made = SelectionClipboard.Paste(document, clipboard, Selected);
@@ -4113,11 +4113,11 @@ public sealed class MainWindow : Window
         }
         if (made is null)
         {
-            Say("This document already holds as many layers as it may.");
+            Say("本文档的图层数量已达上限。");
             return;
         }
         Reselect(made);
-        Say($"Pasted {clipboard.Region.Width} x {clipboard.Region.Height}");
+        Say($"已粘贴 {clipboard.Region.Width} x {clipboard.Region.Height}");
     }
 
     /// <summary>Edit ▸ Layer via Copy: the selected pixels of the active layer as a layer of their own.</summary>
@@ -4125,7 +4125,7 @@ public sealed class MainWindow : Window
     {
         if (_document is not { } document || Selected is not { } id) return;
         Guid? made = null;
-        _history.Begin("Layer via Copy", document, Selected);
+        _history.Begin("通过拷贝的图层", document, Selected);
         try
         {
             made = SelectionClipboard.LayerViaCopy(document, id, Selected);
@@ -4136,11 +4136,11 @@ public sealed class MainWindow : Window
         }
         if (made is null)
         {
-            Say("Select something on a layer with pixels of its own first");
+            Say("请先在自带像素的图层上选中内容");
             return;
         }
         Reselect(made);
-        Say("Layer made from the selection");
+        Say("已从选区建立图层");
     }
 
     /// <summary>The clipboard the window holds: one piece of the canvas at a time, as the Mac build keeps it.</summary>
@@ -4162,13 +4162,13 @@ public sealed class MainWindow : Window
             return;
         }
         if (_document is not { } current) return;
-        if (!Edit("Image Size", () => ImageEdits.Resize(current, asked.Width, asked.Height, asked.Resolution, asked.Sampling)))
+        if (!Edit("图像大小", () => ImageEdits.Resize(current, asked.Width, asked.Height, asked.Resolution, asked.Sampling)))
         {
-            Say("That size is too large to resample to.");
+            Say("该尺寸过大，无法重新取样。");
             return;
         }
         _canvas.Fit();
-        Say($"Image is now {asked.Width} x {asked.Height} at {asked.Resolution:0.##} per inch");
+        Say($"图像现在为 {asked.Width} × {asked.Height}，{asked.Resolution:0.##} 像素/英寸");
     }
 
     /// <summary>A distortion has been taken hold of: one undo step for the whole drag, as a slider drag gets.</summary>
@@ -4177,7 +4177,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         _distortBox = _canvas.TransformBox;
         _distortLayers = SelectedLayers;
-        _history.Begin(_distortLayers.Count > 1 ? "Distort Layers" : "Distort", document, Selected);
+        _history.Begin(_distortLayers.Count > 1 ? "变形多个图层" : "变形", document, Selected);
         if (_distortLayers.Count > 1) StartPreview(document, _distortLayers);
         else StartPreview(document, id);
     }
@@ -4213,7 +4213,7 @@ public sealed class MainWindow : Window
         var distorted = ids.Count > 1 && box is { } group
             ? DistortEdits.Distort(document, ids, group, corners)
             : DistortEdits.Distort(document, id, corners);
-        if (!distorted) Say("That shape cannot be made");
+        if (!distorted) Say("无法创建该形状");
         _history.End(document, Selected);
         Reselect(id);
     }
@@ -4222,7 +4222,7 @@ public sealed class MainWindow : Window
     private void GuideDragStarted()
     {
         if (_document is not { } document) return;
-        _history.Begin("Move Guide", document, Selected);
+        _history.Begin("移动参考线", document, Selected);
     }
 
     /// <summary>The guide follows the pointer; the history step was begun when it was taken hold of.</summary>
@@ -4231,7 +4231,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (!GuideEdits.Move(document, id, position)) return;
         _canvas.InvalidateVisual();
-        Say($"Guide at {position:0.#}");
+        Say($"参考线位于 {position:0.#}");
     }
 
     /// <summary>
@@ -4244,7 +4244,7 @@ public sealed class MainWindow : Window
         if (document.Guides.FirstOrDefault(guide => !GuideEdits.OnCanvas(document, guide)) is { } away)
         {
             GuideEdits.Remove(document, away.ID);
-            Say("Guide taken away");
+            Say("参考线已移除");
         }
         _history.End(document, Selected);
         Refresh();
@@ -4261,14 +4261,14 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (_guidesLocked)
         {
-            Say("The guides are locked, so none can be pulled off the ruler");
+            Say("参考线已锁定，无法从标尺拖出");
             return;
         }
         var at = Where(axis, ruler, onRuler);
-        _history.Begin("New Guide", document, Selected);
+        _history.Begin("新建参考线", document, Selected);
         _pulledGuide = GuideEdits.Add(document, axis, at);
         _canvas.InvalidateVisual();
-        Say($"Guide at {at:0.#}");
+        Say($"参考线位于 {at:0.#}");
     }
 
     /// <summary>The guide being pulled off a ruler follows the pointer; the history step began when it was made.</summary>
@@ -4278,7 +4278,7 @@ public sealed class MainWindow : Window
         var at = Where(ruler.Axis, ruler, onRuler);
         if (!GuideEdits.Move(document, id, at)) return;
         _canvas.InvalidateVisual();
-        Say($"Guide at {at:0.#}");
+        Say($"参考线位于 {at:0.#}");
     }
 
     /// <summary>
@@ -4304,10 +4304,10 @@ public sealed class MainWindow : Window
     /// <summary>The three things a drag can line up with, as the View menu lists them.</summary>
     private (MenuItem Item, SnapTo Flag, string Label)[] SnapRows() =>
     [
-        (_snapToCanvas, SnapTo.Canvas, "Snap to Canvas"),
-        (_snapToGuides, SnapTo.Guides, "Snap to Guides"),
-        (_snapToLayers, SnapTo.Layers, "Snap to Layers"),
-        (_snapToGrid, SnapTo.Grid, "Snap to Grid"),
+        (_snapToCanvas, SnapTo.Canvas, "对齐到画布"),
+        (_snapToGuides, SnapTo.Guides, "对齐到参考线"),
+        (_snapToLayers, SnapTo.Layers, "对齐到图层"),
+        (_snapToGrid, SnapTo.Grid, "对齐到网格"),
     ];
 
     /// <summary>View ▸ Snap to …: one kind of thing a drag lines up with, on or off.</summary>
@@ -4344,10 +4344,10 @@ public sealed class MainWindow : Window
     {
         _gridVisible = !_gridVisible;
         _canvas.Grid = _gridVisible ? _grid : null;
-        _showGrid.Header = _gridVisible ? "_Hide Grid" : "Show _Grid";
+        _showGrid.Header = _gridVisible ? "隐藏网格(_H)" : "显示网格(_G)";
         KeepSwitches();
         _canvas.InvalidateVisual();
-        Say(_gridVisible ? $"Grid every {_grid.Spacing} pixels" : "Grid hidden");
+        Say(_gridVisible ? $"网格间距 {_grid.Spacing} 像素" : "网格已隐藏");
     }
 
     /// <summary>A View menu row that is a switch: it opens where it was left and turns over when clicked.</summary>
@@ -4366,7 +4366,7 @@ public sealed class MainWindow : Window
         _showGuides.IsChecked = _guidesVisible;
         PushViewSwitches();
         KeepSwitches();
-        Say(_guidesVisible ? "Guides shown" : "Guides hidden");
+        Say(_guidesVisible ? "参考线已显示" : "参考线已隐藏");
     }
 
     /// <summary>View ▸ Lock Guides: whether a guide may be dragged. Locked, a click on one passes by it.</summary>
@@ -4376,7 +4376,7 @@ public sealed class MainWindow : Window
         _lockGuides.IsChecked = _guidesLocked;
         PushViewSwitches();
         KeepSwitches();
-        Say(_guidesLocked ? "Guides locked" : "Guides unlocked");
+        Say(_guidesLocked ? "参考线已锁定" : "参考线已解锁");
     }
 
     /// <summary>View ▸ Show Transform Controls: whether the Move tool draws its handles.</summary>
@@ -4386,7 +4386,7 @@ public sealed class MainWindow : Window
         _showTransform.IsChecked = _transformShown;
         PushViewSwitches();
         KeepSwitches();
-        Say(_transformShown ? "Transform controls shown" : "Transform controls hidden");
+        Say(_transformShown ? "变换控件已显示" : "变换控件已隐藏");
     }
 
     /// <summary>View ▸ Pixel Grid: a line around each document pixel when the view is in far enough.</summary>
@@ -4396,7 +4396,7 @@ public sealed class MainWindow : Window
         _pixelGrid.IsChecked = _pixelGridShown;
         PushViewSwitches();
         KeepSwitches();
-        Say(_pixelGridShown ? "Pixel grid shown from 800% up" : "Pixel grid hidden");
+        Say(_pixelGridShown ? "像素网格已显示(800% 及以上)" : "像素网格已隐藏");
     }
 
     /// <summary>View ▸ Snap: whether a drag lines up with anything at all.</summary>
@@ -4405,7 +4405,7 @@ public sealed class MainWindow : Window
         _snappingOn = !_snappingOn;
         _snapping.IsChecked = _snappingOn;
         KeepSwitches();
-        Say(_snappingOn ? "Snapping on" : "Snapping off");
+        Say(_snappingOn ? "对齐已打开" : "对齐已关闭");
     }
 
     /// <summary>The canvas told where each view switch stands, so what is drawn and what is caught agree.</summary>
@@ -4428,7 +4428,7 @@ public sealed class MainWindow : Window
         _rulerCorner.IsVisible = _rulersVisible;
         KeepSwitches();
         UpdateRulers();
-        Say(_rulersVisible ? "Rulers shown" : "Rulers hidden");
+        Say(_rulersVisible ? "标尺已显示" : "标尺已隐藏");
     }
 
     /// <summary>
@@ -4462,7 +4462,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document || _projectPath is not { } path) return;
         if (_history.IsModified)
         {
-            Say("The project has been written by something else — save or reopen to take the change up");
+            Say("项目已被其他程序改写 —— 请存储或重新打开以载入改动");
             return;
         }
         ProjectSnapshot snapshot;
@@ -4472,7 +4472,7 @@ public sealed class MainWindow : Window
         }
         catch (ProjectException)
         {
-            Say("The project has been written by something else, and what is there now cannot be read");
+            Say("项目已被其他程序改写，且当前内容无法读取");
             return;
         }
         var viewport = _canvas.Viewport;
@@ -4488,7 +4488,7 @@ public sealed class MainWindow : Window
         var again = selected.FirstOrDefault(id => _document.Layers.Any(layer => layer.ID == id));
         if (again != Guid.Empty) Reselect(again);
         Refresh();
-        Say($"{Path.GetFileName(path)} — taken up again, {_document.Layers.Count} layers");
+        Say($"{Path.GetFileName(path)} —— 已重新打开，{_document.Layers.Count} 个图层");
     }
 
     /// <summary>
@@ -4513,7 +4513,7 @@ public sealed class MainWindow : Window
         if (_gridVisible) _canvas.Grid = _grid;
         KeepSwitches();
         _canvas.InvalidateVisual();
-        Say($"Grid every {_grid.Spacing} pixels, split {_grid.Subdivisions} ways");
+        Say($"网格间距 {_grid.Spacing} 像素，分为 {_grid.Subdivisions} 份");
     }
 
     /// <summary>View ▸ New Guide: a line across the canvas to line things up against.</summary>
@@ -4522,16 +4522,16 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (await GuideDialog.Ask(this, document.Width, document.Height) is not { } asked) return;
         if (_document is not { } current) return;
-        _history.Begin("New Guide", current, Selected);
+        _history.Begin("新建参考线", current, Selected);
         var made = GuideEdits.Add(current, asked.Axis, asked.Position);
         _history.End(current, Selected);
         if (made is null)
         {
-            Say("This document already holds as many guides as it may.");
+            Say("本文档的参考线数量已达上限。");
             return;
         }
         Refresh();
-        Say($"{asked.Axis} guide at {asked.Position:0.#}");
+        Say($"{Labels.Axis(asked.Axis)}参考线位于 {asked.Position:0.#}");
     }
 
     /// <summary>View ▸ Clear Guides: every guide taken away, as one undo step.</summary>
@@ -4540,11 +4540,11 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (document.Guides.Count == 0)
         {
-            Say("There are no guides to clear");
+            Say("没有可清除的参考线");
             return;
         }
-        Edit("Clear Guides", () => GuideEdits.Clear(document) > 0);
-        Say("Guides cleared");
+        Edit("清除参考线", () => GuideEdits.Clear(document) > 0);
+        Say("参考线已清除");
     }
 
     /// <summary>
@@ -4557,11 +4557,11 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { Asset: not null, IsGroup: false, Adjustment: null })
         {
-            Say("Auto Levels needs a layer with pixels of its own");
+            Say("自动色阶需要自带像素的图层");
             return;
         }
-        if (!Edit("Auto Levels", () => LevelsEdits.Auto(document, id, mode))) Say("There is nothing in that layer to stretch");
-        else Say($"Auto Levels: {mode}");
+        if (!Edit("自动色阶", () => LevelsEdits.Auto(document, id, mode))) Say("该图层没有可拉伸的内容");
+        else Say($"{Labels.Auto(mode)}已完成");
         Reselect(id);
     }
 
@@ -4700,12 +4700,12 @@ public sealed class MainWindow : Window
         }
         if (ColorRangeSession.Begin(document) is not { } session)
         {
-            Say("There is no picture to pick a color from");
+            Say("没有可供取色的画面");
             return;
         }
         _colorRange = session;
         _colorRangeWas = document.Selection;
-        _history.Begin("Color Range", document, Selected);
+        _history.Begin("色彩范围", document, Selected);
         var panel = new ColorRangePanel(session);
         panel.Changed += () =>
         {
@@ -4717,7 +4717,7 @@ public sealed class MainWindow : Window
             if (_document is { } current) _history.End(current, Selected);
             CloseColorRange();
             Refresh();
-            Say($"Selected what is near {session.Include.Count} color(s) within {session.Fuzziness:0}");
+            Say($"已选中与 {session.Include.Count} 种颜色相近的范围，容差 {session.Fuzziness:0}");
         };
         panel.Cancelled += () =>
         {
@@ -4735,7 +4735,7 @@ public sealed class MainWindow : Window
         _canvas.EyedropperOnClick = true;
         panel.Show(this);
         ShowColorRange(document, false);
-        Say("Color Range: click the picture to pick the color to select");
+        Say("色彩范围：在画面上点击以拾取要选择的颜色");
     }
 
     /// <summary>Shows the panel the selection as it now stands, and lets the canvas draw it.</summary>
@@ -4745,7 +4745,7 @@ public sealed class MainWindow : Window
         _colorRangePanel?.Showing(_colorRange?.Mask(document), _colorRange?.Include.Count ?? 0,
             _colorRange?.Exclude.Count ?? 0);
         if (!changed) return;
-        Say(_colorRange?.Problem ?? $"{_colorRange?.Include.Count ?? 0} color(s) picked");
+        Say(_colorRange?.Problem ?? $"已取样 {_colorRange?.Include.Count ?? 0} 种颜色");
     }
 
     /// <summary>Puts the panel away and lets the session and its sample go.</summary>
@@ -4764,8 +4764,8 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (await CanvasSizeDialog.Ask(this, document.Width, document.Height, CanvasEdits.CentreAnchor) is not { } asked) return;
         if (_document is not { } current) return;
-        Edit("Canvas Size", () => CanvasEdits.Resize(current, asked.Width, asked.Height, asked.Anchor));
-        Say($"Canvas is now {asked.Width} x {asked.Height}");
+        Edit("画布大小", () => CanvasEdits.Resize(current, asked.Width, asked.Height, asked.Anchor));
+        Say($"画布现在为 {asked.Width} x {asked.Height}");
     }
 
     /// <summary>Image ▸ Trim: the canvas cut back to what is actually drawn on it.</summary>
@@ -4774,8 +4774,8 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (await TrimDialog.Ask(this, new TrimOptions()) is not { } options) return;
         if (_document is not { } current) return;
-        if (!Edit("Trim", () => TrimEdits.Trim(current, options))) Say("There was nothing to trim");
-        else Say($"Trimmed to {current.Width} x {current.Height}");
+        if (!Edit("裁切", () => TrimEdits.Trim(current, options))) Say("没有可裁切的内容");
+        else Say($"已裁切为 {current.Width} x {current.Height}");
     }
 
     /// <summary>
@@ -4793,10 +4793,10 @@ public sealed class MainWindow : Window
         }
         if (projects.Count == 0)
         {
-            _recentMenu.Items.Add(new MenuItem { Header = "Nothing yet", IsEnabled = false });
+            _recentMenu.Items.Add(new MenuItem { Header = "暂无", IsEnabled = false });
         }
         _recentMenu.Items.Add(new Separator());
-        var clear = Command("_Clear Menu", () =>
+        var clear = Command("清除菜单(_C)", () =>
         {
             _recent.Forgot();
             RefreshRecent();
@@ -4821,7 +4821,7 @@ public sealed class MainWindow : Window
         }
         catch (Exception error)
         {
-            Say($"Could not open {Path.GetFileName(path)}: {error.Message}");
+            Say($"无法打开 {Path.GetFileName(path)}: {error.Message}");
             RefreshRecent();
         }
     }
@@ -4832,7 +4832,7 @@ public sealed class MainWindow : Window
     /// </summary>
     private static readonly (string Label, double? Ratio)[] CropRatios =
     [
-        ("Free", null), ("Original", -1), ("1:1", 1), ("4:3", 4.0 / 3), ("3:4", 3.0 / 4),
+        ("Free", null), ("原样", -1), ("1:1", 1), ("4:3", 4.0 / 3), ("3:4", 3.0 / 4),
         ("16:9", 16.0 / 9), ("9:16", 9.0 / 16),
     ];
 
@@ -4847,8 +4847,8 @@ public sealed class MainWindow : Window
         // The same two rows the canvas answers to, so they show the key that really applies the frame.
         var apply = Command("_Apply", ApplyCrop);
         var cancel = Command("_Cancel", CancelCrop);
-        ShowKey(apply, "Apply Canvas Operation", Shortcuts.Canvas);
-        ShowKey(cancel, "Cancel Canvas Operation", Shortcuts.Canvas);
+        ShowKey(apply, "应用画布操作", Shortcuts.Canvas);
+        ShowKey(cancel, "取消画布操作", Shortcuts.Canvas);
         _cropRatios.Items.Add(apply);
         _cropRatios.Items.Add(cancel);
     }
@@ -4860,7 +4860,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (ratio is null)
         {
-            Say("Crop: any shape");
+            Say("裁剪：任意形状");
             return;
         }
         var wanted = ratio == -1 ? CropEdits.OriginalRatio(document) : ratio.Value;
@@ -4868,7 +4868,7 @@ public sealed class MainWindow : Window
         _cropFrame = CropEdits.ApplyRatio(frame, wanted);
         ShowCropBox();
         Refresh();
-        Say($"Crop: {wanted:0.##} to 1");
+        Say($"裁剪比例 {wanted:0.##}:1");
     }
 
     /// <summary>The crop frame follows the tool: the whole canvas until it is dragged.</summary>
@@ -4907,12 +4907,12 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if (_cropFrame is not { } frame)
         {
-            Say("Drag a frame first");
+            Say("请先拖出裁剪框");
             return;
         }
-        if (!CropEdits.Valid(frame)) { Say("That frame is not one the canvas can be cropped to"); return; }
+        if (!CropEdits.Valid(frame)) { Say("该裁剪框超出了画布可裁剪的范围"); return; }
         _canvas.SnapLines = (null, null);
-        Edit("Crop", () => CanvasEdits.Crop(document, frame));
+        Edit("裁剪", () => CanvasEdits.Crop(document, frame));
         _cropFrame = null;
         ShowCropBox();
     }
@@ -4924,7 +4924,7 @@ public sealed class MainWindow : Window
         _canvas.SnapLines = (null, null);
         ShowCropBox();
         Refresh();
-        Say("Crop: let go");
+        Say("裁剪：松开");
     }
 
     /// <summary>
@@ -4951,7 +4951,7 @@ public sealed class MainWindow : Window
             is { } target)
         {
             _text = TextSession.Editing(target);
-            _history.Begin("Edit Text", document, target.ID);
+            _history.Begin("编辑文字", document, target.ID);
         }
         else
         {
@@ -4964,12 +4964,12 @@ public sealed class MainWindow : Window
                 Green = _options.Brush.Green,
                 Blue = _options.Brush.Blue,
             }, origin);
-            _history.Begin("Type", document, Selected);
+            _history.Begin("文字", document, Selected);
         }
         _canvas.BeginText();
         ShowTextCaret();
         Refresh();
-        Say("Typing — Escape lets it go, Ctrl+Enter keeps it");
+        Say("输入中 —— Esc 放弃，Ctrl+Enter 确认");
     }
 
     /// <summary>Keys that were typed, put into the text and drawn as they go.</summary>
@@ -4981,7 +4981,7 @@ public sealed class MainWindow : Window
         if (typed.Length == 0) return;
         if (!session.Type(document, typed))
         {
-            Say("That text could not be drawn: its box is too big for one surface");
+            Say("该文字无法绘制：文本框超出一张画布的上限");
             return;
         }
         ShowText();
@@ -5037,7 +5037,7 @@ public sealed class MainWindow : Window
         _history.End(document, kept);
         if (kept is { } layer) Reselect(layer);
         else Refresh();
-        if (kept is not null) Say($"Text: {typed.Replace('\n', ' ').Trim().Length} characters");
+        if (kept is not null) Say($"文字: {typed.Replace('\n', ' ').Trim().Length} 个字符");
     }
 
     /// <summary>Escape: the words go back to what they were, and the history drops the step.</summary>
@@ -5050,7 +5050,7 @@ public sealed class MainWindow : Window
         session.Cancel(document);
         _history.End(document, session.LayerID);
         Refresh();
-        Say("Text let go");
+        Say("文字已释放");
     }
 
     /// <summary>Changes the selected text layer's face, size or colour and draws it again.</summary>
@@ -5060,18 +5060,18 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (document.Layers.FirstOrDefault(layer => layer.ID == id) is not { Text: { } text } layer)
         {
-            Say("That layer is not text");
+            Say("该图层不是文字图层");
             return;
         }
         var origin = new SKPoint((float)layer.Transform.X, (float)layer.Transform.Y);
-        if (await TextDialog.Ask(this, "Edit text", text.Style) is not { } wanted) return;
+        if (await TextDialog.Ask(this, "编辑文字", text.Style) is not { } wanted) return;
         if (_document is not { } current) return;
-        _history.Begin("Edit Text", current, id);
+        _history.Begin("编辑文字", current, id);
         var changed = TextEdits.SetStyle(current, id, wanted);
         _history.End(current, id);
-        if (!changed) { Say("That text could not be drawn"); return; }
+        if (!changed) { Say("该文字无法绘制"); return; }
         Reselect(id);
-        Say($"Text: {wanted.Content.Length} characters at {origin.X:0},{origin.Y:0}");
+        Say($"文字: {wanted.Content.Length} 个字符，位于 {origin.X:0},{origin.Y:0}");
     }
 
     /// <summary>Where a brush stroke goes: the layer's pixels, or its mask.</summary>
@@ -5080,8 +5080,8 @@ public sealed class MainWindow : Window
         _options.PaintOnMask = mask;
         _paintOnMask.IsChecked = mask;
         Say(mask
-            ? "The brush paints on the layer's mask — white reveals, and Erase paints black"
-            : "The brush paints on the layer's pixels");
+            ? "画笔描绘在图层蒙版上 —— 白色显示，橡皮擦描绘黑色"
+            : "画笔描绘在图层像素上");
     }
 
     /// <summary>The brush erases rather than paints: on a mask, that is black rather than white.</summary>
@@ -5090,7 +5090,7 @@ public sealed class MainWindow : Window
         _options.Erase = erasing;
         _eraseToggle.IsChecked = erasing;
         PushBrush();
-        Say(erasing ? "The brush erases" : "The brush paints");
+        Say(erasing ? "画笔在擦除" : "画笔在描绘");
     }
 
     /// <summary>
@@ -5102,7 +5102,7 @@ public sealed class MainWindow : Window
         if (_document is not { } document) return;
         if ((long)document.Width * document.Height > DocumentLimits.MaxSurfacePixels)
         {
-            Say("This canvas is too big to read a color from in one piece");
+            Say("画布过大，无法一次性取色");
             return;
         }
         var x = (int)Math.Floor(point.X);
@@ -5112,7 +5112,7 @@ public sealed class MainWindow : Window
         var colour = rendered.GetPixel(x, y);
         if (colour.Alpha == 0)
         {
-            Say("Nothing is drawn there");
+            Say("该处没有任何内容");
             return;
         }
         // Colour Range is up: the colour is one of the ones being looked for, and Shift or Alt says whether it
@@ -5130,7 +5130,7 @@ public sealed class MainWindow : Window
         if (_picker is { } picking)
         {
             picking.Sample((colour.Red / 255.0, colour.Green / 255.0, colour.Blue / 255.0));
-            Say($"Sampled {colour.Red},{colour.Green},{colour.Blue} into the picker");
+            Say($"已取样 {colour.Red},{colour.Green},{colour.Blue} 到拾色器");
             return;
         }
         // A transparent pixel has no colour to take; a part-transparent one is read as it looks on white.
@@ -5141,7 +5141,7 @@ public sealed class MainWindow : Window
             Blue = colour.Blue / 255.0,
         };
         PushBrush();
-        Say($"Brush color {colour.Red},{colour.Green},{colour.Blue}");
+        Say($"画笔颜色 {colour.Red},{colour.Green},{colour.Blue}");
     }
 
     /// <summary>How Spot Healing works out what to put in the painted area.</summary>
@@ -5149,7 +5149,7 @@ public sealed class MainWindow : Window
     {
         _options.Brush = _options.Brush with { Healing = mode };
         PushBrush();
-        Say($"Spot healing: {mode}");
+        Say($"污点修复：{Labels.Healing(mode)}");
     }
 
     /// <summary>Asks for one of the brush's settings and takes it, as an options bar would.</summary>
@@ -5158,27 +5158,27 @@ public sealed class MainWindow : Window
         switch (which)
         {
             case BrushSetting.Size:
-                if (await Ask("Brush size", "Diameter in pixels, 1 to 2000",
+                if (await Ask("画笔大小", "直径(像素)，1 到 2000",
                         $"{_options.Brush.Diameter:0}", 1, 2000) is { } size)
                 {
                     _options.Brush = _options.Brush with { Diameter = size };
                 }
                 break;
             case BrushSetting.Hardness:
-                if (await Ask("Brush hardness", "Percent, 0 for a soft tip and 100 for a hard one",
+                if (await Ask("画笔硬度", "百分比，0 为最软，100 为最硬",
                         $"{_options.Brush.Hardness * 100:0}", 0, 100) is { } hardness)
                 {
                     _options.Brush = _options.Brush with { Hardness = hardness / 100.0 };
                 }
                 break;
             case BrushSetting.Opacity:
-                if (await Ask("Brush opacity", "Percent, 1 to 100", $"{_options.Brush.Opacity * 100:0}", 1, 100) is { } opacity)
+                if (await Ask("画笔不透明度", "百分比，1 到 100", $"{_options.Brush.Opacity * 100:0}", 1, 100) is { } opacity)
                 {
                     _options.Brush = _options.Brush with { Opacity = opacity / 100.0 };
                 }
                 break;
             case BrushSetting.Radius:
-                if (await Ask("Blur radius", "How far the blur reaches, in pixels, 0.5 to 50",
+                if (await Ask("模糊半径", "模糊的作用范围(像素)，0.5 到 50",
                         $"{_options.Brush.BlurRadius:0.#}", 0.5, 50) is { } radius)
                 {
                     _options.Brush = _options.Brush with { BlurRadius = radius };
@@ -5190,7 +5190,7 @@ public sealed class MainWindow : Window
                 return;
         }
         PushBrush();
-        Say($"Brush: {_options.Brush.Diameter:0} pixels, {Spell(_options.Brush)}");
+        Say($"画笔: {_options.Brush.Diameter:0} 像素, {Spell(_options.Brush)}");
     }
 
     private async Task<double?> Ask(string title, string label, string initial, double least, double most)
@@ -5198,7 +5198,7 @@ public sealed class MainWindow : Window
         if (await TextPrompt.Ask(this, title, label, initial) is not { } typed) return null;
         if (!double.TryParse(typed.Trim(), out var value) || value < least || value > most)
         {
-            Say($"That has to be a number from {least:0} to {most:0}");
+            Say($"必须输入 {least:0} 到 {most:0} 之间的数字");
             return null;
         }
         return value;
@@ -5230,7 +5230,7 @@ public sealed class MainWindow : Window
     private void Deselect()
     {
         _canvas.CancelDraft();
-        Change("Deselect", SelectionEdits.Deselect);
+        Change("取消选择", SelectionEdits.Deselect);
     }
 
     /// <summary>
@@ -5240,9 +5240,9 @@ public sealed class MainWindow : Window
     private void SelectLayerPixels()
     {
         if (Selected is not { } id) return;
-        if (!Change("Select Layer's Pixels", document => SelectionEdits.SelectLayerPixels(document, id)))
+        if (!Change("选择图层像素", document => SelectionEdits.SelectLayerPixels(document, id)))
         {
-            Say("That layer shows no pixels to take a selection from");
+            Say("该图层没有可用于建立选区的像素");
         }
     }
 
@@ -5250,9 +5250,9 @@ public sealed class MainWindow : Window
     private void SelectMaskBlack()
     {
         if (Selected is not { } id) return;
-        if (!Change("Select Mask's Black Areas", document => SelectionEdits.SelectMaskDark(document, id)))
+        if (!Change("选择蒙版的黑色区域", document => SelectionEdits.SelectMaskDark(document, id)))
         {
-            Say("That layer has no mask, or none of it is hidden");
+            Say("该图层没有蒙版，或蒙版没有隐藏任何内容");
         }
     }
 
@@ -5276,24 +5276,24 @@ public sealed class MainWindow : Window
         }
         if (feed is null)
         {
-            await UpdateDialog.Ask(this, "Check for Updates",
-                $"The update feed could not be reached, so whether {running} is the latest is not known.");
+            await UpdateDialog.Ask(this, "检查更新",
+                $"无法连接更新源，因此无法确定 {running} 是否为最新版本。");
             return;
         }
         if (UpdateFeed.Newest(feed) is not { } release)
         {
-            await UpdateDialog.Ask(this, "Check for Updates", "The update feed had no release to read.");
+            await UpdateDialog.Ask(this, "检查更新", "更新源没有可读取的发行版本。");
             return;
         }
         if (!UpdateFeed.IsNewer(release, running))
         {
-            await UpdateDialog.Ask(this, "Check for Updates", $"Compositor {running} is the latest.");
+            await UpdateDialog.Ask(this, "检查更新", $"Compositor {running} 已是最新版本。");
             return;
         }
-        Say($"Compositor {release.Version} is out; this build is {running}");
-        await UpdateDialog.Ask(this, "Check for Updates",
-            $"Compositor {release.Version} is out{(release.Published is { } when ? $", published {when}" : "")} — " +
-            $"this build is {running}. The Windows build is made from this repository.",
+        Say($"Compositor {release.Version} 已发布；当前版本为 {running}");
+        await UpdateDialog.Ask(this, "检查更新",
+            $"Compositor {release.Version} 已发布{(release.Published is { } when ? $"，发行日期 {when}" : "")} —— " +
+            $"当前版本为 {running}。Windows 版由该仓库构建。",
             release.Page);
     }
 
@@ -5310,13 +5310,13 @@ public sealed class MainWindow : Window
     private void FillPixels(SKColor colour, string name)
     {
         if (_document is not { } document || Selected is not { } id) return;
-        var filled = Edit(_options.PaintOnMask ? "Fill Mask" : name, () => _options.PaintOnMask
+        var filled = Edit(_options.PaintOnMask ? "填充蒙版" : name, () => _options.PaintOnMask
             ? FillEdits.FillMask(document, id,
                 (byte)Math.Clamp(Math.Round((colour.Red + colour.Green + colour.Blue) / 3.0), 0, 255))
             : FillEdits.Fill(document, id, colour));
         if (!filled)
         {
-            Say("Nothing to fill: that layer holds no pixels, or the selection does not reach it");
+            Say("没有可填充的内容：该图层没有像素，或选区未覆盖到");
         }
     }
 
@@ -5329,15 +5329,15 @@ public sealed class MainWindow : Window
         if (_document is not { } document || Selected is not { } id) return;
         if (_options.PaintOnMask)
         {
-            if (!Edit("Clear Mask", () => FillEdits.FillMask(document, id, 0)))
+            if (!Edit("清除蒙版", () => FillEdits.FillMask(document, id, 0)))
             {
-                Say("Nothing to clear: the selection does not reach that mask");
+                Say("没有可清除的内容：选区未覆盖到该蒙版");
             }
             return;
         }
-        if (!Edit("Clear", () => FillEdits.Clear(document, id)))
+        if (!Edit("清除", () => FillEdits.Clear(document, id)))
         {
-            Say("Nothing to clear: that layer holds no pixels, or the selection does not reach it");
+            Say("没有可清除的内容：该图层没有像素，或选区未覆盖到");
         }
     }
 
@@ -5346,7 +5346,7 @@ public sealed class MainWindow : Window
     /// modifiers asked.
     /// </summary>
     private void MarqueeFinished(SKRectI box, SelectionMode mode, bool ellipse) =>
-        Change(ellipse ? "Elliptical Marquee" : "Rectangular Marquee", document => mode == SelectionMode.Replace
+        Change(ellipse ? "椭圆选框" : "矩形选框", document => mode == SelectionMode.Replace
             ? ellipse
                 ? SelectionEdits.SelectEllipse(document, box, _options.SelectionAntialiased)
                 : SelectionEdits.Select(document, box, _options.SelectionAntialiased)
@@ -5355,7 +5355,7 @@ public sealed class MainWindow : Window
 
     /// <summary>A lasso or polygonal lasso drag: the outline through the points it gathered.</summary>
     private void LassoFinished(IReadOnlyList<SKPoint> points, SelectionMode mode, bool polygonal) =>
-        Change(polygonal ? "Polygonal Lasso" : "Lasso", document => mode == SelectionMode.Replace
+        Change(polygonal ? "多边形套索" : "套索", document => mode == SelectionMode.Replace
             ? SelectionEdits.SelectLasso(document, points, _options.SelectionAntialiased)
             : SelectionEdits.Apply(document, SelectionEdits.Lasso(points), mode, _options.SelectionAntialiased));
 
@@ -5363,7 +5363,7 @@ public sealed class MainWindow : Window
     /// amounts are the options bar's: how far off the colour counts, how wide a sample is read, whether the
     /// outline has to stay joined, and whether every visible layer is read or only the one in hand.</summary>
     private void WandClicked(SKPoint point, SelectionMode mode) =>
-        Change("Magic Wand", document =>
+        Change("魔棒", document =>
         {
             using var sample = SelectionEdits.Sample(document, _options.WandAllLayers ? null : Selected);
             return sample is not null && SelectionEdits.SelectWand(document, sample,
@@ -5376,15 +5376,15 @@ public sealed class MainWindow : Window
     {
         if (_document is not { } document || document.Selection.Path is null)
         {
-            Say("Select something first");
+            Say("请先选中内容");
             return;
         }
         var most = which == SelectionAmount.Feather ? SelectionEdits.MaxFeather : SelectionEdits.MaxAmount;
-        var label = which == SelectionAmount.Feather ? "Feather radius in pixels" : "Pixels";
-        if (await TextPrompt.Ask(this, $"Modify Selection — {which}", label, "4") is not { } typed) return;
+        var label = which == SelectionAmount.Feather ? "羽化半径(像素)" : "Pixels";
+        if (await TextPrompt.Ask(this, $"修改选区 —— {which}", label, "4") is not { } typed) return;
         if (!int.TryParse(typed.Trim(), out var amount) || amount < 1 || amount > most)
         {
-            Say($"The amount has to be a whole number from 1 to {most}");
+            Say($"必须输入 1 到 {most} 之间的整数");
             return;
         }
         if (_document is not { } current) return;
@@ -5410,12 +5410,12 @@ public sealed class MainWindow : Window
         if (BrushFor(stroke) is not { } settings) return;
         var name = _tool switch
         {
-            Tool.Clone => "Clone Stamp",
-            Tool.Blur => "Blur",
+            Tool.Clone => "仿制图章",
+            Tool.Blur => "模糊",
             Tool.Liquify => "Liquify",
             Tool.Smudge => "Smudge",
-            Tool.Heal => "Spot Healing",
-            _ => "Brush",
+            Tool.Heal => "污点修复画笔",
+            _ => "画笔",
         };
         Edit(_options.PaintOnMask ? $"{name} on the mask" : name, () =>
         {
@@ -5451,7 +5451,7 @@ public sealed class MainWindow : Window
         if (_tool != Tool.Clone) return _canvas.Brush;
         if (_cloneSource is not { } source)
         {
-            Say("Alt-click where the Clone Stamp should copy from first");
+            Say("请先 Alt 点击仿制图章的取样来源");
             return null;
         }
         // A clone stroke that is not aligned takes the place it starts from as the new source, so the offset is
@@ -5467,7 +5467,7 @@ public sealed class MainWindow : Window
         _cloneSource = point;
         // A new source starts a new alignment, as the Mac build's does.
         _cloneOffset = null;
-        Say($"Clone stamp copying from {point.X:0},{point.Y:0} — drag on the canvas");
+        Say($"仿制图章：从 {point.X:0},{point.Y:0} 取样 —— 在画布上拖动");
     }
 
     /// <summary>
@@ -5501,7 +5501,7 @@ public sealed class MainWindow : Window
         _transformBox = box;
         _transformOriginals = TransformEdits.GroupMembers(document, SelectedLayers)
             .ToDictionary(layer => layer.ID, layer => layer.Transform);
-        _history.Begin(_transformOriginals.Count > 1 ? "Transform Layers" : "Transform", document, id);
+        _history.Begin(_transformOriginals.Count > 1 ? "变换多个图层" : "变换", document, id);
     }
 
     /// <summary>
@@ -5542,9 +5542,9 @@ public sealed class MainWindow : Window
         _canvas.InvalidateVisual();
         UpdateLayerMenu();
         if (_transforming is null) ShowTransformBox();
-        var undo = _history.CanUndo ? $"Undo {_history.UndoName}" : "";
-        var redo = _history.CanRedo ? $"Redo {_history.RedoName}" : "";
-        var edited = _history.IsModified ? "edited" : "";
+        var undo = _history.CanUndo ? $"撤销 {_history.UndoName}" : "";
+        var redo = _history.CanRedo ? $"重做 {_history.RedoName}" : "";
+        var edited = _history.IsModified ? "已编辑" : "";
         Say(string.Join("    ", new[] { undo, redo, edited }.Where(part => part.Length > 0)));
     }
 
@@ -5591,7 +5591,7 @@ public sealed class MainWindow : Window
         {
             var picked = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Import an image",
+                Title = "导入图像",
                 AllowMultiple = false,
                 FileTypeFilter =
                 [
@@ -5602,7 +5602,7 @@ public sealed class MainWindow : Window
             if (picked.Count == 0 || picked[0].TryGetLocalPath() is not { } path) return;
             if (!ImageImporter.LooksImportable(path))
             {
-                Say($"{Path.GetExtension(path)} files are not read; {string.Join(", ", ImageImporter.Extensions)} are");
+                Say($"无法读取 {Path.GetExtension(path)} 文件；可读取的类型为 {string.Join("、", ImageImporter.Extensions)}");
                 return;
             }
             // Decoded once: a camera RAW is minutes of work, so the picture the document gets is this one.
@@ -5616,23 +5616,23 @@ public sealed class MainWindow : Window
                 WatchProject();
                 _history.Reset();
                 ShowLayers(_document);
-                Say($"{Path.GetFileName(path)} — {_document.Width} by {_document.Height}, " +
-                    $"{_document.Layers.Count} layer, not saved yet");
+                Say($"{Path.GetFileName(path)} — {_document.Width} × {_document.Height}，" +
+                    $"{_document.Layers.Count} 个图层，尚未存储");
                 Refresh();
                 return;
             }
             var origin = new SKPoint(
                 (float)((document.Width - image.Width) / 2.0), (float)((document.Height - image.Height) / 2.0));
-            _history.Begin("Import image", document, Selected);
+            _history.Begin("导入图像", document, Selected);
             document.Layers.Add(new ImageLayer(Guid.NewGuid(), image,
                 new LayerTransform(origin.X, origin.Y, image.Width, image.Height), image.Name));
             _history.End(document, Selected);
             Reselect(document.Layers[^1].ID);
-            Say($"Imported {Path.GetFileName(path)} at {image.Width} by {image.Height}");
+            Say($"已导入 {Path.GetFileName(path)}，{image.Width} × {image.Height}");
         }
         catch (Exception error)
         {
-            Say($"Could not import that image: {error.Message}");
+            Say($"无法导入该图像: {error.Message}");
         }
     }
 
@@ -5657,7 +5657,7 @@ public sealed class MainWindow : Window
         {
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Save the project",
+                Title = "存储项目",
                 SuggestedFileName = _projectPath is { } known ? Path.GetFileName(known) : "Untitled.comp",
                 DefaultExtension = "comp",
             });
@@ -5665,7 +5665,7 @@ public sealed class MainWindow : Window
             // A project is a folder on Windows, so a path that is already a file cannot be written as one.
             if (File.Exists(path))
             {
-                Say("A project is a folder, and that path is a file.");
+                Say("项目是一个文件夹，而该路径是一个文件。");
                 return;
             }
             WriteTo(document, path);
@@ -5674,7 +5674,7 @@ public sealed class MainWindow : Window
         }
         catch (Exception error)
         {
-            Say($"Could not save: {error.Message}");
+            Say($"无法存储: {error.Message}");
         }
     }
 
@@ -5691,11 +5691,11 @@ public sealed class MainWindow : Window
             WatchProject();
             NoteRecent(path);
             Refresh();
-            Say($"Saved {path}");
+            Say($"已存储 {path}");
         }
         catch (Exception error)
         {
-            Say($"Could not save: {error.Message}");
+            Say($"无法存储: {error.Message}");
         }
     }
 
@@ -5703,25 +5703,25 @@ public sealed class MainWindow : Window
     {
         if (_document is not { } document)
         {
-            Say("Nothing to export yet.");
+            Say("还没有可导出的内容。");
             return;
         }
         try
         {
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Export PNG",
-                SuggestedFileName = "Compositor export.png",
+                Title = "导出 PNG",
+                SuggestedFileName = "Compositor 导出.png",
                 DefaultExtension = "png",
             });
             if (file?.TryGetLocalPath() is not { } path) return;
             // A band of tiles at a time, so the canvas size does not have to fit in one buffer.
             TiledPngWriter.Write(document, path);
-            Say($"Exported {path}");
+            Say($"已导出 {path}");
         }
         catch (Exception error)
         {
-            Say($"Could not export: {error.Message}");
+            Say($"无法导出: {error.Message}");
         }
     }
 
@@ -5733,34 +5733,68 @@ public sealed class MainWindow : Window
     {
         if (_document is not { } document)
         {
-            Say("Nothing to export yet.");
+            Say("还没有可导出的内容。");
             return;
         }
         try
         {
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Export JPEG",
-                SuggestedFileName = "Compositor export.jpg",
+                Title = "导出 JPEG",
+                SuggestedFileName = "Compositor 导出.jpg",
                 DefaultExtension = "jpg",
             });
             if (file?.TryGetLocalPath() is not { } path) return;
             if (await QualityDialog.Ask(this) is not { } quality) return;
             if (!ImageWriter.Write(document, path, quality))
             {
-                Say("That canvas is too large to write as one JPEG.");
+                Say("画布过大，无法输出为单个 JPEG。");
                 return;
             }
-            Say($"Exported {path}");
+            Say($"已导出 {path}");
         }
         catch (Exception error)
         {
-            Say($"Could not export: {error.Message}");
+            Say($"无法导出: {error.Message}");
         }
     }
 
     private static string Spell<T>(T value) where T : struct, Enum =>
         System.Text.Json.JsonSerializer.Serialize(value, ManifestJson.Options).Trim('"');
+
+    /// <summary>
+    /// A blend mode as the panel and the status line name it. This is deliberately NOT <see cref="Spell{T}"/>:
+    /// the manifest spells a mode in English and must keep doing so, so the name a person reads is looked up
+    /// separately and the wire name is never touched.
+    /// </summary>
+    private static string BlendLabel(LayerBlendMode mode) => mode switch
+    {
+        LayerBlendMode.Normal => "正常",
+        LayerBlendMode.Darken => "变暗",
+        LayerBlendMode.Multiply => "正片叠底",
+        LayerBlendMode.ColorBurn => "颜色加深",
+        LayerBlendMode.LinearBurn => "线性加深",
+        LayerBlendMode.Lighten => "变亮",
+        LayerBlendMode.Screen => "滤色",
+        LayerBlendMode.ColorDodge => "颜色减淡",
+        LayerBlendMode.LinearDodgeAdd => "线性减淡(添加)",
+        LayerBlendMode.Overlay => "叠加",
+        LayerBlendMode.SoftLight => "柔光",
+        LayerBlendMode.HardLight => "强光",
+        LayerBlendMode.VividLight => "亮光",
+        LayerBlendMode.LinearLight => "线性光",
+        LayerBlendMode.PinLight => "点光",
+        LayerBlendMode.HardMix => "实色混合",
+        LayerBlendMode.Difference => "差值",
+        LayerBlendMode.Exclusion => "排除",
+        LayerBlendMode.Subtract => "减去",
+        LayerBlendMode.Divide => "划分",
+        LayerBlendMode.Hue => "色相",
+        LayerBlendMode.Saturation => "饱和度",
+        LayerBlendMode.Color => "颜色",
+        LayerBlendMode.Luminosity => "明度",
+        _ => Spell(mode),
+    };
 
     private string _message = "";
 
@@ -5772,9 +5806,9 @@ public sealed class MainWindow : Window
     {
         if (message.Length > 0) _message = message;
         _status.Text = _message;
-        var limit = _canvas.ZoomedOutAsFarAsItGoes ? "    as far out as one screenful can be drawn" : "";
+        var limit = _canvas.ZoomedOutAsFarAsItGoes ? "    已缩到最小" : "";
         _statusInfo.Text = _document is not { } document
-            ? "Ready when you are"
-            : $"{_canvas.Zoom * 100:0}%    {document.Width} × {document.Height} px    sRGB · Transparent{limit}";
+            ? "准备就绪"
+            : $"{_canvas.Zoom * 100:0}%    {document.Width} × {document.Height} px    sRGB · 透明{limit}";
     }
 }

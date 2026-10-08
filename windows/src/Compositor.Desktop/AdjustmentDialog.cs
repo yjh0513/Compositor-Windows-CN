@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -33,7 +33,7 @@ internal sealed class AdjustmentDialog : DialogWindow
     {
         _start = start;
         var kind = start.Kind;
-        Title = $"{LayerPlacement.Name(kind)} Adjustment";
+        Title = $"{LayerPlacement.Name(kind)}调整图层";
         Width = 460;
         Height = 580;
         CanResize = true;
@@ -50,11 +50,11 @@ internal sealed class AdjustmentDialog : DialogWindow
                     ItemsSource = HueBand.Ranges.Select(range => range.ToString()).ToList(),
                     SelectedIndex = HueBand.Ranges.IndexOf(hsv.Range),
                 };
-                group.Children.Add(Row("Range", _range));
-                Add(group, "Hue", -180, 180, hsv.Current.Hue, 0, (s, v) => s.HsvSettings = Hsv(s, hue: v));
-                Add(group, "Saturation", -100, 100, hsv.Current.Saturation, 0, (s, v) => s.HsvSettings = Hsv(s, saturation: v));
-                Add(group, "Lightness", -100, 100, hsv.Current.Lightness, 0, (s, v) => s.HsvSettings = Hsv(s, lightness: v));
-                Check(group, "Colorize", hsv.Colorize, (s, v) => s.HsvSettings = Hsv(s, colorize: v));
+                group.Children.Add(Row("范围", _range));
+                Add(group, "色相", -180, 180, hsv.Current.Hue, 0, (s, v) => s.HsvSettings = Hsv(s, hue: v));
+                Add(group, "饱和度", -100, 100, hsv.Current.Saturation, 0, (s, v) => s.HsvSettings = Hsv(s, saturation: v));
+                Add(group, "明度", -100, 100, hsv.Current.Lightness, 0, (s, v) => s.HsvSettings = Hsv(s, lightness: v));
+                Check(group, "着色", hsv.Colorize, (s, v) => s.HsvSettings = Hsv(s, colorize: v));
                 break;
             }
             case AdjustmentKind.Levels:
@@ -62,36 +62,36 @@ internal sealed class AdjustmentDialog : DialogWindow
                 var range = start.Levels.Ranges[(int)start.Levels.Channel];
                 _levelsChannel = new ComboBox
                 {
-                    ItemsSource = new[] { "RGB", "Red", "Green", "Blue" },
+                    ItemsSource = new[] { "RGB", "红", "绿", "蓝" },
                     SelectedIndex = (int)start.Levels.Channel,
                 };
-                group.Children.Add(Row("Channel", _levelsChannel));
-                Add(group, "Black point", 0, 254, range.Black, 0, SetLevels);
-                Add(group, "Gamma", 0.1, 9.99, range.Gamma, 1, SetLevels, "0.00");
-                Add(group, "White point", 1, 255, range.White, 255, SetLevels);
-                Add(group, "Output black", 0, 255, range.OutputBlack, 0, SetLevels);
-                Add(group, "Output white", 0, 255, range.OutputWhite, 255, SetLevels);
+                group.Children.Add(Row("通道", _levelsChannel));
+                Add(group, "黑场", 0, 254, range.Black, 0, SetLevels);
+                Add(group, "灰度系数", 0.1, 9.99, range.Gamma, 1, SetLevels, "0.00");
+                Add(group, "白场", 1, 255, range.White, 255, SetLevels);
+                Add(group, "输出黑场", 0, 255, range.OutputBlack, 0, SetLevels);
+                Add(group, "输出白场", 0, 255, range.OutputWhite, 255, SetLevels);
                 break;
             }
             case AdjustmentKind.Exposure:
-                Add(group, "Exposure, stops", -20, 20, start.Exposure.Exposure, 0, (s, v) => s.ExposureSettings = Exposure(s, exposure: v), "0.00");
-                Add(group, "Offset", -0.5, 0.5, start.Exposure.Offset, 0, (s, v) => s.ExposureSettings = Exposure(s, offset: v), "0.000");
-                Add(group, "Gamma", 0.01, 9.99, start.Exposure.Gamma, 1, (s, v) => s.ExposureSettings = Exposure(s, gamma: v), "0.00");
+                Add(group, "曝光度(级)", -20, 20, start.Exposure.Exposure, 0, (s, v) => s.ExposureSettings = Exposure(s, exposure: v), "0.00");
+                Add(group, "偏移", -0.5, 0.5, start.Exposure.Offset, 0, (s, v) => s.ExposureSettings = Exposure(s, offset: v), "0.000");
+                Add(group, "灰度系数", 0.01, 9.99, start.Exposure.Gamma, 1, (s, v) => s.ExposureSettings = Exposure(s, gamma: v), "0.00");
                 break;
             case AdjustmentKind.Grain:
-                Add(group, "Amount", 0, 100, start.Grain.Amount, 25, (s, v) => s.GrainSettings = Grain(s, amount: v));
-                Add(group, "Size", 0.5, 20, start.Grain.Size, 1.5, (s, v) => s.GrainSettings = Grain(s, size: v), "0.0");
-                Add(group, "Roughness", 0, 100, start.Grain.Roughness, 50, (s, v) => s.GrainSettings = Grain(s, roughness: v));
+                Add(group, "数量", 0, 100, start.Grain.Amount, 25, (s, v) => s.GrainSettings = Grain(s, amount: v));
+                Add(group, "大小", 0.5, 20, start.Grain.Size, 1.5, (s, v) => s.GrainSettings = Grain(s, size: v), "0.0");
+                Add(group, "粗糙度", 0, 100, start.Grain.Roughness, 50, (s, v) => s.GrainSettings = Grain(s, roughness: v));
                 break;
             case AdjustmentKind.Curves:
             {
                 var channel = new ComboBox
                 {
-                    ItemsSource = new[] { "RGB", "Red", "Green", "Blue" },
+                    ItemsSource = new[] { "RGB", "红", "绿", "蓝" },
                     SelectedIndex = Math.Clamp((int)start.Curves.Channel, 0, 3),
                     Width = 120,
                 };
-                group.Children.Add(Row("Channel", channel));
+                group.Children.Add(Row("通道", channel));
                 _curve = new CurveEditor { Curves = Clone(start.Curves), Channel = channel.SelectedIndex, Height = 260 };
                 channel.SelectionChanged += (_, _) => _curve.Channel = Math.Max(0, channel.SelectedIndex);
                 _curve.Changed += () => Preview?.Invoke(Built(_start));
@@ -112,58 +112,58 @@ internal sealed class AdjustmentDialog : DialogWindow
                 group.Children.Add(strip);
                 // What Reset goes back to, which is what a layer of this kind is made with.
                 var fresh = new LayerAdjustment { Kind = kind }.GradientMap;
-                Swatch(group, "Shadows", End(start.GradientMap.Shadows), End(fresh.Shadows),
-                    "Color Picker (Gradient Map Shadows)", "Choose the shadows color", strip, atStart: true,
+                Swatch(group, "阴影", End(start.GradientMap.Shadows), End(fresh.Shadows),
+                    "拾色器(渐变映射 阴影)", "选择阴影颜色", strip, atStart: true,
                     (s, colour) => s.GradientMapSettings = Map(s, shadowRed: colour.Red, shadowGreen: colour.Green, shadowBlue: colour.Blue));
-                Swatch(group, "Highlights", End(start.GradientMap.Highlights), End(fresh.Highlights),
-                    "Color Picker (Gradient Map Highlights)", "Choose the highlights color", strip, atStart: false,
+                Swatch(group, "高光", End(start.GradientMap.Highlights), End(fresh.Highlights),
+                    "拾色器(渐变映射 高光)", "选择高光颜色", strip, atStart: false,
                     (s, colour) => s.GradientMapSettings = Map(s, highlightRed: colour.Red, highlightGreen: colour.Green, highlightBlue: colour.Blue));
-                Check(group, "Reverse", start.GradientMap.Reversed, (s, v) => s.GradientMapSettings = Map(s, reversed: v));
+                Check(group, "反向", start.GradientMap.Reversed, (s, v) => s.GradientMapSettings = Map(s, reversed: v));
                 break;
             }
             case AdjustmentKind.AddNoise:
-                Add(group, "Amount, %", 0.1, 400, start.ResolvedNoiseAmount, 10, (s, v) => s.NoiseAmount = v);
-                Check(group, "Gaussian", start.ResolvedNoiseGaussian, (s, v) => s.NoiseGaussian = v);
-                Check(group, "Monochromatic", start.ResolvedNoiseMonochromatic, (s, v) => s.NoiseMonochromatic = v);
+                Add(group, "数量(%)", 0.1, 400, start.ResolvedNoiseAmount, 10, (s, v) => s.NoiseAmount = v);
+                Check(group, "高斯分布", start.ResolvedNoiseGaussian, (s, v) => s.NoiseGaussian = v);
+                Check(group, "单色", start.ResolvedNoiseMonochromatic, (s, v) => s.NoiseMonochromatic = v);
                 break;
             case AdjustmentKind.GaussianBlur:
-                Add(group, "Radius, pixels", 0.1, 250, start.GaussianRadius, 10, (s, v) => s.BlurRadius = v);
+                Add(group, "半径(像素)", 0.1, 250, start.GaussianRadius, 10, (s, v) => s.BlurRadius = v);
                 break;
             case AdjustmentKind.MotionBlur:
-                Add(group, "Angle, degrees", -90, 90, start.ResolvedMotionAngle, 0, (s, v) => s.MotionAngle = v);
-                Add(group, "Distance, pixels", 1, 2000, start.ResolvedMotionDistance, 10, (s, v) => s.MotionDistance = v, "0");
+                Add(group, "角度(度)", -90, 90, start.ResolvedMotionAngle, 0, (s, v) => s.MotionAngle = v);
+                Add(group, "距离(像素)", 1, 2000, start.ResolvedMotionDistance, 10, (s, v) => s.MotionDistance = v, "0");
                 break;
             case AdjustmentKind.Invert:
-                group.Children.Add(new TextBlock { Text = "Invert has no settings: it turns every pixel over." });
+                group.Children.Add(new TextBlock { Text = "反相没有可调参数：它把每个像素都反转过来。" });
                 break;
             case AdjustmentKind.BlackWhite:
-                Add(group, "Reds", -200, 300, start.BlackWhite.Reds, 40, (s, v) => s.BlackWhiteSettings = Mix(s, reds: v));
-                Add(group, "Yellows", -200, 300, start.BlackWhite.Yellows, 60, (s, v) => s.BlackWhiteSettings = Mix(s, yellows: v));
-                Add(group, "Greens", -200, 300, start.BlackWhite.Greens, 40, (s, v) => s.BlackWhiteSettings = Mix(s, greens: v));
-                Add(group, "Cyans", -200, 300, start.BlackWhite.Cyans, 60, (s, v) => s.BlackWhiteSettings = Mix(s, cyans: v));
-                Add(group, "Blues", -200, 300, start.BlackWhite.Blues, 20, (s, v) => s.BlackWhiteSettings = Mix(s, blues: v));
-                Add(group, "Magentas", -200, 300, start.BlackWhite.Magentas, 80, (s, v) => s.BlackWhiteSettings = Mix(s, magentas: v));
-                Check(group, "Tint", start.BlackWhite.Tint, (s, v) => s.BlackWhiteSettings = Mix(s, tint: v));
-                Add(group, "Tint hue", 0, 360, start.BlackWhite.TintHue, 40, (s, v) => s.BlackWhiteSettings = Mix(s, tintHue: v));
-                Add(group, "Tint saturation", 0, 100, start.BlackWhite.TintSaturation, 20, (s, v) => s.BlackWhiteSettings = Mix(s, tintSaturation: v));
+                Add(group, "红色", -200, 300, start.BlackWhite.Reds, 40, (s, v) => s.BlackWhiteSettings = Mix(s, reds: v));
+                Add(group, "黄色", -200, 300, start.BlackWhite.Yellows, 60, (s, v) => s.BlackWhiteSettings = Mix(s, yellows: v));
+                Add(group, "绿色", -200, 300, start.BlackWhite.Greens, 40, (s, v) => s.BlackWhiteSettings = Mix(s, greens: v));
+                Add(group, "青色", -200, 300, start.BlackWhite.Cyans, 60, (s, v) => s.BlackWhiteSettings = Mix(s, cyans: v));
+                Add(group, "蓝色", -200, 300, start.BlackWhite.Blues, 20, (s, v) => s.BlackWhiteSettings = Mix(s, blues: v));
+                Add(group, "洋红", -200, 300, start.BlackWhite.Magentas, 80, (s, v) => s.BlackWhiteSettings = Mix(s, magentas: v));
+                Check(group, "色调", start.BlackWhite.Tint, (s, v) => s.BlackWhiteSettings = Mix(s, tint: v));
+                Add(group, "色调 色相", 0, 360, start.BlackWhite.TintHue, 40, (s, v) => s.BlackWhiteSettings = Mix(s, tintHue: v));
+                Add(group, "色调 饱和度", 0, 100, start.BlackWhite.TintSaturation, 20, (s, v) => s.BlackWhiteSettings = Mix(s, tintSaturation: v));
                 break;
             default:
-                Add(group, "Shadows: cyan to red", -100, 100, start.ColorBalance.ShadowCyanRed, 0, (s, v) => s.ColorBalanceSettings = Balance(s, shadowCyanRed: v));
-                Add(group, "Shadows: magenta to green", -100, 100, start.ColorBalance.ShadowMagentaGreen, 0, (s, v) => s.ColorBalanceSettings = Balance(s, shadowMagentaGreen: v));
-                Add(group, "Shadows: yellow to blue", -100, 100, start.ColorBalance.ShadowYellowBlue, 0, (s, v) => s.ColorBalanceSettings = Balance(s, shadowYellowBlue: v));
-                Add(group, "Midtones: cyan to red", -100, 100, start.ColorBalance.MidCyanRed, 0, (s, v) => s.ColorBalanceSettings = Balance(s, midCyanRed: v));
-                Add(group, "Midtones: magenta to green", -100, 100, start.ColorBalance.MidMagentaGreen, 0, (s, v) => s.ColorBalanceSettings = Balance(s, midMagentaGreen: v));
-                Add(group, "Midtones: yellow to blue", -100, 100, start.ColorBalance.MidYellowBlue, 0, (s, v) => s.ColorBalanceSettings = Balance(s, midYellowBlue: v));
-                Add(group, "Highlights: cyan to red", -100, 100, start.ColorBalance.HighlightCyanRed, 0, (s, v) => s.ColorBalanceSettings = Balance(s, highlightCyanRed: v));
-                Add(group, "Highlights: magenta to green", -100, 100, start.ColorBalance.HighlightMagentaGreen, 0, (s, v) => s.ColorBalanceSettings = Balance(s, highlightMagentaGreen: v));
-                Add(group, "Highlights: yellow to blue", -100, 100, start.ColorBalance.HighlightYellowBlue, 0, (s, v) => s.ColorBalanceSettings = Balance(s, highlightYellowBlue: v));
-                Check(group, "Preserve luminosity", start.ColorBalance.PreserveLuminosity, (s, v) => s.ColorBalanceSettings = Balance(s, preserve: v));
+                Add(group, "阴影: 青色 → 红色", -100, 100, start.ColorBalance.ShadowCyanRed, 0, (s, v) => s.ColorBalanceSettings = Balance(s, shadowCyanRed: v));
+                Add(group, "阴影: 洋红 → 绿色", -100, 100, start.ColorBalance.ShadowMagentaGreen, 0, (s, v) => s.ColorBalanceSettings = Balance(s, shadowMagentaGreen: v));
+                Add(group, "阴影: 黄色 → 蓝色", -100, 100, start.ColorBalance.ShadowYellowBlue, 0, (s, v) => s.ColorBalanceSettings = Balance(s, shadowYellowBlue: v));
+                Add(group, "中间调: 青色 → 红色", -100, 100, start.ColorBalance.MidCyanRed, 0, (s, v) => s.ColorBalanceSettings = Balance(s, midCyanRed: v));
+                Add(group, "中间调: 洋红 → 绿色", -100, 100, start.ColorBalance.MidMagentaGreen, 0, (s, v) => s.ColorBalanceSettings = Balance(s, midMagentaGreen: v));
+                Add(group, "中间调: 黄色 → 蓝色", -100, 100, start.ColorBalance.MidYellowBlue, 0, (s, v) => s.ColorBalanceSettings = Balance(s, midYellowBlue: v));
+                Add(group, "高光: 青色 → 红色", -100, 100, start.ColorBalance.HighlightCyanRed, 0, (s, v) => s.ColorBalanceSettings = Balance(s, highlightCyanRed: v));
+                Add(group, "高光: 洋红 → 绿色", -100, 100, start.ColorBalance.HighlightMagentaGreen, 0, (s, v) => s.ColorBalanceSettings = Balance(s, highlightMagentaGreen: v));
+                Add(group, "高光: 黄色 → 蓝色", -100, 100, start.ColorBalance.HighlightYellowBlue, 0, (s, v) => s.ColorBalanceSettings = Balance(s, highlightYellowBlue: v));
+                Check(group, "保留明度", start.ColorBalance.PreserveLuminosity, (s, v) => s.ColorBalanceSettings = Balance(s, preserve: v));
                 break;
         }
 
-        var ok = new Button { Content = "Apply", IsDefault = true };
-        var cancel = new Button { Content = "Cancel", IsCancel = true };
-        var reset = new Button { Content = "Reset" };
+        var ok = new Button { Content = "应用", IsDefault = true };
+        var cancel = new Button { Content = "取消", IsCancel = true };
+        var reset = new Button { Content = "复位" };
         ok.Click += (_, _) => Accept(start);
         cancel.Click += (_, _) => Close();
         reset.Click += (_, _) => Restore(new LayerAdjustment { Kind = kind });

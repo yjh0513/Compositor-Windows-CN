@@ -1,108 +1,202 @@
-# Compositor
+# Compositor Windows 中文汉化版
 
-Adobe Photoshop costs too much and tools like GIMP don’t feel familiar enough for me to stay in flow. That’s why I built Compositor.
+**免费、开源的 Windows 图像编辑器，界面已按 Photoshop 中文版习惯汉化。**
+原版 Compositor 是 macOS 上「买不起 Photoshop」的替代品，这个仓库提供的是它的 **Windows 移植版 + 中文界面**。
 
-The goal was to create a full-featured image editor that is completely free and open source. I used to use Photoshop for compositing and post-processing, so Compositor is built around that workflow - with the tools needed to create a pixel-perfect final image.
+---
 
-Because it’s open source, you can download the Xcode project and add, remove, or modify any feature to fit your workflow.
+## ⚠️ 开篇必读：三件事
 
-> **This is the `compositor_win` branch: a Windows build beside the macOS app, not a replacement for it.**
-> Everything below describes the macOS original. The Windows build is in [`windows/`](windows/README.md) — .NET 10
-> and Avalonia, reading and writing the same `.comp` projects, with its own build, its own tests and its own
-> headless self-checks. **`main` is read there, never merged:** every feature is ported by hand, so the Windows
-> build can never be broken by Swift code it does not compile. It is a lagging port, not a copy of the current
-> Mac — that README names the version it tracks and what the two builds still differ on.
+### 1. 这是纯 AI 写的东西
 
-## Installation
+**代码不是我写的。** 具体说：
 
-### Download
-Get Compositor from [robbietilton.com/compositor](https://robbietilton.com/compositor), or download the latest release directly from [GitHub Releases](https://github.com/robbietilton/Compositor/releases/latest).
+| 部分 | 谁写的 |
+|---|---|
+| macOS 原版 Compositor | 原作者 **robbietilton**（Wonder Assembly LLC），人类 |
+| Windows 移植版（C# / Avalonia） | **AI 编写**（由移植者 chenguisen 用 AI 完成，见其 README 自述） |
+| **中文汉化（本仓库的改动）** | **AI 完成**（WorkBuddy / Claude 系模型），全部界面文案与汉化后的测试期望值 |
+| 上传、写这份说明 | 我，`yjh0513`。我只做了搬运和打包，一行代码都没手写 |
 
-### Homebrew
+所以：**不要把它当成有人负责维护的商业软件来用。** 它能跑、功能是完整的，但它是 AI 的产物。
 
-```sh
-brew install --cask robbietilton-compositor
+### 2. 我不维护这个项目
+
+不修 bug、不加功能、不看 issue、不回邮件、不合 PR。
+**这个仓库就是一个存档**，放在这里让大家免费下载。它现在什么样，以后基本就什么样。
+
+### 3. 遇到问题怎么办 —— 交给 AI 去改
+
+这正是我把代码原样开源的原因。你不需要会编程，只需要：
+
+```bash
+git clone https://github.com/yjh0513/Compositor-Windows-CN.git
+cd Compositor-Windows-CN/windows
 ```
 
-## Features
+然后打开任意一个 AI 编程助手（WorkBuddy / Claude Code / Codex / Cursor / Copilot 等），
+把**这个文件夹**交给它，用大白话描述问题，例如：
 
-### Layers
-- Layers and folders, with opacity and Photoshop's full set of blend modes in its order — a folder's opacity dims everything inside it
-- Layer masks: paint, fill, invert, blur and feather them anywhere on the canvas, past the layer's own pixels; link or unlink them to transform a mask on its own
-- Clipping masks and folder masks
-- Adjustment layers: Hue/Saturation, Levels, Curves, Exposure, Gradient Map, Grain, Black & White, Color Balance, Invert, Gaussian Blur, Motion Blur and Noise
-- Layer effects: Stroke, Drop Shadow, Color Overlay, Inner Shadow, Outer Glow and Inner Glow, rendered on the GPU and editable at any time
-- Merge Down, Merge Layers and Merge Group (⌘E)
-- Duplicate, rename inline, reorder and nest by drag and drop; Option-drag to duplicate; a right-click menu in the Layers panel
-- Copy and paste whole layers and folders (⌘C/⌘V with no selection), within a project or between projects, or drag them between projects
+> 「我在 Windows 上编译这个项目，报了这个错：`<粘贴报错>`，帮我修好。」
+> 「裁剪工具的选框在缩放超过 400% 后就对不齐了，帮我找到原因并修掉。」
+> 「帮我把界面里还剩下的英文文案也翻成中文。」
 
-### Transform
-- Non-destructive move, scale, rotate and flip — images keep their full resolution however small you make them
-- Free distort (⌘-drag a handle), with Shift to lock to an axis
-- Transform several layers, or a whole folder, together
-- Snapping to canvas and layer edges and centers, with guides
-- Exact values for position, size, scale and angle, stepped with the arrow keys
-- Flip Layer and Flip Canvas, horizontal and vertical
+这个项目的代码注释非常详尽（每个类、每个方法都写了「为什么这么做」），
+**结构就是为 AI 阅读而写的**，AI 改起来效率很高。这也是它适合「交给 AI 修」的原因。
 
-### Selections
-- Rectangle and Ellipse Marquee, Freehand and Polygonal Lasso, and the Magic tool — Wand selects by color, Object traces whatever you click (Tab switches)
-- Select Subject, and Expand, Contract and Feather on any selection
-- Add to and subtract from selections, move the outline, or move and duplicate the pixels inside
-- Load a layer's pixels or a mask as a selection
-- Content-Aware Fill, which can also extend an image past its edges
+---
 
-### Painting and retouching
-- Brush with size, hardness, opacity and smoothing, in Paint or Erase mode (B and E), and Shift for straight lines
-- Spot Healing Brush (content-aware)
-- Clone Stamp, aligned or not, sampling one layer or all of them
-- Blur tool, on pixels or masks
-- Gradient tool and Shape tool (rectangles, rounded rectangles, ellipses and lines), which stay editable rather than being rasterized
-- Type tool (T): inline multiline editing in draggable, resizable paragraph boxes; font, size, color, alignment and spacing in the tool header; transform text and use it as a clipping mask
-- Eyedropper and a full color picker
+## 这是什么
 
-### Adjustments and filters
-- Camera Raw filter: light, color, curves, color mixer, color grading, detail, optics and geometry, in a panel beside the canvas
-- Levels (with Auto), Curves, Hue/Saturation, Exposure, Gradient Map, Grain, Black & White, Color Balance and Invert
-- Gaussian Blur and Motion Blur that spread past a layer's edges
-- Add Noise, Vignette, Bloom / Glow, Tonal Contrast, Lens Correction and Remove Background
-- Live previews, limited to the selection when there is one
+[Compositor](https://github.com/robbietilton/Compositor) 是一个开源的图像编辑器，
+定位是 macOS 上 Photoshop 的免费替代品，在 GitHub 上有 **13,000+ star**。
 
-### Canvas and files
-- Multiple projects in tabs
-- Rulers (⌘R), guides dragged from them, a layout grid with adjustable spacing and subdivisions, and Snap To for guides, grid, layers and document bounds
-- Crop with snapping, ratios including 3:4 and 9:16, and Option for symmetric cropping; with a selection, the crop starts at it
-- Canvas Size, Image Size and Trim
-- Sharp high-quality downsampling when zoomed out, and a pixel grid when zoomed in
-- Import JPEG, PNG, HEIC, TIFF, SVG, camera RAW (with a develop step first) and Photoshop PSD and PSB (8-bit RGB; not CMYK). Photoshop folders, masks, blend modes, fill rectangles/ellipses, and simple horizontal text stay editable; other vectors and vertical text become pixels. A conversion report is shown before anything is applied.
-- Large documents: the memory budget scales with your Mac, and a Photoshop file too big to open has its layers cropped to the canvas instead
-- Export JPEG with a live preview (⇧⌥⌘S); Copy Merged
-- Keep working while a project saves
-- Photoshop-style keyboard shortcuts throughout, remappable in Edit > Keyboard Shortcuts
-- Drag a number's label to scrub its value, as in Photoshop
-- Automatic updates, signed and notarized
+本仓库是它的 **Windows 移植版（C# / .NET 10 / Avalonia）**，并且：
 
-### Works with AI agents
-- AI agents and scripts can build and edit projects directly: a `.comp` is a folder of PNG layers and a manifest, and an open project updates live as it's written. See [Writing Compositor projects](docs/writing-comp-files.md)
+- ✅ **界面全部中文**，按 Photoshop 中文版的用词与习惯翻译（菜单栏是 `文件(F) 编辑(E) 图层(L) 图像(I) 滤镜(T) 工具(O) 选择(S) 视图(V) 帮助(H)`）
+- ✅ **读写与 macOS 版相同的 `.comp` 工程格式**（格式版本 v11），两个版本的文件可以互相打开
+- ✅ **功能完整**：图层、蒙版、混合模式、选区、画笔、仿制图章、修复画笔、渐变、形状、文字、
+  裁剪、自由变换、曲线 / 色阶 / 色相饱和度等调整图层、各种滤镜、Camera Raw、抖动、色彩范围……
+- ✅ **免费、开源、无广告、无内购、不需要联网激活**
 
-## Requirements
+---
 
-- macOS 26.0 or later on a Mac with Apple silicon
-- Xcode 26 or later (to build from source)
+## 代码来源与原作者（重要）
 
-## Building
+这份代码的谱系是三层，**请在使用与转载时保留这些信息**：
 
-Open `Compositor.xcodeproj` and run the **Compositor** scheme.
+| 层 | 项目 / 作者 | 说明 |
+|---|---|---|
+| ① **原始版本** | [**robbietilton/Compositor**](https://github.com/robbietilton/Compositor) <br>作者：**robbietilton**（Wonder Assembly LLC） | **真正的原作者。** macOS 版，Swift + AppKit，MIT 许可证，13k+ star。全部功能设计、文档模型、`.comp` 格式都出自这里 |
+| ② **Windows 移植** | [**chenguisen/Compositor**](https://github.com/chenguisen/Compositor) 的 `compositor_win` 分支 <br>作者：**chenguisen** | 把 macOS 版**手写重写**成 C# / .NET 10 / Avalonia。**这个仓库的代码 90% 以上出自这里** |
+| ③ **中文汉化 + 分发** | **本仓库**（`yjh0513/Compositor-Windows-CN`） <br>汉化：**AI**；上传：**yjh0513** | 只改了「给人看的文字」，以及配套的测试期望值 |
 
-## Releasing
+**关于原作者的明确态度：**
+Compositor 的原作者 robbietilton 在 [issue #87](https://github.com/robbietilton/Compositor/issues/87) 里说明过 ——
+他只有 Mac、没有 Windows 机器，无法构建、测试或维护 Windows 版本，
+因此 Windows 版**永远不会合并进官方仓库**，只接受「另起仓库」的做法。
+**所以本仓库不是官方版本，官方也不为它背书。** 官方只维护 macOS 版。
 
-`scripts/release.sh` builds a Release version, signs it with Developer ID, notarizes and staples it, and packages it into `dist/Compositor-<version>.dmg`.
+**移植版的版本基线：** 对应 macOS 版的 **1.3.7**。
+macOS 官方已经更新到更高版本，**本移植版没有跟进**，属于滞后版本，功能不是完全对等。
 
-It needs, all kept outside this repository:
+---
 
-- a **Developer ID Application** certificate in the login keychain
-- notarization credentials saved with `xcrun notarytool store-credentials "compositor-notary" …`
-- [`create-dmg`](https://github.com/create-dmg/create-dmg) (`brew install create-dmg`)
+## 下载与运行
 
-## License
+### 方式一：下载打包好的便携版（推荐，不需要装任何东西）
 
-MIT — see [LICENSE](LICENSE).
+到本仓库的 **[Releases](releases)** 页面，
+下载 `Compositor-Windows-CN-*-portable.zip`，解压后双击 `Compositor.Desktop.exe` 即可运行。
+
+- 需要 **64 位 Windows 10 / 11**
+- 包内已自带 .NET 运行时，**不用另外安装任何环境**
+- 完全绿色，不写注册表、不装驱动，删掉文件夹就是卸载
+
+> 如果 Releases 里还没有打包版，就用下面的方式二自己编译，或者到仓库里提一句（虽然我不一定会看）。
+
+### 方式二：自己编译（需要 .NET SDK 10）
+
+```bash
+git clone https://github.com/yjh0513/Compositor-Windows-CN.git
+cd Compositor-Windows-CN/windows
+
+# 编译
+dotnet build src/Compositor.Desktop/Compositor.Desktop.csproj -c Release
+
+# 运行
+./src/Compositor.Desktop/bin/Release/net10.0/Compositor.Desktop.exe
+```
+
+生成单文件便携版：
+
+```bash
+dotnet publish src/Compositor.Desktop/Compositor.Desktop.csproj \
+  -c Release -r win-x64 --self-contained true
+```
+
+---
+
+## 中文汉化改了什么
+
+**只改了「给人看的文字」，没有动任何会影响功能的字符串。** 这是汉化最容易踩坑的地方，
+详细说明如下（如果你要在此基础上继续改，请务必遵守）：
+
+### 改了
+
+- 菜单栏、右键菜单、按钮、窗口标题、对话框标签
+- **状态栏提示**（约 40 条），例如 `Shape: Ellipse` → `形状：椭圆`、`Brush: 24 pixels` → `画笔：24 像素`
+- 图层默认命名（`Exposure 1` → `曝光度 1`）
+- 快捷键表的行标题，以及快捷键面板的校验提示
+- 新增 `windows/src/Compositor.Desktop/Labels.cs`，集中存放枚举的中文显示名
+- 配套修正了 3 个测试文件里被汉化的期望值
+
+### 绝对没有改（这是安全边界）
+
+- **`.comp` 工程格式的字段名与取值**，例如 `"blendMode": "Normal"`、`"sampling": "High quality"`、
+  `"alignment": "Left"`、`"format": "com.compositor.project"` —— 保持全 ASCII，
+  否则会和 macOS 版**互相打不开文件**
+- **枚举名本身**（`ShapeKind.Ellipse` 等）—— 只加显示名映射，不改枚举
+- **Avalonia 的按键名**（`"OemOpenBrackets"`、`"Left"`、`"Space"` 等）
+
+> ⚠️ **汉化时最容易踩的一个坑，留个记录：**
+> 快捷键表里 `("Left", "Left")` 的**第二个** `"Left"` 是 Avalonia 的按键名，第一个才是显示文字。
+> 如果手滑把两个都翻成中文，`Enum.TryParse<Avalonia.Input.Key>("左")` 会失败，
+> 这 16 行方向键快捷键会**静默失效** —— 菜单不显示按键、按键也彻底没反应，
+> 而编译、启动、自检全都不会报错。本仓库已修正。
+
+---
+
+## 已知问题
+
+以下问题**在汉化之前就存在**，不是汉化造成的（已通过对比原始提交验证）：
+
+1. **参考线拖拽有缺陷**：从标尺拖出参考线后，再次拖动它时位置不跟随。
+   在项目自带的自检 `--clicks` 里表现为 `FAILED: the guide ended at 110, not 40`。
+2. **有 1 个单元测试在 Windows 上失败**：
+   `ManifestFormatTests.SavingWritesSortedKeysAndReSavingIsStable`，
+   原因是本机 git 检出为 CRLF 而测试期望 LF，属于检出配置问题，**不是产品缺陷**。
+   其余 **847 个测试全部通过**。
+3. **旧版快捷键自定义不会迁移**：`%APPDATA%\Compositor\shortcuts.json` 里的覆盖项以
+   `{组名}:{标题}` 为键，组名汉化后键变了，旧的自定义会静默回到默认值（重设一次即可）。
+4. **移植版滞后于 macOS 官方版本**，部分新功能没有。
+
+另外提醒：这是 AI 写的代码，**没有经过人工代码审计**。虽然项目自带了 848 个单元测试与
+一整套无头自检来保证行为正确，但请自行评估风险。
+
+---
+
+## 许可证
+
+本项目沿用上游的 **MIT 许可证**，版权归原作者 **Wonder Assembly LLC** 所有，
+完整文本见 [LICENSE](LICENSE)。
+
+MIT 许可证允许你自由使用、修改、再分发（包括商用），**条件只有一个**：
+保留版权声明与许可证文本。
+
+因此如果你要转载或二次分发，请务必同时保留：
+
+- 本仓库的 [LICENSE](LICENSE)（MIT，Copyright © 2026 Wonder Assembly LLC）
+- 上游来源：[robbietilton/Compositor](https://github.com/robbietilton/Compositor)
+- 移植来源：[chenguisen/Compositor `compositor_win` 分支](https://github.com/chenguisen/Compositor)
+- 详细谱系见 [ATTRIBUTION.md](ATTRIBUTION.md)
+
+---
+
+## 免责声明
+
+本软件按 **「原样」** 提供，不附带任何明示或暗示的担保。使用本软件造成的任何损失
+（包括但不限于数据丢失、图片损坏、工程文件损坏）由使用者自行承担。
+
+**建议：处理重要图片前先备份。** 尤其是用本版本写出的 `.comp` 工程文件，
+在确认 macOS 版能正常打开之前，不要删掉原图。
+
+---
+
+<div align="center">
+
+**感谢原作者 [robbietilton](https://github.com/robbietilton) 做出了 Compositor，
+感谢 [chenguisen](https://github.com/chenguisen) 做出了 Windows 移植版。**
+这个仓库只是给中文用户省一点翻译的功夫。
+
+</div>

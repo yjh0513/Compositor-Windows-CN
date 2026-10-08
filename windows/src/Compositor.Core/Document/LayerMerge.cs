@@ -28,7 +28,7 @@ public static class LayerMerge
         Guid? Parent,
         /// <summary>The layer whose slot the result takes.</summary>
         Guid Anchor,
-        /// <summary>"Merge Down", "Merge Layers" or "Merge Group", as the Mac build names them.</summary>
+        /// <summary>"向下合并", "合并图层" or "合并组", as the Mac build names them.</summary>
         string Action);
 
     /// <summary>
@@ -52,7 +52,7 @@ public static class LayerMerge
             // The result is named and placed by the topmost layer among the ones actually selected.
             var top = members.LastOrDefault(layer => selected.Contains(layer.ID));
             if (top is null) return null;
-            return new MergePlan([.. members.Select(layer => layer.ID)], top.Name, top.ParentID, top.ID, "Merge Layers");
+            return new MergePlan([.. members.Select(layer => layer.ID)], top.Name, top.ParentID, top.ID, "合并图层");
         }
 
         if (activeLayer.IsGroup)
@@ -61,7 +61,7 @@ public static class LayerMerge
             if (!layers.Any(layer => inside.Contains(layer.ID) && !layer.IsGroup)) return null;
             var members = layers.Where(layer => inside.Contains(layer.ID) || layer.ID == active)
                 .Select(layer => layer.ID).ToList();
-            return new MergePlan(members, activeLayer.Name, activeLayer.ParentID, active, "Merge Group");
+            return new MergePlan(members, activeLayer.Name, activeLayer.ParentID, active, "合并组");
         }
 
         var index = layers.FindIndex(layer => layer.ID == active);
@@ -73,7 +73,7 @@ public static class LayerMerge
             if (layers[candidate].ParentID == activeLayer.ParentID) below = layers[candidate];
         }
         if (below is null || below.IsGroup) return null;
-        return new MergePlan([below.ID, active], below.Name, activeLayer.ParentID, active, "Merge Down");
+        return new MergePlan([below.ID, active], below.Name, activeLayer.ParentID, active, "向下合并");
     }
 
     /// <summary>

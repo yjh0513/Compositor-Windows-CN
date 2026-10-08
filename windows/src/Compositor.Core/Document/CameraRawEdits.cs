@@ -142,7 +142,7 @@ public sealed class CameraRawSettings
 
     /// <summary>The eight families the mixer's numbers are for, in the order they are held in.</summary>
     public static string[] MixerFamilies { get; } =
-        ["Reds", "Oranges", "Yellows", "Greens", "Aquas", "Blues", "Purples", "Magentas"];
+        ["红色", "橙色", "黄色", "绿色", "浅绿色", "蓝色", "紫色", "洋红"];
 
     /// <summary>The colours picked out of the picture to shift. The Mac build picks them by clicking on the
     /// canvas and allows eight; this holds eight and takes their numbers.</summary>
