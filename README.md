@@ -86,14 +86,19 @@ macOS 官方已经更新到更高版本，**本移植版没有跟进**，属于�
 
 ### 方式一：下载打包好的便携版（推荐，不需要装任何东西）
 
-到本仓库的 **[Releases](releases)** 页面，
-下载 `Compositor-Windows-CN-*-portable.zip`，解压后双击 `Compositor.Desktop.exe` 即可运行。
+**[⬇ 点这里直接下载 `Compositor-Windows-CN-portable.zip`（59 MB）](https://github.com/yjh0513/Compositor-Windows-CN/releases/latest/download/Compositor-Windows-CN-portable.zip)**
+
+解压后双击 `Compositor.Desktop.exe` 即可运行。（也可以从 [Releases](releases) 页面下载）
+
+```
+SHA256  e91612f553c6fb878d742b10b0aa9c58f00b625c94db4dcadcc4e227f3fac887
+MD5     d87dec1636a66f72255b09c853937ba4
+```
 
 - 需要 **64 位 Windows 10 / 11**
 - 包内已自带 .NET 运行时，**不用另外安装任何环境**
 - 完全绿色，不写注册表、不装驱动，删掉文件夹就是卸载
-
-> 如果 Releases 里还没有打包版，就用下面的方式二自己编译，或者到仓库里提一句（虽然我不一定会看）。
+- 包内含 `使用说明.txt`、`LICENSE`、`ATTRIBUTION.md`
 
 ### 方式二：自己编译（需要 .NET SDK 10）
 
