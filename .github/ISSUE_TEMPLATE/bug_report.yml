@@ -1,0 +1,71 @@
+name: Bug 报告 / Bug report
+description: 报告程序崩溃、功能异常或与预期不符的行为
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！提交前请先搜索已有 issue，并看一眼 README 中的「已知问题」。
+        本仓库只处理 **Windows 中文汉化版** 的问题，请不要把 Windows 版的问题提到上游 robbietilton/Compositor。
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      description: Release 版本号（如 v1.3.7-cn.1），或自己编译时的提交哈希
+      placeholder: v1.3.7-cn.1
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: 获取方式
+      options:
+        - 便携版 zip（Releases 下载）
+        - 自己编译
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: 操作系统
+      placeholder: Windows 11 23H2 x64
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 ...
+        2. 选择 ...
+        3. 看到 ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际结果
+      description: 如有报错信息、截图，请一并附上
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息
+      description: 例如能复现问题的最小 .comp 文件、该问题在 macOS 原版上是否也存在等
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已搜索过已有 issue，没有重复
+          required: true
+        - label: 我已查看 README 中的「已知问题」
+          required: true

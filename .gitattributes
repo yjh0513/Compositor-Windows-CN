@@ -1,0 +1,18 @@
+# 默认：让 git 自动识别文本文件并在仓库中统一存为 LF。
+# Default: let git detect text files and normalize them to LF in the repository.
+* text=auto
+
+# ManifestFormatTests.SavingWritesSortedKeysAndReSavingIsStable 把 .comp 写出器的输出（固定使用 "\n"）
+# 与测试源文件里的 C# 原始字符串字面量（"""）逐字比较；原始字符串的换行符跟随源文件。
+# 在 Windows 上以 CRLF 检出时期望值会带上 "\r\n"，导致测试失败。因此测试源文件始终以 LF 检出。
+# The test compares the manifest writer's output (always "\n") with a C# raw string literal whose line
+# endings follow the source file, so the test sources must be checked out with LF on every platform.
+windows/tests/**/*.cs text eol=lf
+
+# 二进制文件，不做换行转换 / Binary files, never converted
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.psd binary
+*.ico binary
+*.zip binary

@@ -1,5 +1,23 @@
 # Notes for AI agents
 
+## This repository: the Windows port (Chinese localization)
+
+This repository (`yjh0513/Compositor-Windows-CN`) ships the **Windows port** in `windows/` (C# / .NET 10 /
+Avalonia), with a Chinese-localized interface. The macOS sources below are kept for reference only and are not
+built here.
+
+- Requires the .NET 10 SDK. From `windows/`:
+  - Build: `dotnet build Compositor.slnx -warnaserror --nologo` (the port is held at zero warnings).
+  - Tests: `dotnet test tests/Compositor.Core.Tests/Compositor.Core.Tests.csproj --nologo`.
+  - Headless window check: `dotnet run --project src/Compositor.Desktop/Compositor.Desktop.csproj -- --clicks clicks.png`
+    (currently fails on the known guide-drag bug; see README.md).
+- Localization: translate only human-facing text. Never translate `.comp` format keys or values, enum names, or
+  Avalonia key names; enum display names go in `windows/src/Compositor.Desktop/Labels.cs`. See CONTRIBUTING.md.
+- Port features from upstream by hand; do not merge the macOS `main` branch (see `windows/README.md`).
+- Keep the attribution in README.md and ATTRIBUTION.md intact (robbietilton original, chenguisen port, AI localization).
+
+## The macOS app (upstream)
+
 Compositor is a macOS image editor for compositing and photo work, written in Swift (SwiftUI and AppKit, with some C for pixel work).
 
 ## Designing or editing a Compositor project

@@ -1,0 +1,53 @@
+name: 翻译问题 / Translation issue
+description: 漏翻、错译、用词不符合 Photoshop 中文版习惯
+title: "[翻译] "
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提醒：`.comp` 工程格式的字段名与取值、枚举名、Avalonia 按键名**不能翻译**（否则会导致文件互不兼容或快捷键失效）。
+        这里只处理「给人看的文字」。
+  - type: input
+    id: location
+    attributes:
+      label: 出现位置
+      description: 菜单 / 对话框 / 面板 / 状态栏等
+      placeholder: 滤镜 > 模糊 > 高斯模糊 对话框
+    validations:
+      required: true
+  - type: input
+    id: current
+    attributes:
+      label: 当前文字
+      placeholder: Radius
+    validations:
+      required: true
+  - type: input
+    id: suggested
+    attributes:
+      label: 建议译文
+      placeholder: 半径
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 问题类型
+      options:
+        - 漏翻（仍是英文）
+        - 错译
+        - 用词不符合 Photoshop 中文版习惯
+        - 其他
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充说明
+      description: 截图、参考来源（例如 Photoshop 中文版的对应用词）
+  - type: input
+    id: version
+    attributes:
+      label: 版本
+      placeholder: v1.3.7-cn.1

@@ -5,29 +5,42 @@
 
 ---
 
-## ⚠️ 开篇必读：三件事
+> **English summary.** Compositor Windows CN is a Chinese-localized build of the Windows port of
+> [Compositor](https://github.com/robbietilton/Compositor), a free, open-source image editor originally written
+> for macOS by **robbietilton** (Wonder Assembly LLC, MIT licence). The Windows port (C# / .NET 10 / Avalonia),
+> which accounts for nearly all of the code here, was made by **chenguisen** with AI assistance; the Chinese
+> localization in this repository was also done by AI, and none of the code has been audited line by line by a
+> human. The repository is now maintained by **yjh0513**, who reviews issues and pull requests and publishes
+> releases. It is not an official Compositor release and is not endorsed by the upstream author. See the
+> [Roadmap](#路线图--roadmap), [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
 
-### 1. 这是纯 AI 写的东西
+---
 
-**代码不是我写的。** 具体说：
+## ⚠️ 开篇必读
+
+### 1. 代码由 AI 编写 / 汉化，未经人工逐行审计
+
+**代码不是我手写的。** 具体说：
 
 | 部分 | 谁写的 |
 |---|---|
 | macOS 原版 Compositor | 原作者 **robbietilton**（Wonder Assembly LLC），人类 |
 | Windows 移植版（C# / Avalonia） | **AI 编写**（由移植者 chenguisen 用 AI 完成，见其 README 自述） |
 | **中文汉化（本仓库的改动）** | **AI 完成**（WorkBuddy / Claude 系模型），全部界面文案与汉化后的测试期望值 |
-| 上传、写这份说明 | 我，`yjh0513`。我只做了搬运和打包，一行代码都没手写 |
+| 上传、打包、维护本仓库 | `yjh0513`（负责审阅、合并与发布，没有手写代码） |
 
-所以：**不要把它当成有人负责维护的商业软件来用。** 它能跑、功能是完整的，但它是 AI 的产物。
+项目自带 848 个单元测试和一整套无头自检，但代码**没有经过人工逐行审计**，请自行评估风险。
 
-### 2. 我不维护这个项目
+### 2. 维护状态
 
-不修 bug、不加功能、不看 issue、不回邮件、不合 PR。
-**这个仓库就是一个存档**，放在这里让大家免费下载。它现在什么样，以后基本就什么样。
+本仓库现由 **`yjh0513` 维护**：会查看并回复 issue、审阅并合并 PR、发布新的 Release。
+计划中的工作见下方 [路线图](#路线图--roadmap)，变更记录见 [CHANGELOG.md](CHANGELOG.md)。
+这是个人业余维护，响应速度无法保证，也不是 Compositor 官方版本（见下文「代码来源与原作者」）。
 
-### 3. 遇到问题怎么办 —— 交给 AI 去改
+### 3. 想自己动手修？可以借助 AI 助手，然后提 PR
 
-这正是我把代码原样开源的原因。你不需要会编程，只需要：
+这个项目的代码注释非常详尽（每个类、每个方法都写了「为什么这么做」），很适合交给 AI 编程助手阅读和修改。
+即使你不熟悉 C#，也可以：
 
 ```bash
 git clone https://github.com/yjh0513/Compositor-Windows-CN.git
@@ -41,8 +54,8 @@ cd Compositor-Windows-CN/windows
 > 「裁剪工具的选框在缩放超过 400% 后就对不齐了，帮我找到原因并修掉。」
 > 「帮我把界面里还剩下的英文文案也翻成中文。」
 
-这个项目的代码注释非常详尽（每个类、每个方法都写了「为什么这么做」），
-**结构就是为 AI 阅读而写的**，AI 改起来效率很高。这也是它适合「交给 AI 修」的原因。
+改好并确认 `dotnet build` / `dotnet test` 通过后，欢迎**提交 PR**，说明里注明哪些部分由 AI 生成即可。
+详见 [参与贡献](#参与贡献) 与 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ---
 
@@ -53,7 +66,7 @@ cd Compositor-Windows-CN/windows
 
 本仓库是它的 **Windows 移植版（C# / .NET 10 / Avalonia）**，并且：
 
-- ✅ **界面全部中文**，按 Photoshop 中文版的用词与习惯翻译（菜单栏是 `文件(F) 编辑(E) 图层(L) 图像(I) 滤镜(T) 工具(O) 选择(S) 视图(V) 帮助(H)`）
+- ✅ **界面基本全部中文**（少量残留英文文案见[路线图](#路线图--roadmap)），按 Photoshop 中文版的用词与习惯翻译（菜单栏是 `文件(F) 编辑(E) 图层(L) 图像(I) 滤镜(T) 工具(O) 选择(S) 视图(V) 帮助(H)`）
 - ✅ **读写与 macOS 版相同的 `.comp` 工程格式**（格式版本 v11），两个版本的文件可以互相打开
 - ✅ **功能完整**：图层、蒙版、混合模式、选区、画笔、仿制图章、修复画笔、渐变、形状、文字、
   裁剪、自由变换、曲线 / 色阶 / 色相饱和度等调整图层、各种滤镜、Camera Raw、抖动、色彩范围……
@@ -158,16 +171,52 @@ dotnet publish src/Compositor.Desktop/Compositor.Desktop.csproj \
 
 1. **参考线拖拽有缺陷**：从标尺拖出参考线后，再次拖动它时位置不跟随。
    在项目自带的自检 `--clicks` 里表现为 `FAILED: the guide ended at 110, not 40`。
-2. **有 1 个单元测试在 Windows 上失败**：
-   `ManifestFormatTests.SavingWritesSortedKeysAndReSavingIsStable`，
-   原因是本机 git 检出为 CRLF 而测试期望 LF，属于检出配置问题，**不是产品缺陷**。
+2. **有 1 个单元测试在 Windows 上失败（已提交修复，待在 Windows 上验证）**：
+   `ManifestFormatTests.SavingWritesSortedKeysAndReSavingIsStable`。
+   原因：测试的期望值是写在 `ManifestFormatTests.cs` 源文件里的 C# 原始字符串字面量（`"""`），
+   其换行符随源文件的换行符而定；而 `.comp` 写出器固定使用 `\n`。当 Windows 上 git 以 CRLF 检出
+   （`core.autocrlf=true`）时，期望值里就变成了 `\r\n`，两者不相等。属于检出配置问题，**不是产品缺陷**，
    其余 **847 个测试全部通过**。
+   现已新增 [`.gitattributes`](.gitattributes)，让 `windows/tests/` 下的 `*.cs` 始终以 LF 检出（`eol=lf`）。
+   已有的本地克隆需要重新检出这些文件才会生效：重新 clone，或在没有未提交改动的前提下，
+   删除 `windows/tests/Compositor.Core.Tests/` 下的 `*.cs` 后执行 `git checkout -- windows/tests`。
 3. **旧版快捷键自定义不会迁移**：`%APPDATA%\Compositor\shortcuts.json` 里的覆盖项以
    `{组名}:{标题}` 为键，组名汉化后键变了，旧的自定义会静默回到默认值（重设一次即可）。
 4. **移植版滞后于 macOS 官方版本**，部分新功能没有。
 
 另外提醒：这是 AI 写的代码，**没有经过人工代码审计**。虽然项目自带了 848 个单元测试与
 一整套无头自检来保证行为正确，但请自行评估风险。
+
+---
+
+## 路线图 / Roadmap
+
+以下是近期计划，按大致优先级排列。都是计划而非承诺，进展会记录在 [CHANGELOG.md](CHANGELOG.md)。
+
+- [ ] **修复参考线拖拽问题**（已知问题 1）：让 `--clicks` 自检里的参考线检查通过。
+- [x] **修复 Windows 上 CRLF 导致的单元测试失败**（已知问题 2）：通过 `.gitattributes` 固定 LF，本次改动已完成，待在 Windows 上确认。
+- [ ] **翻译剩余的英文文案**：继续遵守下方「安全边界」，只改给人看的文字。
+- [ ] **在可行范围内跟进 macOS 上游 1.3.7 之后的新版本**：按移植者的做法逐个功能手工移植，不合并 macOS 代码。
+- [ ] **发布时由 CI 自动构建便携版 zip**：在打 tag / 发布 Release 时自动生成 `Compositor-Windows-CN-portable.zip` 及校验值。
+
+English: fix the guide-drag bug; fix the CRLF test failure via `.gitattributes` (done in this change, pending
+verification on Windows); translate the remaining English strings; port newer upstream macOS features beyond
+1.3.7 where feasible; build the portable zip in CI on release.
+
+---
+
+## 参与贡献
+
+欢迎提交 bug 报告、翻译改进和 PR（包括借助 AI 助手完成的改动）。
+
+- 贡献指南：[CONTRIBUTING.md](CONTRIBUTING.md)（编译 / 测试命令、汉化规则、PR 检查清单）
+- 提 issue：[Bug 报告](https://github.com/yjh0513/Compositor-Windows-CN/issues/new?template=bug_report.yml) ·
+  [功能建议](https://github.com/yjh0513/Compositor-Windows-CN/issues/new?template=feature_request.yml) ·
+  [翻译问题](https://github.com/yjh0513/Compositor-Windows-CN/issues/new?template=translation.yml)
+- 变更记录：[CHANGELOG.md](CHANGELOG.md)
+
+如果问题在 macOS 原版上也存在，也可以考虑反馈给上游 [robbietilton/Compositor](https://github.com/robbietilton/Compositor/issues)；
+但请**不要**把 Windows 版的问题提到上游，原作者已说明不维护 Windows 版。
 
 ---
 
@@ -202,6 +251,6 @@ MIT 许可证允许你自由使用、修改、再分发（包括商用），**�
 
 **感谢原作者 [robbietilton](https://github.com/robbietilton) 做出了 Compositor，
 感谢 [chenguisen](https://github.com/chenguisen) 做出了 Windows 移植版。**
-这个仓库只是给中文用户省一点翻译的功夫。
+本仓库在此基础上做中文汉化与日常维护。
 
 </div>
